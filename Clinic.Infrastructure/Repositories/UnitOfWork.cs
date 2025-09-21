@@ -1,0 +1,32 @@
+﻿using Clinic.Application.Interfaces.Repositories;
+using Clinic.Domain.Entities;
+using Clinic.Infrastructure.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Clinic.Infrastructure.Repositories;
+public class UnitOfWork : IUnitOfWork
+{
+    private readonly ApplicationDbContext _context;
+
+    public IPatientRepository Patients { get; }
+
+    public UnitOfWork(ApplicationDbContext context)
+    {
+        _context = context;
+        Patients = new PatientRespository(_context);
+    }
+
+    public async Task<int> SaveAsync()
+    {
+        return await _context.SaveChangesAsync();
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
+    }
+}
