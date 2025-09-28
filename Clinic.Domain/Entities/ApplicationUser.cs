@@ -9,7 +9,8 @@ namespace Clinic.Domain.Entities;
 
 public class ApplicationUser : IdentityUser
 {
-    public string FullName { get; set; } = null!;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
     public string? ImageUrl { get; set; }
 }
 

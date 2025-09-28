@@ -1,0 +1,1 @@
+﻿global using Clinic.Domain.Common;

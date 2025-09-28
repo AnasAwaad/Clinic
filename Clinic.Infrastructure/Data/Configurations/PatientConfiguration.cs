@@ -20,8 +20,6 @@ public class PatientConfiguration:IEntityTypeConfiguration<Patient>
         // Properties
         builder.Property(p => p.DateOfBirth).IsRequired();
         builder.Property(p => p.Address).HasMaxLength(500);
-        builder.Property(p => p.IsDeleted).HasDefaultValue(false);
-        builder.Property(p => p.CreatedAt).IsRequired().HasDefaultValueSql("GETUTCDATE()");
 
         // Index on UserId
         builder.HasIndex(p => p.UserId).IsUnique();
@@ -32,7 +30,5 @@ public class PatientConfiguration:IEntityTypeConfiguration<Patient>
                .HasForeignKey<Patient>(p => p.UserId)
                .IsRequired();
         
-        // Global query filter for soft delete
-        builder.HasQueryFilter(p => !p.IsDeleted);
     }
 }

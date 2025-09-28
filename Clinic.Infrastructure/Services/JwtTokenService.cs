@@ -27,7 +27,7 @@ public class TokenService : ITokenService
         var claims = new List<Claim>()
         {
             new Claim(ClaimTypes.Email, appUser.Email),
-            new Claim(ClaimTypes.GivenName, appUser.FullName),
+            new Claim(ClaimTypes.GivenName, appUser.FirstName),
             new Claim(ClaimTypes.NameIdentifier, appUser.Id),
             new Claim(ClaimTypes.Role ,role),
             new Claim("UserName", appUser.UserName),

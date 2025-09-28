@@ -14,7 +14,7 @@ public static class DefaultUsers
     {
         var superAdmin = new ApplicationUser
         {
-            FullName = "Super Admin",
+            FirstName = "Super Admin",
             Email = "SuperAdmin@gmail.com",
             UserName = "SuperAdmin",
             EmailConfirmed = true,
@@ -22,7 +22,7 @@ public static class DefaultUsers
 
         var admin = new ApplicationUser
         {
-            FullName = "Admin",
+            FirstName = "Admin",
             Email = "Admin@gmail.com",
             UserName = "Admin",
             EmailConfirmed = true,
@@ -30,7 +30,7 @@ public static class DefaultUsers
 
         var secretary = new ApplicationUser
         {
-            FullName = "Secretary",
+            FirstName = "Secretary",
             Email = "Secretary@gmail.com",
             UserName = "Secretary",
             EmailConfirmed = true,
@@ -38,7 +38,7 @@ public static class DefaultUsers
 
         var patient = new ApplicationUser
         {
-            FullName = "Patient",
+            FirstName = "Patient",
             Email = "Patient@gmail.com",
             UserName = "patient",
             EmailConfirmed = true,

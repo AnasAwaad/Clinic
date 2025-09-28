@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.Interfaces.Repositories;
-public interface IGenericRepository<T> where T : BaseEntity
+public interface IGenericRepository<T> where T : class
 {
     Task<T?> GetByIdAsync(int id);
     Task<IEnumerable<T>> GetAllAsync();

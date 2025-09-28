@@ -14,7 +14,7 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
     {
         builder.HasKey(u => u.Id);
 
-        builder.Property(u => u.FullName)
+        builder.Property(u => u.FirstName)
             .HasMaxLength(100);
     }
 }

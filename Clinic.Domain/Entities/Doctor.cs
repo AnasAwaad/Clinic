@@ -6,14 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Domain.Entities;
-public class Patient:AuditableEntity
+public class Doctor : AuditableEntity
 {
     public int Id { get; set; }
-    public DateTime DateOfBirth { get; set; }
-    public string? Address { get; set; }
-    public string? Gender { get; set; }
+    public string Specialization { get; set; } = string.Empty;
+    public int YearOfExperience { get; set; }
 
     public string UserId { get; set; } = string.Empty;
     public ApplicationUser User { get; set; } = default!;
-
+    public ICollection<MedicalRecord> MedicalRecords { get; set; } = new List<MedicalRecord>();
 }

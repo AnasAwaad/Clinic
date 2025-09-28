@@ -38,7 +38,8 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         {
             Token = token,
             Email = user.Email!,
-            FullName = user.FullName
+            FirstName = user.FirstName,
+            LastName = user.LastName
         };
 
         return Result<LoginResult>.Success(loginResult, "Logged in successfully.");
@@ -62,7 +63,8 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
             {
                 UserName = email,
                 Email = email,
-                FullName = claimsPrincipal.FindFirstValue(ClaimTypes.GivenName) ?? string.Empty,
+                FirstName = claimsPrincipal.FindFirstValue(ClaimTypes.GivenName) ?? string.Empty,
+                LastName = claimsPrincipal.FindFirstValue(ClaimTypes.Surname) ?? string.Empty,
                 EmailConfirmed = true
             };
 
@@ -100,7 +102,8 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         {
             Token = token,
             Email = user.Email!,
-            FullName = user.FullName
+            FirstName = user.FirstName,
+            LastName = user.LastName
         };
 
         return Result<LoginResult>.Success(resultResponse, "Logged in successfully.");
@@ -116,7 +119,8 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         {
             UserName = dto.Email,
             Email = dto.Email,
-            FullName = dto.FullName
+            FirstName = dto.FirstName,
+            LastName = dto.LastName
         };
 
         var result = await userManager.CreateAsync(user, dto.Password);
@@ -128,15 +132,7 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         if (!roleResult.Succeeded)
             return Result<string>.Fail("Failed to assign role"); 
 
-
-        var student = new Patient()
-        {
-            CreatedAt = DateTime.Now,
-            UserId = user.Id,
-            IsDeleted = false,
-        };
-
-        await unitOfWork.Patients.AddAsync(student);
+        await unitOfWork.Patients.AddAsync(new Patient { UserId = user.Id});
         await unitOfWork.SaveAsync();
 
 
