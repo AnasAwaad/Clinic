@@ -1,9 +1,12 @@
 ﻿using Clinic.Application.Interfaces.Services;
 using Clinic.Application.Services;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +19,11 @@ public static class ServiceCollectionExtensions
 
         services.AddAutoMapper(applicationAssembly);
 
+        services
+           .AddFluentValidationAutoValidation()
+           .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
 
         return services;
     }

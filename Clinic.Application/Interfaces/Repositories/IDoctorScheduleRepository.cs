@@ -6,13 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.Interfaces.Repositories;
-public interface IUnitOfWork : IDisposable
+public interface IDoctorScheduleRepository : IGenericRepository<DoctorSchedule>
 {
-    IPatientRepository Patients { get; }
-    IDoctorScheduleRepository Schedules { get; }
-    IDoctorRepository Doctors { get; }
-    Task<int> SaveAsync();
 }
-
-
-

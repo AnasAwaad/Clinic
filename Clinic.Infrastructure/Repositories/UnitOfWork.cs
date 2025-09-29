@@ -13,11 +13,15 @@ public class UnitOfWork : IUnitOfWork
     private readonly ApplicationDbContext _context;
 
     public IPatientRepository Patients { get; }
+    public IDoctorScheduleRepository Schedules { get; }
+    public IDoctorRepository Doctors { get; }
 
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
         Patients = new PatientRespository(_context);
+        Schedules = new DoctorScheduleRepository(_context);
+        Doctors = new DoctorRepository(_context);
     }
 
     public async Task<int> SaveAsync()
