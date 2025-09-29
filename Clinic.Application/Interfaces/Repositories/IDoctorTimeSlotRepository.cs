@@ -8,5 +8,7 @@ namespace Clinic.Application.Interfaces.Repositories;
 public interface IDoctorTimeSlotRepository : IGenericRepository<DoctorTimeSlot>
 {
     Task<bool> IsTimeSlotOverlappingAsync(int scheduleId, TimeOnly startTime, TimeOnly endTime);
+    Task<DoctorTimeSlot?> GetByIdAndDayAsync(int timeSlotId, string day);
     Task<IEnumerable<DoctorTimeSlot>> GetAllForDayAsync(string day);
+    Task<IEnumerable<DoctorTimeSlot>> GetAvailableSlotsByDayAsync(string day);
 }

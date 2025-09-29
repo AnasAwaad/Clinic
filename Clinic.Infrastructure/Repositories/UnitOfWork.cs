@@ -17,6 +17,8 @@ public class UnitOfWork : IUnitOfWork
     public IDoctorRepository Doctors { get; }
     public IDoctorTimeSlotRepository TimeSlots { get; }
 
+    public IAppointmentRepository Appointments { get; }
+
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
@@ -24,6 +26,7 @@ public class UnitOfWork : IUnitOfWork
         Schedules = new DoctorScheduleRepository(_context);
         Doctors = new DoctorRepository(_context);
         TimeSlots = new DoctorTimeSlotRepository(_context);
+        Appointments = new AppointmentRepository(_context);
     }
 
     public async Task<int> SaveAsync()

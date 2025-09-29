@@ -13,4 +13,9 @@ internal class PatientRespository : GenericRepository<Patient>, IPatientReposito
     public PatientRespository(DbContext context) : base(context)
     {
     }
+
+    public Task<Patient?> GetByUserIdAsync(string userId)
+    {
+        return _context.Set<Patient>().SingleOrDefaultAsync(u => u.UserId == userId);
+    }
 }

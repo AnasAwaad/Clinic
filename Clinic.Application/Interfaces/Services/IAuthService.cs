@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Services;
 public interface IAuthService
 {
-    //Task<Result<string>> RegisterAsync(RegisterPatientDto dto);
-    //Task<Result<LoginResult>> LoginAsync(LoginDto dto);
+    Task<Result> RegisterAsync(RegisterPatientDto dto);
+    Task<Result<LoginResult>> LoginAsync(LoginDto dto);
     //Task<Result<LoginResult>> LoginWithGoogle(ClaimsPrincipal claimsPrincipal);
 }

@@ -14,20 +14,20 @@ namespace Clinic.API.Controllers;
 [ApiController]
 public class AuthController(IAuthService authService,SignInManager<ApplicationUser> signInManager) : ControllerBase
 {
-    //[HttpPost("register")]
-    //public async Task<ActionResult<Result<string>>> RegisterPatient([FromBody] RegisterPatientDto dto)
-    //{
-    //    var result = await authService.RegisterAsync(dto);
-    //    return result.Succeeded ? Ok(result) : BadRequest(result);
-    //}
+    [HttpPost("register")]
+    public async Task<ActionResult> Register([FromBody] RegisterPatientDto dto)
+    {
+        var result = await authService.RegisterAsync(dto);
+        return result.IsSuccess ? Ok() : result.ToProblem();
+    }
 
 
-    //[HttpPost("login")]
-    //public async Task<IActionResult> Login([FromBody] LoginDto dto)
-    //{
-    //    var result = await authService.LoginAsync(dto);
-    //    return result.Succeeded ? Ok(result) : BadRequest(result);
-    //}
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    {
+        var result = await authService.LoginAsync(dto);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
 
     //// Google Login
     //[HttpPost("login/google")]

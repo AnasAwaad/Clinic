@@ -8,4 +8,5 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Repositories;
 public interface IPatientRepository : IGenericRepository<Patient>
 {
+    Task<Patient?> GetByUserIdAsync(string userId);
 }

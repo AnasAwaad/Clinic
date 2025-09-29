@@ -8,6 +8,5 @@ namespace Clinic.Application.DTOs.DoctorSchedules;
 public record TimeSlotResponse(
     int Id,
     TimeOnly StartTime,
-    TimeOnly EndTime,
-    bool IsBooked
+    TimeOnly EndTime
 );

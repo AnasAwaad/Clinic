@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Domain.Entities;
-public class Patient:AuditableEntity
+public class Patient
 {
     public int Id { get; set; }
     public DateTime DateOfBirth { get; set; }
@@ -15,5 +15,7 @@ public class Patient:AuditableEntity
 
     public string UserId { get; set; } = string.Empty;
     public ApplicationUser User { get; set; } = default!;
+
+    public ICollection<Appointment> Appointments { get; set; } = default!;
 
 }
