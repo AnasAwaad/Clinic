@@ -5,10 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.DTOs.DoctorSchedules;
-public record DoctorScheduleResponse(
-    int Id,
-    string Day,
-    TimeOnly StartTime,
-    TimeOnly EndTime,
-    bool IsBooked
+public record TimeSlotRequest(
+    string StartTime,
+    string EndTime
 );

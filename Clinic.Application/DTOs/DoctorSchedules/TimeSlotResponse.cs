@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.DTOs.DoctorSchedules;
-public record DoctorScheduleRequest(
-    string StartTime,
-    string EndTime
+public record TimeSlotResponse(
+    int Id,
+    TimeOnly StartTime,
+    TimeOnly EndTime,
+    bool IsBooked
 );

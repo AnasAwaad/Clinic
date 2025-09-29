@@ -10,15 +10,10 @@ public class DoctorScheduleMapping : Profile
 {
     public DoctorScheduleMapping()
     {
-        CreateMap<DoctorSchedule, DoctorScheduleResponse>()
-            .ConstructUsing(src => new DoctorScheduleResponse(
-                src.Id,
-                src.Day,
-                src.TimeSlots.First().StartTime,
-                src.TimeSlots.First().EndTime,
-                src.TimeSlots.First().IsBooked
-            ));
-
+        CreateMap<DoctorTimeSlot, TimeSlotResponse>();
+        CreateMap<TimeSlotRequest, DoctorTimeSlot>()
+            .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.StartTime)))
+            .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.EndTime)));
     }
 
 }

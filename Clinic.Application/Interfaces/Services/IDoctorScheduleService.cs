@@ -7,5 +7,9 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Services;
 public interface IDoctorScheduleService
 {
-    Task<Result<DoctorScheduleResponse>> CreateAsync(int doctorId, string day, DoctorScheduleRequest request);
+    Task<Result<IEnumerable<TimeSlotResponse>>> GetAllAsync(string day);
+    Task<Result<TimeSlotResponse>> GetByIdAsync(int id);
+    Task<Result<TimeSlotResponse>> CreateAsync(string day, TimeSlotRequest request);
+    Task<Result> UpdateAsync(int id, TimeSlotRequest request);
+    Task<Result> DeleteAsync(int id);
 }

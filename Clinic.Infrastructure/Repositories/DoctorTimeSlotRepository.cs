@@ -15,11 +15,17 @@ internal class DoctorTimeSlotRepository : GenericRepository<DoctorTimeSlot>, IDo
         this.context = context;
     }
 
+    public async Task<IEnumerable<DoctorTimeSlot>> GetAllForDayAsync(string day)
+    {
+        return await context.Set<DoctorTimeSlot>()
+            .Where(x => x.Schedule.Day == day)
+            .ToListAsync();
+            
+    }
+
     public Task<bool> IsTimeSlotOverlappingAsync(int scheduleId, TimeOnly startTime, TimeOnly endTime)
     {
         return context.Set<DoctorTimeSlot>()
-            .AnyAsync(x => x.ScheduleId == scheduleId && ((x.StartTime <= startTime && x.EndTime <= endTime) ||
-            (x.StartTime >= startTime && x.EndTime >= endTime) || (x.StartTime <= startTime && x.EndTime >= endTime) ||
-            (x.StartTime >= startTime && x.EndTime <= endTime))); 
+            .AnyAsync(x => x.ScheduleId == scheduleId && startTime < x.EndTime && endTime > x.StartTime); 
     }
 }

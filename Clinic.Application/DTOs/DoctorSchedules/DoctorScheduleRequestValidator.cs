@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.DTOs.DoctorSchedules;
-public class DoctorScheduleRequestValidator : AbstractValidator<DoctorScheduleRequest>
+public class TimeSlotRequestValidator : AbstractValidator<TimeSlotRequest>
 {
-    public DoctorScheduleRequestValidator()
+    public TimeSlotRequestValidator()
     {
         RuleFor(x => x.EndTime)
             .NotEmpty()
