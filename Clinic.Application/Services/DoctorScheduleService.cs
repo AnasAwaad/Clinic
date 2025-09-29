@@ -18,22 +18,28 @@ public class DoctorScheduleService(IUnitOfWork unitOfWork,IMapper mapper) : IDoc
         if (doctor is null)
             return Result.Failure<DoctorScheduleResponse>(DoctorErrors.DoctorNotFound);
 
-        if (TimeOnly.Parse(request.StartTime) >= TimeOnly.Parse(request.EndTime))
-            return Result.Failure<DoctorScheduleResponse>(DoctorErrors.DoctorNotFound);
+        var dayExists = await unitOfWork.Schedules.DayIsExists(day);
 
-        var schedule = new DoctorSchedule
+        if (!dayExists)
+            return Result.Failure<DoctorScheduleResponse>(DoctorScheduleErrors.InvalidDay);
+
+        var schedule = await unitOfWork.Schedules.GetByDayAsync(day);
+
+        var startTime = TimeOnly.Parse(request.StartTime);
+        var endTime = TimeOnly.Parse(request.EndTime);
+
+        var isOverloapping = await unitOfWork.TimeSlots.IsTimeSlotOverlappingAsync(schedule.Id, startTime, endTime);
+        if (isOverloapping)
+            return Result.Failure<DoctorScheduleResponse>(DoctorScheduleErrors.OverlappingTimeSlot);
+
+        var timeSlot =  new DoctorTimeSlot
         {
-            Day = day,
-            DoctorId = doctorId,
+            ScheduleId = schedule.Id,
+            StartTime = startTime,
+            EndTime = endTime
         };
 
-        schedule.TimeSlots.Add(new DoctorTimeSlot 
-        { 
-            StartTime = TimeOnly.Parse(request.StartTime),
-            EndTime = TimeOnly.Parse(request.EndTime)
-        });
-
-        await unitOfWork.Schedules.AddAsync(schedule);
+        await unitOfWork.TimeSlots.AddAsync(timeSlot);
         await unitOfWork.SaveAsync();
 
         return Result.Success(mapper.Map<DoctorScheduleResponse>(schedule));

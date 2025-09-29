@@ -19,7 +19,12 @@ public static class DefaultUsers
             UserName = "SuperAdmin",
             EmailConfirmed = true,
         };
-
+        var doctor = new Doctor
+        {
+            Specialization = "Cardiology",
+            YearOfExperience = 10,
+            User = superAdmin
+        };
         var admin = new ApplicationUser
         {
             FirstName = "Admin",

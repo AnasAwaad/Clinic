@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace Clinic.Infrastructure.Repositories;
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
-    private readonly DbContext _context;
-    private readonly DbSet<T> _dbSet;
+    protected readonly DbContext _context;
+    protected readonly DbSet<T> _dbSet;
 
     public GenericRepository(DbContext context)
     {

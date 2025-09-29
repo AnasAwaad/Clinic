@@ -8,4 +8,6 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Repositories;
 public interface IDoctorScheduleRepository : IGenericRepository<DoctorSchedule>
 {
+    Task<bool> DayIsExists(string day);
+    Task<DoctorSchedule> GetByDayAsync(string day);
 }

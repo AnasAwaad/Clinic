@@ -20,9 +20,16 @@ public class DoctorScheduleRequestValidator : AbstractValidator<DoctorScheduleRe
             .Matches(@"^(?:[01]\d|2[0-3]):[0-5]\d$")
             .WithMessage("Start time must be in HH:mm format");
 
-        RuleFor(x=>x)
-            .Must(x=> TimeOnly.Parse(x.EndTime) > TimeOnly.Parse(x.StartTime))
-            .WithMessage("End time must be greater than start time");
+        RuleFor(x => x)
+            .Must(x =>
+            {
+                if (!TimeOnly.TryParse(x.StartTime, out var start)) return false;
+                if (!TimeOnly.TryParse(x.EndTime, out var end)) return false;
+                var duration = end - start;
+                return duration.TotalMinutes >= 15 && duration.TotalMinutes <= 240;
+            })
+            .WithName("TimeSlotDuration")
+            .WithMessage("StartTime must be greater than end time and Time slot must be between 15 minutes and 4 hours.");
 
     }
 }

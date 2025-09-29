@@ -21,10 +21,11 @@ public static class ServiceCollectionExtensions
 
         services
            .AddFluentValidationAutoValidation()
-           .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+           .AddValidatorsFromAssemblyContaining<DoctorScheduleRequestValidator>();
+
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
 
         return services;
-    }
+    } 
 }
