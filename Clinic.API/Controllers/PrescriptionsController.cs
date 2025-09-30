@@ -27,9 +27,8 @@ public class PrescriptionsController(IPrescriptionService prescriptionService) :
     [HttpPost]
     public async Task<IActionResult> Create([FromRoute] int recordId, [FromBody] PrescriptionRequest request)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var result = await prescriptionService.CreateAsync(userId,recordId, request);
-        return CreatedAtAction(nameof(GetById), new { recordId = recordId, id=result.Value.Id }, result.Value);
+        var result = await prescriptionService.CreateAsync(User.GetUserId(), recordId, request);
+        return CreatedAtAction(nameof(GetById), new { recordId, id=result.Value.Id }, result.Value);
     }
 
     [HttpPut("{id}")]

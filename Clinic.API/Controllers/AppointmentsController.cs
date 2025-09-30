@@ -15,8 +15,7 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     [Authorize]
     public async Task<IActionResult> Book([FromBody] AppointmentRequest request)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var result = await appointmentService.CreateAsync(userId,request);
+        var result = await appointmentService.CreateAsync(User.GetUserId(), request);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
@@ -39,8 +38,7 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     [Authorize]
     public async Task<IActionResult> GetMyAppointments()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var result = await appointmentService.GetByUserAsync(userId);
+        var result = await appointmentService.GetByUserAsync(User.GetUserId());
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
@@ -48,8 +46,7 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     [Authorize]
     public async Task<IActionResult> Cancel(int id)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var result = await appointmentService.CancelAsync(userId,id);
+        var result = await appointmentService.CancelAsync(User.GetUserId(), id);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 }

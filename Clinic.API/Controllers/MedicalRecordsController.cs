@@ -27,8 +27,7 @@ public class MedicalRecordsController(IMedicalRecordService medicalRecordService
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MedicalRecordRequest request)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var result = await medicalRecordService.CreateAsync(userId,request);
+        var result = await medicalRecordService.CreateAsync(User.GetUserId(), request);
         return result.IsSuccess ? CreatedAtAction(nameof(GetById), new {result.Value.Id},result.Value) : result.ToProblem();
     }
 

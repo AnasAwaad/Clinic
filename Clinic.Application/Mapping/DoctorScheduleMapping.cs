@@ -2,6 +2,7 @@
 using Clinic.Application.DTOs.Appointment;
 using Clinic.Application.DTOs.MedicalRecord;
 using Clinic.Application.DTOs.Prescription;
+using Clinic.Application.DTOs.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,9 @@ public class DoctorScheduleMapping : Profile
         // prescription
         CreateMap<Prescription, PrescriptionResponse>();
         CreateMap<PrescriptionRequest, Prescription>();
+
+        //user
+        CreateMap<ApplicationUser, UserProfileResponse>();
         
 
     }
