@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Clinic.Application.DTOs.User;
+using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,9 +13,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.Services;
-internal class UserService(UserManager<ApplicationUser> userManager,IMapper mapper) : IUserService
+internal class UserService(UserManager<ApplicationUser> userManager,IUnitOfWork unitOfWork,IMapper mapper) : IUserService
 {
-    
+    public async Task<IEnumerable<UserResponse>> GetAllAsync()
+    {
+        return await unitOfWork.Users.GetAllUsersWithRoles();
+    }
+
     public async Task<Result<UserProfileResponse>> GetProfileAsync(string userId,CancellationToken cancellationToken = default)
     {
         var result = await userManager.Users
@@ -49,5 +54,6 @@ internal class UserService(UserManager<ApplicationUser> userManager,IMapper mapp
         var error = result.Errors.First();
         return Result.Failure(new Error(error.Code, error.Description,StatusCodes.Status400BadRequest));
     }
+
 
 }

@@ -15,6 +15,7 @@ public interface IUnitOfWork : IDisposable
     IAppointmentRepository Appointments { get; }
     IMedicalRecordRepository MedicalRecords { get; }
     IPrescriptionRepository Prescriptions { get; }
+    IUserRepository Users { get; }
     Task<int> SaveAsync();
 }
 
