@@ -8,4 +8,5 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Repositories;
 public interface IMedicalRecordRepository : IGenericRepository<MedicalRecord>
 {
+    Task<bool> MedicalRecordIsExists(int recordId);
 }

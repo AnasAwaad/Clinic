@@ -13,4 +13,10 @@ internal class MedicalRecordRepository : GenericRepository<MedicalRecord>, IMedi
     public MedicalRecordRepository(DbContext context) : base(context)
     {
     }
+
+    public async Task<bool> MedicalRecordIsExists(int recordId)
+    {
+        return await _context.Set<MedicalRecord>()
+            .AnyAsync(x => x.Id == recordId);
+    }
 }

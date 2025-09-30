@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Clinic.Application.DTOs.Appointment;
 using Clinic.Application.DTOs.MedicalRecord;
+using Clinic.Application.DTOs.Prescription;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,11 @@ public class DoctorScheduleMapping : Profile
 
         CreateMap<MedicalRecord, MedicalRecordResponse>();
         CreateMap<MedicalRecordRequest, MedicalRecord>();
+
+        // prescription
+        CreateMap<Prescription, PrescriptionResponse>();
+        CreateMap<PrescriptionRequest, Prescription>();
+        
 
     }
 
