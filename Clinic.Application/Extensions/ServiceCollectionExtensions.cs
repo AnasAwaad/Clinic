@@ -1,6 +1,7 @@
 ﻿using Clinic.Application.Interfaces.Services;
 using Clinic.Application.Services;
 using FluentValidation;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System;
@@ -29,6 +30,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMedicalRecordService, MedicalRecordService>();
         services.AddScoped<IPrescriptionService, PrescriptionService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IJwtProvider, JwtProvider>();
+        services.AddScoped<IEmailSender, EmailService>();
+
+
 
         return services;
     } 

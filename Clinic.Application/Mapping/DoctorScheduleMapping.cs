@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Clinic.Application.DTOs.Appointment;
+using Clinic.Application.DTOs.Auth;
 using Clinic.Application.DTOs.MedicalRecord;
 using Clinic.Application.DTOs.Prescription;
 using Clinic.Application.DTOs.User;
@@ -46,6 +47,9 @@ public class DoctorScheduleMapping : Profile
 
         //user
         CreateMap<ApplicationUser, UserProfileResponse>();
+
+        // auth
+        CreateMap<RegisterRequest, ApplicationUser>();
         
 
     }

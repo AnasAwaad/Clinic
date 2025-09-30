@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.DTOs.Auth;
-public class LoginDto
+public class RefreshTokenRequest
 {
-    public string Email { get; set; } = null!;
-    public string Password { get; set; } = null!;
+    public string Token { get; set; } = string.Empty;
+    public string RefreshToken { get; set; } = string.Empty;
 }

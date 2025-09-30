@@ -12,12 +12,12 @@ public class TimeSlotRequestValidator : AbstractValidator<TimeSlotRequest>
     {
         RuleFor(x => x.EndTime)
             .NotEmpty()
-            .Matches(@"^(?:[01]\d|2[0-3]):[0-5]\d$")
+            .Matches(RegexPatterns.Time)
             .WithMessage("End time must be in HH:mm format");
 
         RuleFor(x=>x.StartTime)
             .NotEmpty()
-            .Matches(@"^(?:[01]\d|2[0-3]):[0-5]\d$")
+            .Matches(RegexPatterns.Time)
             .WithMessage("Start time must be in HH:mm format");
 
         RuleFor(x => x)

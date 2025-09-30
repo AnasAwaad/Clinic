@@ -1,8 +1,10 @@
 ﻿using Clinic.Domain.Entities;
+using Clinic.Domain.Helpers;
 using Clinic.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
@@ -70,6 +72,13 @@ public static class WebApplicationBuilderExtensions
         }).AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
+        builder.Services.AddOptions<JwtOptions>()
+            .BindConfiguration(JwtOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        var jwtSettings = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
+
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -98,18 +107,21 @@ public static class WebApplicationBuilderExtensions
         })
         .AddJwtBearer(options =>
         {
+            options.SaveToken = true;
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:Key"])),
                 ValidateIssuer = true,
-                ValidIssuer = builder.Configuration["Token:Issuer"],
-                ValidateAudience = false
-
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtSettings?.Issuer,
+                ValidAudience = jwtSettings?.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings?.Key!))
             };
         });
 
 
-
+        builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
+        builder.Services.AddHttpContextAccessor();
     }
 }

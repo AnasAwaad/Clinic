@@ -15,7 +15,7 @@ namespace Clinic.API.Controllers;
 public class AuthController(IAuthService authService,SignInManager<ApplicationUser> signInManager) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<ActionResult> Register([FromBody] RegisterPatientDto dto)
+    public async Task<ActionResult> Register([FromBody] RegisterRequest dto)
     {
         var result = await authService.RegisterAsync(dto);
         return result.IsSuccess ? Ok() : result.ToProblem();
@@ -23,10 +23,26 @@ public class AuthController(IAuthService authService,SignInManager<ApplicationUs
 
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    public async Task<IActionResult> Login([FromBody] LoginRequest dto)
     {
         var result = await authService.LoginAsync(dto);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> CreateRefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        var result = await authService.GetRefreshTokenAsync(request.Token, request.RefreshToken, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+
+    [HttpPut("revoke-refresh-token")]
+    public async Task<IActionResult> RevokeRefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        var result = await authService.RevokeRefreshTokenAsync(request.Token, request.RefreshToken, cancellationToken);
+
+        return result.IsSuccess ? Ok() : result.ToProblem();
     }
 
     //// Google Login

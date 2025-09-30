@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.DTOs.Auth;
-public class AuthResponseDto
+public class LoginRequest
 {
-    public string Token { get; set; } = null!;
     public string Email { get; set; } = null!;
-    public string FullName { get; set; } = null!;
+    public string Password { get; set; } = null!;
 }
