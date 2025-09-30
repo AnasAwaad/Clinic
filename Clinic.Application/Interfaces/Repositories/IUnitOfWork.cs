@@ -13,6 +13,7 @@ public interface IUnitOfWork : IDisposable
     IDoctorTimeSlotRepository TimeSlots { get; }
     IDoctorRepository Doctors { get; }
     IAppointmentRepository Appointments { get; }
+    IMedicalRecordRepository MedicalRecords { get; }
     Task<int> SaveAsync();
 }
 
