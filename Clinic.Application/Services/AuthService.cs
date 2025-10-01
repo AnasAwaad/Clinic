@@ -2,24 +2,15 @@
 using Clinic.Application.DTOs.Auth;
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
-using Clinic.Domain.Consts;
-using Clinic.Domain.Entities;
 using Clinic.Domain.Helpers;
-using Clinic.Domain.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Clinic.Application.Services;
 internal class AuthService(UserManager<ApplicationUser> userManager,
@@ -28,7 +19,8 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
     IUnitOfWork unitOfWork,
     IMapper mapper,
     IHttpContextAccessor httpContextAccessor,
-    IEmailSender emailSender) : IAuthService
+    IEmailSender emailSender,
+    ILogger<AuthService> logger) : IAuthService
 {
     private readonly int _refreshTokenExpiryDays = 14;
 
@@ -82,6 +74,60 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
             return Result.Failure<AuthResponse>(UserErrors.LockedUser);
 
         return Result.Failure<AuthResponse>(result.IsNotAllowed ? UserErrors.EmailNotConfirmed : UserErrors.InvalidCredentials);
+    }
+
+    public async Task<Result> ConfirmEmailAsync(ConfirmEmailRequest request)
+    {
+        var user = await userManager.FindByIdAsync(request.Id);
+
+        if (user is null)
+            return Result.Failure(UserErrors.InvalidCode);
+
+        if (user.EmailConfirmed)
+            return Result.Failure(UserErrors.EmailAlreadyConfirmed);
+
+        string decodedCode;
+        try
+        {
+            decodedCode = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Code));
+        }
+        catch (FormatException)
+        {
+            return Result.Failure(UserErrors.InvalidCode);
+        }
+
+        var result = await userManager.ConfirmEmailAsync(user, decodedCode);
+
+        if (!result.Succeeded)
+        {
+            var error = result.Errors.First();
+
+            return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
+        }
+
+        return Result.Success();
+    }
+
+    public async Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request)
+    {
+        var user = await userManager.FindByEmailAsync(request.Email);
+
+        if (user is null)
+            return Result.Success();
+
+        if (user.EmailConfirmed)
+            return Result.Failure(UserErrors.EmailAlreadyConfirmed);
+
+        // Send confirmation email to user
+        var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+        logger.LogInformation("ConfirmationCode: {Code}", code);
+
+        await SendConfirmationEmail(user, code);
+
+
+        return Result.Success();
     }
 
     //public async Task<Result<LoginResult>> LoginWithGoogle(ClaimsPrincipal claimsPrincipal)
@@ -258,6 +304,59 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
 
         return Result.Success();
     }
+
+    public async Task<Result> SendResetPasswordCodeAsync(string email)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+
+        if (user is null)
+            return Result.Success();
+
+        if (!user.EmailConfirmed)
+            return Result.Failure(UserErrors.EmailNotConfirmed);
+
+        // Send confirmation email to user
+        var code = await userManager.GeneratePasswordResetTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+        logger.LogInformation("Reset code: {Code}", code);
+
+        await SendResetPasswordEmail(user, code);
+
+
+        return Result.Success();
+    }
+
+    public async Task<Result> ResetPasswordAsync(ResetPasswordRequest request)
+    {
+        var user = await userManager.FindByEmailAsync(request.Email);
+
+        if (user is null || !user.EmailConfirmed)
+            return Result.Failure(UserErrors.InvalidCode);
+
+        string decodedCode;
+        IdentityResult result;
+        try
+        {
+            decodedCode = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Code));
+            result = await userManager.ResetPasswordAsync(user, decodedCode, request.NewPassword);
+        }
+        catch (FormatException)
+        {
+            result = IdentityResult.Failed(userManager.ErrorDescriber.InvalidToken());
+        }
+
+        if (!result.Succeeded)
+        {
+            logger.LogInformation("Password reset failed for user {UserId}. Errors: {Errors}", user.Id, string.Join(',', result.Errors.Select(e => e.Description)));
+            
+            var error = result.Errors.First();
+            return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
+        }
+
+        return Result.Success();
+    }
+
     private static string GenerateRefreshToken()
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
@@ -275,6 +374,21 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
             });
 
         await emailSender.SendEmailAsync(user.Email!, "Confirm your email", emailBody);
+
+    }
+
+    private async Task SendResetPasswordEmail(ApplicationUser user, string code)
+    {
+        var origin = httpContextAccessor.HttpContext?.Request.Headers.Origin;
+
+        var emailBody = EmailBodyBuilder.GenerateEmailBody("ForgetPassword",
+            new Dictionary<string, string>
+            {
+                { "{{name}}", user.FirstName },
+                { "{{action_url}}", $"{origin}/auth/forgetPassword?email={user.Email}&code={code}" }
+            });
+
+        await emailSender.SendEmailAsync(user.Email!, "Change password", emailBody);
 
     }
 

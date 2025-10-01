@@ -65,7 +65,7 @@ public static class WebApplicationBuilderExtensions
             options.Password.RequireUppercase = true;
             options.Password.RequireDigit = true;
             options.Password.RequiredLength = 6;
-            options.SignIn.RequireConfirmedEmail = false;
+            options.SignIn.RequireConfirmedEmail = true;
             options.User.RequireUniqueEmail = true;
 
 

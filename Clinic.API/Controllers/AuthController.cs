@@ -1,11 +1,5 @@
 ﻿using Clinic.Application.DTOs.Auth;
-using Clinic.Application.Interfaces.Services;
 using Clinic.Domain.Entities;
-using Clinic.Domain.Response;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,6 +38,39 @@ public class AuthController(IAuthService authService,SignInManager<ApplicationUs
 
         return result.IsSuccess ? Ok() : result.ToProblem();
     }
+
+    [HttpPost("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
+    {
+        var result = await authService.ConfirmEmailAsync(request);
+
+        return result.IsSuccess ? Ok() : result.ToProblem();
+    }
+
+    [HttpPost("resend-confirmation-email")]
+    public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailRequest request)
+    {
+        var result = await authService.ResendConfirmationEmailAsync(request);
+
+        return result.IsSuccess ? Ok() : result.ToProblem();
+    }
+
+    [HttpPost("forget-password")]
+    public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordRequest request)
+    {
+        await authService.SendResetPasswordCodeAsync(request.Email);
+
+        return Ok();
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        var result = await authService.ResetPasswordAsync(request);
+
+        return result.IsSuccess ? Ok() : result.ToProblem();
+    }
+    
 
     //// Google Login
     //[HttpPost("login/google")]
