@@ -11,8 +11,7 @@ internal class LoginRequestValidator : AbstractValidator<LoginRequest>
 {
     public LoginRequestValidator()
     {
-        RuleFor(x => x.Email)
-            .EmailAddress()
+        RuleFor(x => x.EmailOrUsername)
             .NotEmpty();
 
         RuleFor(x => x.Password)

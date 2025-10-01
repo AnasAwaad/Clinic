@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace Clinic.Domain.Consts;
 public static class AppRoles
 {
-    public const string Admin = "Admin";
-    public const string SuperAdmin = "SuperAdmin";
-    public const string Secretary = "Secretary";
-    public const string Patient = "Patient";
+    public const string SuperAdmin = nameof(SuperAdmin);
+    public const string Doctor = nameof(Doctor);
+    public const string Secretary = nameof(Secretary);
+    public const string Patient = nameof(Patient);
 }

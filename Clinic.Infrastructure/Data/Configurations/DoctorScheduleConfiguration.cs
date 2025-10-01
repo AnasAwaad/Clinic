@@ -26,6 +26,6 @@ internal class DoctorScheduleConfiguration : IEntityTypeConfiguration<DoctorSche
             new DoctorSchedule { Id = 6, Day = "Saturday", DoctorId = 1 },
             new DoctorSchedule { Id = 7, Day = "Sunday", DoctorId = 1 },
 
-            ]);
+        ]);
     }
 }

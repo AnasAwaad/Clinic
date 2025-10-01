@@ -1,10 +1,6 @@
 ﻿using Clinic.Application.DTOs.Appointment;
-using Clinic.Infrastructure.Data.Seeds;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Clinic.API.Controllers;
 [Route("api/[controller]")]

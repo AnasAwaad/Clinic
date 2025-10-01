@@ -26,7 +26,8 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
 
     public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request)
     {
-        var user = await userManager.FindByEmailAsync(request.Email);
+        var user = await userManager.Users
+            .FirstOrDefaultAsync(x=>x.Email!.Equals(request.EmailOrUsername) || x.UserName!.Equals(request.EmailOrUsername));
 
         if (user is null)
             return Result.Failure<AuthResponse>(UserErrors.InvalidCredentials);

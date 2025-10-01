@@ -1,13 +1,5 @@
-﻿using Clinic.API.Extensions;
-using Clinic.Application.Extensions;
-using Clinic.Application.Interfaces.Services;
-using Clinic.Domain.Entities;
-using Clinic.Infrastructure.Data.Seeds;
+﻿using Clinic.Application.Extensions;
 using Clinic.Infrastructure.Extensions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,17 +27,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-#region Seed Roles and Users
-var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
-using var scope = scopeFactory.CreateScope();
-
-var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-await DefaultRoles.SeedRoles(roleManager);
-await DefaultUsers.SeedUsers(userManager);
-#endregion
 
 app.MapControllers();
 
