@@ -47,6 +47,7 @@ public class DoctorScheduleMapping : Profile
 
         //user
         CreateMap<ApplicationUser, UserProfileResponse>();
+        CreateMap<ApplicationUser, UserResponse>();
 
         // auth
         CreateMap<RegisterRequest, ApplicationUser>();

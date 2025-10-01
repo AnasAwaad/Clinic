@@ -6,6 +6,7 @@ using Clinic.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,30 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.Services;
-internal class UserService(UserManager<ApplicationUser> userManager,IUnitOfWork unitOfWork,IMapper mapper) : IUserService
+internal class UserService(UserManager<ApplicationUser> userManager,
+    IUnitOfWork unitOfWork,
+    IMapper mapper,
+    ILogger<UserService> logger) : IUserService
 {
     public async Task<IEnumerable<UserResponse>> GetAllAsync()
     {
         return await unitOfWork.Users.GetAllUsersWithRoles();
+    }
+
+    public async Task<Result<UserResponse>> GetAsync(string id)
+    {
+        logger.LogInformation("Getting user with id {UserId}", id);
+        var user = await userManager.FindByIdAsync(id);
+
+        if (user is null)
+            return Result.Failure<UserResponse>(UserErrors.UserNotFound);
+
+        var userRoles = await userManager.GetRolesAsync(user);
+
+        var resposne = mapper.Map<UserResponse>(user);
+        resposne.Roles = userRoles;
+
+        return Result.Success(resposne);
     }
 
     public async Task<Result<UserProfileResponse>> GetProfileAsync(string userId,CancellationToken cancellationToken = default)
