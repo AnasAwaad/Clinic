@@ -20,20 +20,21 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
 
         var hasher = new PasswordHasher<ApplicationUser>();
 
-        var superAdmin = new ApplicationUser
+        var admin = new ApplicationUser
         {
             Id = "556c1c99-2d3a-4988-a80a-46ab2f14ea71",
-            FirstName = "Super",
-            LastName = "Admin",
-            UserName = "SuperAdmin",
-            NormalizedUserName = "SUPERADMIN",
-            Email = "SuperAdmin@gmail.com",
-            NormalizedEmail = "SUPERADMIN@GMAIL.COM",
+            FirstName = "Admin",
+            LastName = "",
+            UserName = "Admin",
+            NormalizedUserName = "ADMIN",
+            Email = "Admin@gmail.com",
+            NormalizedEmail = "ADMIN@GMAIL.COM",
             EmailConfirmed = true,
             SecurityStamp = Guid.NewGuid().ToString(),
-            ConcurrencyStamp = Guid.NewGuid().ToString()
+            ConcurrencyStamp = Guid.NewGuid().ToString(),
+            PasswordHash = hasher.HashPassword(null!,"Pa$$w0rd")
         };
-        superAdmin.PasswordHash = hasher.HashPassword(superAdmin, "SuperAdmin@123");
+        //admin.PasswordHash = hasher.HashPassword(admin, "Pa$$w0rd");
 
         var doctor = new ApplicationUser
         {
@@ -48,7 +49,7 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
             SecurityStamp = Guid.NewGuid().ToString(),
             ConcurrencyStamp = Guid.NewGuid().ToString()
         };
-        doctor.PasswordHash = hasher.HashPassword(doctor, "Doctor@123");
+        doctor.PasswordHash = hasher.HashPassword(doctor, "Pa$$w0rd");
 
         var secretary = new ApplicationUser
         {
@@ -65,6 +66,6 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
         };
         secretary.PasswordHash = hasher.HashPassword(secretary, "Secretary@123");
 
-        builder.HasData(superAdmin, doctor, secretary);
+        builder.HasData(admin, doctor, secretary);
     }
 }

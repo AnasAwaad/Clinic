@@ -8,7 +8,7 @@ namespace Clinic.API.Controllers;
 public class AppointmentsController(IAppointmentService appointmentService) : ControllerBase
 {
     [HttpPost]
-    [Authorize]
+    [HasPermission(Permissions.AddAppointments)]
     public async Task<IActionResult> Book([FromBody] AppointmentRequest request)
     {
         var result = await appointmentService.CreateAsync(User.GetUserId(), request);
@@ -16,6 +16,7 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     }
 
     [HttpGet("available/{date}")]
+    [HasPermission(Permissions.GetTimeSlots)]
     public async Task<IActionResult> GetAvailable([FromRoute] DateOnly date)
     {
         var result = await appointmentService.GetAvailableSlotsAsync(date.DayOfWeek.ToString());
@@ -23,7 +24,7 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     }
 
     [HttpGet("{id}")]
-
+    [HasPermission(Permissions.GetAppointments)]
     public async Task<IActionResult> GetDetails([FromRoute] int id)
     {
         var result = await appointmentService.GetAsync(id);
@@ -31,7 +32,7 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     }
 
     [HttpGet("my")]
-    [Authorize]
+    [HasPermission(Permissions.GetOwnAppointments)]
     public async Task<IActionResult> GetMyAppointments()
     {
         var result = await appointmentService.GetByUserAsync(User.GetUserId());
@@ -39,7 +40,7 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     }
 
     [HttpPut("{id}/cancel")]
-    [Authorize]
+    [HasPermission(Permissions.CancelAppointments)]
     public async Task<IActionResult> Cancel(int id)
     {
         var result = await appointmentService.CancelAsync(User.GetUserId(), id);

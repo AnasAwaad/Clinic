@@ -20,6 +20,8 @@ public class UnitOfWork : IUnitOfWork
     public IMedicalRecordRepository MedicalRecords { get; }
     public IPrescriptionRepository Prescriptions { get; }
     public IUserRepository Users { get; }
+    public IRoleRepository Roles { get; }
+    public IRoleClaimRepository RoleClaims { get; }
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -32,6 +34,8 @@ public class UnitOfWork : IUnitOfWork
         MedicalRecords = new MedicalRecordRepository(_context);
         Prescriptions = new PrescriptionRepository(_context);
         Users = new UserRepository(_context);
+        Roles = new RoleRepository(_context);
+        RoleClaims = new RoleClaimRepository(_context);
     }
 
     public async Task<int> SaveAsync()

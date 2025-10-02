@@ -10,6 +10,7 @@ public class TimeSlotsController(IDoctorScheduleService scheduleService) : Contr
 {
     
     [HttpPost("days/{day}/timeslots")]
+    [HasPermission(Permissions.AddTimeSlots)]
     public async Task<IActionResult> Create([FromRoute] string day, [FromBody] TimeSlotRequest request, CancellationToken cancellationToken)
     {
         var result = await scheduleService.CreateAsync(day, request);
@@ -19,6 +20,7 @@ public class TimeSlotsController(IDoctorScheduleService scheduleService) : Contr
     }
 
     [HttpGet("days/{day}/timeslots")]
+    [HasPermission(Permissions.GetTimeSlots)]
     public async Task<IActionResult> GetAll([FromRoute] string day)
     {
         var result = await scheduleService.GetAllAsync(day);
@@ -26,6 +28,7 @@ public class TimeSlotsController(IDoctorScheduleService scheduleService) : Contr
     }
     
     [HttpGet("timeslots/{id}")]
+    [HasPermission(Permissions.GetTimeSlots)]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         var result = await scheduleService.GetByIdAsync(id);
@@ -33,6 +36,7 @@ public class TimeSlotsController(IDoctorScheduleService scheduleService) : Contr
     }
 
     [HttpPut("timeslots/{id}")]
+    [HasPermission(Permissions.UpdateTimeSlots)]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] TimeSlotRequest request)
     {
         var result = await scheduleService.UpdateAsync(id, request);
@@ -40,6 +44,7 @@ public class TimeSlotsController(IDoctorScheduleService scheduleService) : Contr
     }
 
     [HttpDelete("timeslots/{id}")]
+    [HasPermission(Permissions.DeleteTimeSlots)]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         var result = await scheduleService.DeleteAsync(id);

@@ -24,7 +24,7 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
 {
     private readonly int _refreshTokenExpiryDays = 14;
 
-    public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request)
+    public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request,CancellationToken cancellationToken = default)
     {
         var user = await userManager.Users
             .FirstOrDefaultAsync(x=>x.Email!.Equals(request.EmailOrUsername) || x.UserName!.Equals(request.EmailOrUsername));
@@ -40,11 +40,11 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         if (result.Succeeded)
         {
             // get roles and permissions
-            //var (userRoles, userPermissions) = await GetUserRolesAndPermissionsAsync(user, cancellationToken);
-
-            var userRoles = "Patient";
+            var userRoles = await userManager.GetRolesAsync(user);
+            var userPermissions = await unitOfWork.Roles.GetUserPermissionsAsync(userRoles,cancellationToken);
+            
             // generate token and refresh token
-            (string token, int expiresIn) = jwtProvider.GenerateToken(user, [userRoles], null);
+            (string token, int expiresIn) = jwtProvider.GenerateToken(user, userRoles,userPermissions!);
 
             var refreshToken = GenerateRefreshToken();
             var refreshTokenExpiration = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
@@ -392,5 +392,4 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         await emailSender.SendEmailAsync(user.Email!, "Change password", emailBody);
 
     }
-
 }

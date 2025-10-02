@@ -3,6 +3,7 @@ using Clinic.Application.DTOs.Appointment;
 using Clinic.Application.DTOs.Auth;
 using Clinic.Application.DTOs.MedicalRecord;
 using Clinic.Application.DTOs.Prescription;
+using Clinic.Application.DTOs.Role;
 using Clinic.Application.DTOs.User;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,8 @@ public class DoctorScheduleMapping : Profile
         // auth
         CreateMap<RegisterRequest, ApplicationUser>();
         
+        // role
+        CreateMap<ApplicationRole, RoleResponse>();
 
     }
 

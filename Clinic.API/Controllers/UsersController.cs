@@ -7,14 +7,14 @@ namespace Clinic.API.Controllers;
 public class UsersController(IUserService userService) : ControllerBase
 {
     [HttpGet]
-    //[HasPermission(Permissions.GetUsers)]
+    [HasPermission(Permissions.GetUsers)]
     public async Task<IActionResult> GetAll()
     {
         return Ok(await userService.GetAllAsync());
     }
 
     [HttpGet("{id}")]
-    //[HasPermission(Permissions.GetUsers)]
+    [HasPermission(Permissions.GetUsers)]
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
         var result = await userService.GetAsync(id);

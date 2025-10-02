@@ -9,17 +9,17 @@ namespace Clinic.API.Controllers;
 public class AuthController(IAuthService authService,SignInManager<ApplicationUser> signInManager) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<ActionResult> Register([FromBody] RegisterRequest dto)
+    public async Task<ActionResult> Register([FromBody] RegisterRequest request)
     {
-        var result = await authService.RegisterAsync(dto);
+        var result = await authService.RegisterAsync(request);
         return result.IsSuccess ? Ok() : result.ToProblem();
     }
 
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest dto)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var result = await authService.LoginAsync(dto);
+        var result = await authService.LoginAsync(request);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 

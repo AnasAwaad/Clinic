@@ -22,7 +22,7 @@ internal class JwtProvider(IOptions<JwtOptions> jwtOptions,ILogger<JwtProvider> 
             new(JwtRegisteredClaimNames.FamilyName, user.LastName),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(nameof(roles), JsonSerializer.Serialize(roles),JsonClaimValueTypes.JsonArray),
-            //new(nameof(permissions), JsonSerializer.Serialize(permissions),JsonClaimValueTypes.JsonArray)
+            new(nameof(permissions), JsonSerializer.Serialize(permissions),JsonClaimValueTypes.JsonArray)
         ];
         logger.LogInformation("Key {key}", _jwtOptions.Key);
         var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));

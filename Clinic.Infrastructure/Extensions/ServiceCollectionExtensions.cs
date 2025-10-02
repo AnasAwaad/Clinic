@@ -1,8 +1,10 @@
 ﻿using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
+using Clinic.Infrastructure.Authorization.Filters;
 using Clinic.Infrastructure.Data;
 using Clinic.Infrastructure.Repositories;
 using Clinic.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +26,10 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ITokenService, TokenService>();
+
+        services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+
 
         return services;
     }

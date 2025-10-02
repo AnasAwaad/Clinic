@@ -7,10 +7,10 @@ using System.Security.Claims;
 namespace Clinic.API.Controllers;
 [Route("api/medical-records/{recordId}/[controller]")]
 [ApiController]
-[Authorize]
 public class PrescriptionsController(IPrescriptionService prescriptionService) : ControllerBase
 {
     [HttpGet]
+    [HasPermission(Permissions.GetPrescriptions)]
     public async Task<IActionResult> GetAll([FromRoute]int recordId)
     {
         var result = await prescriptionService.GetAllAsync(recordId);
@@ -18,6 +18,7 @@ public class PrescriptionsController(IPrescriptionService prescriptionService) :
     }
 
     [HttpGet("{id}")]
+    [HasPermission(Permissions.GetPrescriptions)]
     public async Task<IActionResult> GetById([FromRoute] int recordId,[FromRoute]int id)
     {
         var result = await prescriptionService.GetByIdAsync(recordId,id);
@@ -25,6 +26,7 @@ public class PrescriptionsController(IPrescriptionService prescriptionService) :
     }
 
     [HttpPost]
+    [HasPermission(Permissions.AddPrescriptions)]
     public async Task<IActionResult> Create([FromRoute] int recordId, [FromBody] PrescriptionRequest request)
     {
         var result = await prescriptionService.CreateAsync(User.GetUserId(), recordId, request);
@@ -32,6 +34,7 @@ public class PrescriptionsController(IPrescriptionService prescriptionService) :
     }
 
     [HttpPut("{id}")]
+    [HasPermission(Permissions.UpdatePrescriptions)]
     public async Task<IActionResult> Update([FromRoute] int recordId,[FromRoute]int id, [FromBody] PrescriptionRequest request)
     {
         var result = await prescriptionService.UpdateAsync(recordId,id,request);
@@ -39,6 +42,7 @@ public class PrescriptionsController(IPrescriptionService prescriptionService) :
     }
 
     [HttpDelete("{id}")]
+    [HasPermission(Permissions.DeletePrescriptions)]
     public async Task<IActionResult> Delete([FromRoute] int recordId, [FromRoute] int id)
     {
         var result = await prescriptionService.DeleteAsync(recordId,id);

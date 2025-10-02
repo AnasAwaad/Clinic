@@ -12,8 +12,8 @@ internal class RoleConfiguration : IEntityTypeConfiguration<ApplicationRole>
         builder.HasData([
             new ApplicationRole{
                 Id = "92787aec-1266-4a2d-8a2d-6ea48f5a4811",
-                Name = "SuperAdmin",
-                NormalizedName = "SUPERADMIN",
+                Name = "Admin",
+                NormalizedName = "ADMIN",
                 ConcurrencyStamp = "aee5e2f5-46b1-4ff7-8520-23fb69d75abd",
             },
             new ApplicationRole{

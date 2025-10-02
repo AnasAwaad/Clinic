@@ -7,10 +7,10 @@ using System.Security.Claims;
 namespace Clinic.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
 public class MedicalRecordsController(IMedicalRecordService medicalRecordService) : ControllerBase
 {
     [HttpGet]
+    [HasPermission(Permissions.GetMedicalRecords)]
     public async Task<IActionResult> GetAll()
     {
         var result = await medicalRecordService.GetAllAsync();
@@ -18,6 +18,7 @@ public class MedicalRecordsController(IMedicalRecordService medicalRecordService
     }
 
     [HttpGet("{id}")]
+    [HasPermission(Permissions.GetMedicalRecords)]
     public async Task<IActionResult> GetById([FromRoute]int id)
     {
         var result = await medicalRecordService.GetByIdAsync(id);
@@ -25,6 +26,7 @@ public class MedicalRecordsController(IMedicalRecordService medicalRecordService
     }
 
     [HttpPost]
+    [HasPermission(Permissions.AddMedicalRecords)]
     public async Task<IActionResult> Create([FromBody] MedicalRecordRequest request)
     {
         var result = await medicalRecordService.CreateAsync(User.GetUserId(), request);
@@ -32,6 +34,7 @@ public class MedicalRecordsController(IMedicalRecordService medicalRecordService
     }
 
     [HttpPut("{id}")]
+    [HasPermission(Permissions.UpdateMedicalRecords)]
     public async Task<IActionResult> Update([FromRoute]int id, [FromBody]MedicalRecordRequest request)
     {
         var result = await medicalRecordService.UpdateAsync(id,request);
@@ -40,6 +43,7 @@ public class MedicalRecordsController(IMedicalRecordService medicalRecordService
 
 
     [HttpDelete("{id}")]
+    [HasPermission(Permissions.DeleteMedicalRecords)]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         var result = await medicalRecordService.DeleteAsync(id);
