@@ -13,16 +13,12 @@ public static class ResultExtensions
         var problem = Results.Problem(statusCode: result.Error.statusCode);
         var problemDetails = problem.GetType().GetProperty(nameof(ProblemDetails))!.GetValue(problem) as ProblemDetails;
 
-        problemDetails!.Extensions = new Dictionary<string, object?>
+        problemDetails!.Extensions["errors"] = new Dictionary<string, string[]>
         {
             {
-                "errors",new []{
-                    new
-                    {
-                        result.Error.code,
-                        result.Error.Description
-                    }
-                }
+                
+                result.Error.code,
+                new[]{result.Error.Description }
             }
         };
 

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Clinic.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController(IAuthService authService,SignInManager<ApplicationUser> signInManager) : ControllerBase
+public class AuthController(IAuthService authService,SignInManager<ApplicationUser> signInManager,ILogger<AuthController> logger) : ControllerBase
 {
     [HttpPost("register")]
     public async Task<ActionResult> Register([FromBody] RegisterRequest request)
@@ -26,6 +26,8 @@ public class AuthController(IAuthService authService,SignInManager<ApplicationUs
     [HttpPost("refresh-token")]
     public async Task<IActionResult> CreateRefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
     {
+        logger.LogInformation("Token is {token}", request.Token);
+
         var result = await authService.GetRefreshTokenAsync(request.Token, request.RefreshToken, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();

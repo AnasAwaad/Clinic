@@ -53,7 +53,8 @@ internal class JwtProvider(IOptions<JwtOptions> jwtOptions,ILogger<JwtProvider> 
                 IssuerSigningKey = symmetricSecurityKey,
                 ValidateIssuerSigningKey = true,
                 ValidateIssuer = false,
-                ValidateAudience = false
+                ValidateAudience = false,
+                ValidateLifetime = false
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;

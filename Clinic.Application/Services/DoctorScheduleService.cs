@@ -43,18 +43,13 @@ public class DoctorScheduleService(IUnitOfWork unitOfWork, IMapper mapper) : IDo
         return Result.Success(mapper.Map<TimeSlotResponse>(timeSlot));
 
     }
-    public async Task<Result<IEnumerable<TimeSlotResponse>>> GetAllAsync(string day)
+    public async Task<Result<TimeSlotListResponse>> GetAllAsync()
     {
-        var dayExists = await unitOfWork.Schedules.DayIsExists(day);
+        var slots = await unitOfWork.Schedules.GetAllWithTimesAsync();
 
-        if (!dayExists)
-            return Result.Failure<IEnumerable<TimeSlotResponse>>(DoctorScheduleErrors.InvalidDay);
+        var result = mapper.Map<IEnumerable<DaySlotResponse>>(slots);
 
-        var slots = await unitOfWork.TimeSlots.GetAllForDayAsync(day);
-
-        var response = mapper.Map<IEnumerable<TimeSlotResponse>>(slots);
-
-        return Result.Success(response);
+        return Result.Success(new TimeSlotListResponse { Slots = result});
     } 
     public async Task<Result> DeleteAsync(int id)
     {

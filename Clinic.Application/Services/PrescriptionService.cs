@@ -12,19 +12,14 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Services;
 internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPrescriptionService
 {
-    public async Task<Result<PrescriptionResponse>> CreateAsync(string userId, int recordId, PrescriptionRequest request)
+    public async Task<Result<PrescriptionResponse>> CreateAsync(string userId, PrescriptionRequest request)
     {
-        var recordIsExists = await unitOfWork.MedicalRecords.MedicalRecordIsExists(recordId);
-        if(!recordIsExists)
-            return Result.Failure<PrescriptionResponse>(MedicalRecordErrors.MedicalRecordNotFound);
-
         var patient = await unitOfWork.Patients.GetByUserIdAsync(userId);
 
         if (patient is null)
             return Result.Failure<PrescriptionResponse>(PatientErrors.PatientNotFound);
 
         var prescription = mapper.Map<Prescription>(request);
-        prescription.MedicalRecordId = recordId;
 
         await unitOfWork.Prescriptions.AddAsync(prescription);
         await unitOfWork.SaveAsync();
@@ -32,12 +27,8 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
         return Result.Success(mapper.Map<PrescriptionResponse>(prescription));
     }
 
-    public async Task<Result> DeleteAsync(int recordId, int id)
+    public async Task<Result> DeleteAsync( int id)
     {
-        var recordIsExists = await unitOfWork.MedicalRecords.MedicalRecordIsExists(recordId);
-        if (!recordIsExists)
-            return Result.Failure(MedicalRecordErrors.MedicalRecordNotFound);
-
         var prescription = await unitOfWork.Prescriptions.GetByIdAsync(id);
 
         if (prescription is null)
@@ -49,20 +40,17 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
         return Result.Success();
     }
 
-    public async Task<Result<IEnumerable<PrescriptionResponse>>> GetAllAsync(int recordId)
+    public async Task<Result<IEnumerable<PrescriptionResponse>>> GetAllAsync()
     {
-        var recordIsExists = await unitOfWork.MedicalRecords.MedicalRecordIsExists(recordId);
-        if (!recordIsExists)
-            return Result.Failure<IEnumerable<PrescriptionResponse>>(MedicalRecordErrors.MedicalRecordNotFound);
-
-        var prescriptions = await unitOfWork.Prescriptions.GetAllByMedicalRecordAsync(recordId);
+       
+        var prescriptions = await unitOfWork.Prescriptions.GetAllAsync();
 
         return Result.Success(mapper.Map<IEnumerable<PrescriptionResponse>>(prescriptions));
     }
 
-    public async Task<Result<PrescriptionResponse>> GetByIdAsync(int recordId, int id)
+    public async Task<Result<PrescriptionResponse>> GetByIdAsync(int id)
     {
-        var prescription = await unitOfWork.Prescriptions.GetByMedicalRecordAsync(recordId,id);
+        var prescription = await unitOfWork.Prescriptions.GetAllAsync();
 
         if(prescription is null)
             return Result.Failure<PrescriptionResponse>(PrescriptionErrors.PrescriptionNotFound);
@@ -70,12 +58,8 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
         return Result.Success(mapper.Map<PrescriptionResponse>(prescription));
     }
 
-    public async Task<Result> UpdateAsync(int recordId, int id, PrescriptionRequest request)
+    public async Task<Result> UpdateAsync( int id, PrescriptionRequest request)
     {
-        var recordIsExists = await unitOfWork.MedicalRecords.MedicalRecordIsExists(recordId);
-        if (!recordIsExists)
-            return Result.Failure<IEnumerable<PrescriptionResponse>>(MedicalRecordErrors.MedicalRecordNotFound);
-
         var prescription = await unitOfWork.Prescriptions.GetByIdAsync(id);
 
         mapper.Map(request, prescription);

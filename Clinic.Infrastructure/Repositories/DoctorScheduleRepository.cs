@@ -22,6 +22,14 @@ internal class DoctorScheduleRepository : GenericRepository<DoctorSchedule>, IDo
         return await context.AnyAsync(ds => ds.Day == day);
     }
 
+    public async Task<IEnumerable<DoctorSchedule>> GetAllWithTimesAsync()
+    {
+        return await context
+            .Include(ds => ds.TimeSlots)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
     public async Task<DoctorSchedule> GetByDayAsync(string day)
     {
         return await context

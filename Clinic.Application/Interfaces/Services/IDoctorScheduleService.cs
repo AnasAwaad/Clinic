@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Services;
 public interface IDoctorScheduleService
 {
-    Task<Result<IEnumerable<TimeSlotResponse>>> GetAllAsync(string day);
+    Task<Result<TimeSlotListResponse>> GetAllAsync();
     Task<Result<TimeSlotResponse>> GetByIdAsync(int id);
     Task<Result<TimeSlotResponse>> CreateAsync(string day, TimeSlotRequest request);
     Task<Result> UpdateAsync(int id, TimeSlotRequest request);

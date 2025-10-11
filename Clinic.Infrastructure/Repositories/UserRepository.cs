@@ -22,7 +22,7 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
         return await (from u in _context.Set<ApplicationUser>()
                 join ur in _context.Set<IdentityUserRole<string>>()
                 on u.Id equals ur.UserId
-                join r in _context.Set<IdentityRole>()
+                join r in _context.Set<ApplicationRole>()
                 on ur.RoleId equals r.Id into roles
                 where !roles.Any(x => x.Name == "Patient")
                 select new

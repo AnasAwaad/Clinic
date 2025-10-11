@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Services;
 public interface IPrescriptionService
 {
-    Task<Result<PrescriptionResponse>> CreateAsync(string userId,int recordId, PrescriptionRequest request);
-    Task<Result<PrescriptionResponse>> GetByIdAsync(int recordId,int id);
-    Task<Result<IEnumerable<PrescriptionResponse>>> GetAllAsync(int recordId);
-    Task<Result> UpdateAsync(int recordId, int id, PrescriptionRequest request);
-    Task<Result> DeleteAsync(int recordId, int id);
+    Task<Result<PrescriptionResponse>> CreateAsync(string userId, PrescriptionRequest request);
+    Task<Result<PrescriptionResponse>> GetByIdAsync(int id);
+    Task<Result<IEnumerable<PrescriptionResponse>>> GetAllAsync();
+    Task<Result> UpdateAsync(int id, PrescriptionRequest request);
+    Task<Result> DeleteAsync(int id);
 }

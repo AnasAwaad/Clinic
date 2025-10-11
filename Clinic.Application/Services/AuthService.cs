@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -228,6 +229,8 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
 
     public async Task<Result<AuthResponse>> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default)
     {
+        logger.LogInformation("Token is {token}", token);
+
         var userId = jwtProvider.ValidateToken(token);
 
         if (userId is null)
@@ -273,9 +276,9 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
             Email = user.Email!,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            Token = token,
+            Token = newToken,
             ExpiresIn = expiresIn,
-            RefreshToken = refreshToken,
+            RefreshToken = newRefreshToken,
             RefreshTokenExpiration = refreshTokenExpiration
         };
 

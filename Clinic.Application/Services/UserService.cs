@@ -17,7 +17,8 @@ namespace Clinic.Application.Services;
 internal class UserService(UserManager<ApplicationUser> userManager,
     IUnitOfWork unitOfWork,
     IMapper mapper,
-    ILogger<UserService> logger) : IUserService
+    ILogger<UserService> logger,
+    IRoleService roleService) : IUserService
 {
     public async Task<IEnumerable<UserResponse>> GetAllAsync()
     {
@@ -104,5 +105,100 @@ internal class UserService(UserManager<ApplicationUser> userManager,
         return Result.Failure(new Error(error.Code, error.Description,StatusCodes.Status400BadRequest));
     }
 
+    public async Task<Result<UserResponse>> CreateAsync(CreateUserRequest request, CancellationToken cancellationToken = default)
+    {
+        var emailIsExists = await userManager.Users.AnyAsync(x => x.Email == request.Email, cancellationToken);
 
+        if (emailIsExists)
+            return Result.Failure<UserResponse>(UserErrors.DuplicatedEmail);
+
+        var allowedRoles = await roleService.GetAllAsync(cancellationToken: cancellationToken);
+
+        if (request.Roles.Except(allowedRoles.Select(x => x.Name)).Any())
+            return Result.Failure<UserResponse>(UserErrors.InvalidRoles);
+
+        var user = mapper.Map<ApplicationUser>(request);
+        var result = await userManager.CreateAsync(user, request.Password);
+
+        if (result.Succeeded)
+        {
+            await userManager.AddToRolesAsync(user, request.Roles);
+
+            var resposne = mapper.Map<UserResponse>(user);
+            resposne.Roles = request.Roles;
+
+            return Result.Success(resposne);
+        }
+
+        var error = result.Errors.First();
+        return Result.Failure<UserResponse>(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
+
+    }
+
+    public async Task<Result> UpdateAsync(string id, UpdateUserRequest request, CancellationToken cancellationToken = default)
+    {
+        var emailIsExists = await userManager.Users.AnyAsync(x => x.Email == request.Email && x.Id != id, cancellationToken);
+
+        if (emailIsExists)
+            return Result.Failure<UserResponse>(UserErrors.DuplicatedEmail);
+
+        var allowedRoles = await roleService.GetAllAsync(cancellationToken: cancellationToken);
+
+        if (request.Roles.Except(allowedRoles.Select(x => x.Name)).Any())
+            return Result.Failure<UserResponse>(UserErrors.InvalidRoles);
+
+        var user = await userManager.FindByIdAsync(id);
+        if (user is null)
+            return Result.Failure<UserResponse>(UserErrors.UserNotFound);
+
+        user = mapper.Map(request, user);
+
+
+        var result = await userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            var roles = await userManager.GetRolesAsync(user);
+            await userManager.RemoveFromRolesAsync(user, roles);
+
+            await userManager.AddToRolesAsync(user, request.Roles);
+
+
+            return Result.Success();
+        }
+
+        var error = result.Errors.First();
+        return Result.Failure<UserResponse>(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
+    }
+    public async Task<Result> ToggleStatus(string userId)
+    {
+        var user = await userManager.FindByIdAsync(userId)!;
+
+        if (user is null)
+            return Result.Failure(UserErrors.UserNotFound);
+
+        user.IsDisabled = !user.IsDisabled;
+
+        await userManager.UpdateAsync(user);
+        return Result.Success();
+    }
+
+    public async Task<Result> Unlock(string userId)
+    {
+        var user = await userManager.FindByIdAsync(userId)!;
+
+        if (user is null)
+            return Result.Failure(UserErrors.UserNotFound);
+
+        var result = await userManager.SetLockoutEndDateAsync(user, null);
+
+        if (!result.Succeeded)
+        {
+            var error = result.Errors.First();
+            return Result.Failure<UserResponse>(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
+        }
+
+
+        return Result.Success();
+    }
 }

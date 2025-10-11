@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic.API.Controllers;
-[Route("me")]
+[Route("api/me")]
 [ApiController]
 [Authorize]
 public class AccountController(IUserService userService) : ControllerBase

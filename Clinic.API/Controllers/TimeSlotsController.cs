@@ -19,11 +19,11 @@ public class TimeSlotsController(IDoctorScheduleService scheduleService) : Contr
             : result.ToProblem();
     }
 
-    [HttpGet("days/{day}/timeslots")]
+    [HttpGet("timeslots")]
     [HasPermission(Permissions.GetTimeSlots)]
-    public async Task<IActionResult> GetAll([FromRoute] string day)
+    public async Task<IActionResult> GetAll()
     {
-        var result = await scheduleService.GetAllAsync(day);
+        var result = await scheduleService.GetAllAsync();
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
     

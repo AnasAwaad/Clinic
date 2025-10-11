@@ -16,6 +16,7 @@ public class DoctorScheduleMapping : Profile
 {
     public DoctorScheduleMapping()
     {
+        CreateMap<DoctorSchedule, DaySlotResponse>();
         CreateMap<DoctorTimeSlot, TimeSlotResponse>();
         CreateMap<TimeSlotRequest, DoctorTimeSlot>()
             .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.StartTime)))
@@ -49,6 +50,9 @@ public class DoctorScheduleMapping : Profile
         //user
         CreateMap<ApplicationUser, UserProfileResponse>();
         CreateMap<ApplicationUser, UserResponse>();
+        CreateMap<CreateUserRequest, ApplicationUser>()
+            .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => true));
+        CreateMap<UpdateUserRequest, ApplicationUser>();
 
         // auth
         CreateMap<RegisterRequest, ApplicationUser>();

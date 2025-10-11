@@ -15,13 +15,6 @@ internal class DoctorTimeSlotRepository : GenericRepository<DoctorTimeSlot>, IDo
         this.context = context;
     }
 
-    public async Task<IEnumerable<DoctorTimeSlot>> GetAllForDayAsync(string day)
-    {
-        return await context.Set<DoctorTimeSlot>()
-            .Where(x => x.Schedule.Day == day)
-            .ToListAsync();
-            
-    }
 
     public async Task<DoctorTimeSlot?> GetByIdAndDayAsync(int timeSlotId, string day)
     {
@@ -41,5 +34,19 @@ internal class DoctorTimeSlotRepository : GenericRepository<DoctorTimeSlot>, IDo
         return await context.Set<DoctorTimeSlot>()
             .Where(x => x.Schedule.Day == day && !x.IsBooked)
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<DoctorTimeSlot>> GetByScheduleIdAsync(int scheduleId)
+    {
+        return await context.Set<DoctorTimeSlot>()
+            .Where(x => x.ScheduleId == scheduleId)
+            .OrderBy(x=> x.StartTime)
+            .ToListAsync();
+    }
+
+    public void DeleteByScheduleId(int scheduleId)
+    {
+        var slots = context.Set<DoctorTimeSlot>().Where(x => x.ScheduleId == scheduleId);
+        context.Set<DoctorTimeSlot>().RemoveRange(slots);
     }
 }
