@@ -29,7 +29,9 @@ public class PrescriptionsController(IPrescriptionService prescriptionService) :
     [HasPermission(Permissions.AddPrescriptions)]
     public async Task<IActionResult> Create([FromBody] PrescriptionRequest request)
     {
-        var result = await prescriptionService.CreateAsync(User.GetUserId(), request);
+        var result = await prescriptionService.CreateAsync(request);
+        if (!result.IsSuccess)
+            return result.ToProblem();
         return CreatedAtAction(nameof(GetById), new { id=result.Value.Id }, result.Value);
     }
 

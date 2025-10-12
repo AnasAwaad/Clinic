@@ -10,16 +10,33 @@ internal class PrescriptionRequestValidator : AbstractValidator<PrescriptionRequ
 {
     public PrescriptionRequestValidator()
     {
-        RuleFor(x => x.MedicationName)
+        RuleFor(x => x.PatientId)
             .NotEmpty();
 
-        RuleFor(x => x.Dosage)
+        RuleFor(x => x.Date)
             .NotEmpty();
 
-        RuleFor(x => x.Duration)
+
+        RuleFor(x => x.Age)
+            .NotEmpty();
+
+
+        RuleFor(x => x.Diagnosis)
+            .NotEmpty();
+
+
+        RuleFor(x => x.NextVisit)
             .NotEmpty();
 
         RuleFor(x => x.Notes)
             .NotEmpty();
+
+        RuleFor(x => x.Items)
+            .NotEmpty();
+
+        RuleFor(x => x.Items)
+            .Must(x => x.Count > 0)
+            .When(x => x.Items is not null);
+
     }
 }

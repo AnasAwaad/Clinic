@@ -7,6 +7,5 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Repositories;
 public interface IPrescriptionRepository : IGenericRepository<Prescription>
 {
-    Task<IEnumerable<Prescription>> GetAllByMedicalRecordAsync(int recordId);
-    Task<Prescription?>GetByMedicalRecordAsync(int recordId, int id);
+    Task<Prescription?> GetByIdWithItemsAsync(int id);
 }

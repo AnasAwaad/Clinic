@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Services;
 public interface IPrescriptionService
 {
-    Task<Result<PrescriptionResponse>> CreateAsync(string userId, PrescriptionRequest request);
+    Task<Result<PrescriptionResponse>> CreateAsync(PrescriptionRequest request);
     Task<Result<PrescriptionResponse>> GetByIdAsync(int id);
     Task<Result<IEnumerable<PrescriptionResponse>>> GetAllAsync();
     Task<Result> UpdateAsync(int id, PrescriptionRequest request);

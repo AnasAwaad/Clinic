@@ -14,18 +14,10 @@ public class PrescriptionRepository : GenericRepository<Prescription>, IPrescrip
     {
     }
 
-    public async Task<IEnumerable<Prescription>> GetAllByMedicalRecordAsync(int recordId)
+    public Task<Prescription?> GetByIdWithItemsAsync(int id)
     {
-        return await _context.Set<Prescription>()
-            .Where(x => x.MedicalRecordId == recordId)
-            .AsNoTracking()
-            .ToListAsync();
-    }
-
-    public async Task<Prescription?> GetByMedicalRecordAsync(int recordId,int id)
-    {
-        return await _context.Set<Prescription>()
-            .Where(x => x.MedicalRecordId == recordId && x.Id == id)
-            .FirstOrDefaultAsync();
+        return _context.Set<Prescription>()
+            .Include(p => p.Items)
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 }

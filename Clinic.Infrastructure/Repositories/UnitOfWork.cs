@@ -23,6 +23,8 @@ public class UnitOfWork : IUnitOfWork
     public IRoleRepository Roles { get; }
     public IRoleClaimRepository RoleClaims { get; }
 
+    public IGenericRepository<PrescriptionItem> PrescriptionItems => new GenericRepository<PrescriptionItem>(_context);
+
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;

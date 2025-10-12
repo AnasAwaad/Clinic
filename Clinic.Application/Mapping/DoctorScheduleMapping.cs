@@ -46,6 +46,7 @@ public class DoctorScheduleMapping : Profile
         // prescription
         CreateMap<Prescription, PrescriptionResponse>();
         CreateMap<PrescriptionRequest, Prescription>();
+        CreateMap<PrescriptionItemRequest, PrescriptionItem>();
 
         //user
         CreateMap<ApplicationUser, UserProfileResponse>();

@@ -18,6 +18,7 @@ public interface IUnitOfWork : IDisposable
     IUserRepository Users { get; }
     IRoleRepository Roles { get; }
     IRoleClaimRepository RoleClaims { get; }
+    IGenericRepository<PrescriptionItem> PrescriptionItems { get; }
     Task<int> SaveAsync();
 }
 

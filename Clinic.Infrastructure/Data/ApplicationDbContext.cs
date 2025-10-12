@@ -22,6 +22,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<DoctorTimeSlot> TimeSlots { get; set; }
     public DbSet<MedicalRecord> MedicalRecords { get; set; }
     public DbSet<Prescription> Prescriptions { get; set; }
+    public DbSet<PrescriptionItem> PrescriptionItems { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

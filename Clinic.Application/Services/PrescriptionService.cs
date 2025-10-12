@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Services;
 internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPrescriptionService
 {
-    public async Task<Result<PrescriptionResponse>> CreateAsync(string userId, PrescriptionRequest request)
+    public async Task<Result<PrescriptionResponse>> CreateAsync(PrescriptionRequest request)
     {
-        var patient = await unitOfWork.Patients.GetByUserIdAsync(userId);
+        var patient = await unitOfWork.Patients.GetByIdAsync(request.PatientId);
 
         if (patient is null)
             return Result.Failure<PrescriptionResponse>(PatientErrors.PatientNotFound);
@@ -58,11 +58,63 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
         return Result.Success(mapper.Map<PrescriptionResponse>(prescription));
     }
 
-    public async Task<Result> UpdateAsync( int id, PrescriptionRequest request)
+    public async Task<Result> UpdateAsync(int id, PrescriptionRequest request)
     {
-        var prescription = await unitOfWork.Prescriptions.GetByIdAsync(id);
+        var patient = await unitOfWork.Patients.GetByIdAsync(request.PatientId);
 
-        mapper.Map(request, prescription);
+        if (patient is null)
+            return Result.Failure<PrescriptionResponse>(PatientErrors.PatientNotFound);
+
+        var prescription = await unitOfWork.Prescriptions.GetByIdWithItemsAsync(id);
+
+        if (prescription is null)
+            return Result.Failure<PrescriptionResponse>(PrescriptionErrors.PrescriptionNotFound);
+
+        //var items = mapper.Map<List<PrescriptionItem>>(request.Items);
+
+
+        //var newItems = items.Except(prescription.Items).ToList();
+
+        //var newItems = (from item in items
+        //                where !(from p in prescription.Items select p.Id).Contains(item.Id)
+        //                select item).ToList();
+
+        var newItems = request.Items.Where(i => !prescription.Items.Any(p => p.Id == i.Id)).ToList();
+
+        //var exitingItems = (from item in items
+        //                    where (from p in prescription.Items select p.Id).Contains(item.Id)
+        //                    select item).ToList();
+
+        var exitingItems = request.Items.Where(i => prescription.Items.Any(p => p.Id == i.Id)).ToList();
+
+        //var deletedItems = (from item in prescription.Items
+        //                    where !(from i in items select i.Id).Contains(item.Id)
+        //                    select item).ToList();
+
+        var deletedItems = prescription.Items.Where(p => !request.Items.Any(i => i.Id == p.Id)).ToList();
+
+        foreach (var item in newItems)
+            prescription.Items.Add(mapper.Map<PrescriptionItem>(item));
+
+        foreach (var item in deletedItems)
+            await unitOfWork.PrescriptionItems.DeleteAsync(item);
+
+
+        foreach (var item in exitingItems)
+        {
+            var oldItem = prescription.Items.First(i => i.Id == item.Id);
+            oldItem.Name = item.Name;
+            oldItem.Dosage = item.Dosage;
+            oldItem.Days = item.Days;
+            oldItem.Instructions = item.Instructions;
+            oldItem.Frequency = item.Frequency;
+        }
+
+        prescription.PatientId = request.PatientId;
+        prescription.Age = request.Age;
+        prescription.Diagnosis = request.Diagnosis;
+        prescription.NextVisit = request.NextVisit;
+
 
         await unitOfWork.SaveAsync();
 

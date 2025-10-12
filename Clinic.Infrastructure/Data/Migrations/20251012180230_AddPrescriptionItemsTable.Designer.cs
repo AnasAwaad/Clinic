@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251011184307_UpdatePrescriptionRelationWithMedicalRecord")]
-    partial class UpdatePrescriptionRelationWithMedicalRecord
+    [Migration("20251012180230_AddPrescriptionItemsTable")]
+    partial class AddPrescriptionItemsTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -181,7 +181,7 @@ namespace Clinic.Infrastructure.Data.Migrations
                         {
                             Id = "556c1c99-2d3a-4988-a80a-46ab2f14ea71",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "fdd73b3e-b98a-4ed6-b5ec-dd1069b86e72",
+                            ConcurrencyStamp = "b3757b90-27cc-4617-bcae-95f2050d0a4b",
                             Email = "Admin@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Admin",
@@ -190,9 +190,9 @@ namespace Clinic.Infrastructure.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEPSCF99SzGVwEhESEd1HUFqJ58UB2pjGMucX3YdBk5H5PY4q/e+OAk8xrHz3UzD+A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJc1szk/bqxlO0EdqLFTXUxxTtcF4zMY/s8wt+z4Ptkjo7DMar3rCh6c8/j7QfkKgg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "bdfe1893-d0c2-4191-b174-f4a01acf19be",
+                            SecurityStamp = "99542f00-5fab-43b2-a898-f6436fbb167f",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
@@ -200,7 +200,7 @@ namespace Clinic.Infrastructure.Data.Migrations
                         {
                             Id = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "99851408-2dec-439d-aec5-c290eba51706",
+                            ConcurrencyStamp = "ed9fa9ee-0ff1-4827-85c5-87bd0a0d7168",
                             Email = "Doctor@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Doctor",
@@ -209,9 +209,9 @@ namespace Clinic.Infrastructure.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "DOCTOR@GMAIL.COM",
                             NormalizedUserName = "DOCTOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF3cUpPnp15vFwhAAg9Efgu4bvEaxeoVZW13ZHGNcAz8nLFau5WIKU1AZu7NYVf6Gw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEILRUKPfyb1/Abm7ODSsxLbaerpkqYnGZI8iB3u6LT7VTd4Ys/AXYsUpwU/6CY7LeA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8d47254e-f281-4b36-9ca0-3d8cff3e5860",
+                            SecurityStamp = "5375c2c3-cf98-4ffa-ad2c-259331745392",
                             TwoFactorEnabled = false,
                             UserName = "Doctor"
                         },
@@ -219,7 +219,7 @@ namespace Clinic.Infrastructure.Data.Migrations
                         {
                             Id = "402ddff0-09e1-425f-b41b-2fc1ec5668b0",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f3662825-fb30-4c17-9d99-02f4a18784b6",
+                            ConcurrencyStamp = "1acd75b6-89b1-4539-a71e-ac3243524790",
                             Email = "Secretary@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Secretary",
@@ -228,9 +228,9 @@ namespace Clinic.Infrastructure.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SECRETARY@GMAIL.COM",
                             NormalizedUserName = "SECRETARY",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHCoDwINegul1tjd8hI4OCXaOvXAfi8ybrHUYixJd60azuN6KjecFWzd1kq6Ztk1Pw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHd/TXxDTcOqCVZ2uUSAwavs1UI5rT0s57rPkc+cH0PGwPymgsloW9dpY5erqje6dQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "cf6809c0-f736-4de5-b055-63ff74b33bf7",
+                            SecurityStamp = "14554f52-35a9-4a16-aef9-656ac42289d2",
                             TwoFactorEnabled = false,
                             UserName = "Secretary"
                         });
@@ -534,6 +534,9 @@ namespace Clinic.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
                     b.Property<string>("CreatedById")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -541,23 +544,24 @@ namespace Clinic.Infrastructure.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Dosage")
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Diagnosis")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Duration")
-                        .HasColumnType("datetime2");
 
                     b.Property<int?>("MedicalRecordId")
                         .HasColumnType("int");
 
-                    b.Property<string>("MedicationName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("NextVisit")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
 
                     b.Property<string>("UpdatedById")
                         .HasColumnType("nvarchar(450)");
@@ -571,9 +575,46 @@ namespace Clinic.Infrastructure.Data.Migrations
 
                     b.HasIndex("MedicalRecordId");
 
+                    b.HasIndex("PatientId");
+
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("Prescriptions");
+                });
+
+            modelBuilder.Entity("Clinic.Domain.Entities.PrescriptionItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Days")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Dosage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Instructions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PrescriptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrescriptionId");
+
+                    b.ToTable("PrescriptionItems");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1183,6 +1224,12 @@ namespace Clinic.Infrastructure.Data.Migrations
                         .WithMany()
                         .HasForeignKey("MedicalRecordId");
 
+                    b.HasOne("Clinic.Domain.Entities.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Clinic.Domain.Entities.ApplicationUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
@@ -1191,7 +1238,20 @@ namespace Clinic.Infrastructure.Data.Migrations
 
                     b.Navigation("MedicalRecord");
 
+                    b.Navigation("Patient");
+
                     b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("Clinic.Domain.Entities.PrescriptionItem", b =>
+                {
+                    b.HasOne("Clinic.Domain.Entities.Prescription", "Prescription")
+                        .WithMany("Items")
+                        .HasForeignKey("PrescriptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Prescription");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1258,6 +1318,11 @@ namespace Clinic.Infrastructure.Data.Migrations
             modelBuilder.Entity("Clinic.Domain.Entities.Patient", b =>
                 {
                     b.Navigation("Appointments");
+                });
+
+            modelBuilder.Entity("Clinic.Domain.Entities.Prescription", b =>
+                {
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }
