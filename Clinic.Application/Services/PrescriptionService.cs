@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Clinic.Application.DTOs.MedicalRecord;
 using Clinic.Application.DTOs.Prescription;
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
+using Clinic.Domain.Helpers;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,12 +43,14 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
         return Result.Success();
     }
 
-    public async Task<Result<IEnumerable<PrescriptionResponse>>> GetAllAsync()
+    public async Task<Result<PaginatedList<PrescriptionListResponse>>> GetAllAsync(int pageNumber,int pageSize)
     {
-       
-        var prescriptions = await unitOfWork.Prescriptions.GetAllAsync();
+        var items = unitOfWork.Prescriptions.GetAllWithItemsQueryable()
+            .ProjectTo<PrescriptionListResponse>(mapper.ConfigurationProvider);
 
-        return Result.Success(mapper.Map<IEnumerable<PrescriptionResponse>>(prescriptions));
+        var result = await PaginatedList<PrescriptionListResponse>.CreateAsync(items, pageNumber, pageSize);
+
+        return Result.Success(result);
     }
 
     public async Task<Result<PrescriptionResponse>> GetByIdAsync(int id)

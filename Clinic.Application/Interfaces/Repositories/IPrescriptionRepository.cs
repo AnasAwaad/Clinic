@@ -8,4 +8,5 @@ namespace Clinic.Application.Interfaces.Repositories;
 public interface IPrescriptionRepository : IGenericRepository<Prescription>
 {
     Task<Prescription?> GetByIdWithItemsAsync(int id);
+    IQueryable<Prescription> GetAllWithItemsQueryable();
 }

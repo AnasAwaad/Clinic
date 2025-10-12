@@ -1,5 +1,6 @@
 ﻿using Clinic.Application.DTOs.MedicalRecord;
 using Clinic.Application.DTOs.Prescription;
+using Clinic.Domain.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ public interface IPrescriptionService
 {
     Task<Result<PrescriptionResponse>> CreateAsync(PrescriptionRequest request);
     Task<Result<PrescriptionResponse>> GetByIdAsync(int id);
-    Task<Result<IEnumerable<PrescriptionResponse>>> GetAllAsync();
+    Task<Result<PaginatedList<PrescriptionListResponse>>> GetAllAsync(int pageNumber,int pageSize);
     Task<Result> UpdateAsync(int id, PrescriptionRequest request);
     Task<Result> DeleteAsync(int id);
 }

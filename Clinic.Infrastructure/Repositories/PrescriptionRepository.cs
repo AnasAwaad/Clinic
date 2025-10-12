@@ -20,4 +20,11 @@ public class PrescriptionRepository : GenericRepository<Prescription>, IPrescrip
             .Include(p => p.Items)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
+
+    public IQueryable<Prescription> GetAllWithItemsQueryable()
+    {
+        return _context.Set<Prescription>()
+            .Include(p => p.Items)
+            .AsQueryable();
+    }
 }

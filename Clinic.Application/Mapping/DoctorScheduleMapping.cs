@@ -48,6 +48,9 @@ public class DoctorScheduleMapping : Profile
         CreateMap<PrescriptionRequest, Prescription>();
         CreateMap<PrescriptionItemRequest, PrescriptionItem>();
 
+        CreateMap<Prescription, PrescriptionListResponse>()
+            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.User.FirstName} {src.Patient.User.LastName}"));
+
         //user
         CreateMap<ApplicationUser, UserProfileResponse>();
         CreateMap<ApplicationUser, UserResponse>();
