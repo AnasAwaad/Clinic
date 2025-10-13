@@ -55,7 +55,7 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
 
     public async Task<Result<PrescriptionResponse>> GetByIdAsync(int id)
     {
-        var prescription = await unitOfWork.Prescriptions.GetAllAsync();
+        var prescription = await unitOfWork.Prescriptions.GetByIdWithItemsAsync(id);
 
         if(prescription is null)
             return Result.Failure<PrescriptionResponse>(PrescriptionErrors.PrescriptionNotFound);
@@ -119,6 +119,8 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
         prescription.Age = request.Age;
         prescription.Diagnosis = request.Diagnosis;
         prescription.NextVisit = request.NextVisit;
+        prescription.Notes = request.Notes;
+        prescription.Date = request.Date;
 
 
         await unitOfWork.SaveAsync();

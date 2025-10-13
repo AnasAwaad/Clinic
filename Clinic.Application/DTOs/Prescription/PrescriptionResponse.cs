@@ -8,8 +8,13 @@ namespace Clinic.Application.DTOs.Prescription;
 public class PrescriptionResponse
 {
     public int Id { get; set; }
-    public string MedicationName { get; set; } = string.Empty;
-    public string Dosage { get; set; } = string.Empty;
-    public DateTime Duration { get; set; }
-    public string Notes { get; set; } = string.Empty;
+    public int PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public DateOnly Date { get; set; }
+    public int Age { get; set; }
+    public string Diagnosis { get; set; } = string.Empty;
+    public DateOnly NextVisit { get; set; }
+    public string? Notes { get; set; }
+    public ICollection<PrescriptionItemResponse> Items { get; set; } = [];
+    
 }

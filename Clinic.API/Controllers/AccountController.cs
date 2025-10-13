@@ -18,7 +18,7 @@ public class AccountController(IUserService userService) : ControllerBase
     }
 
     [HttpPut("info")]
-    public async Task<IActionResult> Info([FromBody] UpdateProfileRequest request)
+    public async Task<IActionResult> Info([FromForm] UpdateProfileRequest request)
     {
         await userService.UpdateProfileAsync(User.GetUserId(), request);
 

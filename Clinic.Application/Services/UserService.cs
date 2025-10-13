@@ -18,7 +18,8 @@ internal class UserService(UserManager<ApplicationUser> userManager,
     IUnitOfWork unitOfWork,
     IMapper mapper,
     ILogger<UserService> logger,
-    IRoleService roleService) : IUserService
+    IRoleService roleService,
+    IFileService fileService) : IUserService
 {
     public async Task<IEnumerable<UserResponse>> GetAllAsync()
     {
@@ -82,13 +83,29 @@ internal class UserService(UserManager<ApplicationUser> userManager,
 
     public async Task UpdateProfileAsync(string userId,UpdateProfileRequest request,CancellationToken cancellationToken = default)
     {
-        await userManager.Users
-            .Where(x => x.Id == userId)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(x => x.FirstName, request.FirstName)
-                .SetProperty(x => x.LastName, request.LastName)
-                .SetProperty(x => x.PhoneNumber, request.PhoneNumber)
-            ,cancellationToken);
+        var user = await userManager.Users.SingleAsync(x => x.Id == userId, cancellationToken);
+
+        if (request.ImageProfile is not null)
+        {
+            if(!string.IsNullOrEmpty(user!.ImageUrl))
+                fileService.DeleteFile(user.ImageUrl);
+
+            user.ImageUrl = await fileService.UploadFileAsync(request.ImageProfile, "profiles");
+        }
+
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+        user.PhoneNumber = request.PhoneNumber;
+
+        await userManager.UpdateAsync(user!);
+
+        //await userManager.Users
+        //    .Where(x => x.Id == userId)
+        //    .ExecuteUpdateAsync(setters => setters
+        //        .SetProperty(x => x.FirstName, request.FirstName)
+        //        .SetProperty(x => x.LastName, request.LastName)
+        //        .SetProperty(x => x.PhoneNumber, request.PhoneNumber)
+        //    , cancellationToken);
 
     }
 
