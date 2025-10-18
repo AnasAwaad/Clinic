@@ -23,6 +23,14 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
+    [HttpGet]
+    [HasPermission(Permissions.GetAppointments)]
+    public async Task<IActionResult> GetAll([FromQuery]int pageNumber = 1 , [FromQuery] int pageSize = 10)
+    {
+        var result = await appointmentService.GetAllAsync(pageNumber,pageSize);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+
     [HttpGet("{id}")]
     [HasPermission(Permissions.GetAppointments)]
     public async Task<IActionResult> GetDetails([FromRoute] int id)

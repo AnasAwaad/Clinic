@@ -159,6 +159,11 @@ internal class UserService(UserManager<ApplicationUser> userManager,
         if (emailIsExists)
             return Result.Failure<UserResponse>(UserErrors.DuplicatedEmail);
 
+        var userNameIsExists = await userManager.Users.AnyAsync(x => x.UserName == request.UserName && x.Id != id, cancellationToken);
+
+        if (userNameIsExists)
+            return Result.Failure<UserResponse>(UserErrors.DuplicatedUsername);
+
         var allowedRoles = await roleService.GetAllAsync(cancellationToken: cancellationToken);
 
         if (request.Roles.Except(allowedRoles.Select(x => x.Name)).Any())

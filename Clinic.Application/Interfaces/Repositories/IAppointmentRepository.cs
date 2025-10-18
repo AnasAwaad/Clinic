@@ -9,6 +9,7 @@ namespace Clinic.Application.Interfaces.Repositories;
 public interface IAppointmentRepository : IGenericRepository<Appointment>
 {
     IQueryable<Appointment> GetAllByPatientId(string userId);
+    IQueryable<Appointment> GetAllQueryable();
     Task<bool> HasActiveAppointmentAsync(int patientId, DateOnly now);
     Task<Appointment?> GetByIdAndPatientAsync(int appointmentId, string userId);
     IQueryable<Appointment> GetByIdWithDetails(int id);

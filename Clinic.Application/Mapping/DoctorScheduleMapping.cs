@@ -68,6 +68,15 @@ public class DoctorScheduleMapping : Profile
         // role
         CreateMap<ApplicationRole, RoleResponse>();
 
+        // appointment
+        CreateMap<Appointment, AppointmentListResponse>()
+            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.User.FirstName} {src.Patient.User.LastName}"))
+            .ForMember(x => x.PhoneNumber, opt => opt.MapFrom(src => src.Patient.User.PhoneNumber))
+            .ForMember(x => x.ImageUrl, opt => opt.MapFrom(src => src.Patient.User.ImageUrl))
+            .ForMember(x => x.StartTime, opt => opt.MapFrom(src => src.TimeSlot.StartTime))
+            .ForMember(x => x.EndTime, opt => opt.MapFrom(src => src.TimeSlot.EndTime));
+
+
     }
 
 }

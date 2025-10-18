@@ -13,5 +13,7 @@ public class UserResponse
     public string UserName { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public bool IsDisabled { get; set; }
+    public bool IsLocked { get; set; }
     public IEnumerable<string> Roles { get; set; } = [];
 }

@@ -82,7 +82,6 @@ internal class RoleClaimConfiguration : IEntityTypeConfiguration<IdentityRoleCla
         var patientPermissions = new List<string>
         {
             Permissions.AddAppointments,
-            Permissions.GetAppointments,
             Permissions.GetOwnAppointments,
             Permissions.CancelAppointments,
             Permissions.GetTimeSlots

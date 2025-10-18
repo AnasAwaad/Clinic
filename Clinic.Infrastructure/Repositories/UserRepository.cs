@@ -33,9 +33,11 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
                     u.Email,
                     u.UserName,
                     u.PhoneNumber,
+                    u.IsDisabled,
+                    u.LockoutEnd,
                     Roles = roles.Select(r => r.Name).ToList()
                 })
-                .GroupBy(u => new { u.Id, u.FirstName, u.LastName, u.Email, u.UserName, u.PhoneNumber })
+                .GroupBy(u => new { u.Id, u.FirstName, u.LastName, u.Email, u.UserName, u.PhoneNumber ,u.IsDisabled,u.LockoutEnd})
                 .Select(u => new UserResponse
                 {
                     Id = u.Key.Id,
@@ -44,6 +46,8 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
                     Email = u.Key.Email,
                     UserName = u.Key.UserName,
                     PhoneNumber = u.Key.PhoneNumber,
+                    IsDisabled = u.Key.IsDisabled,
+                    IsLocked = u.Key.LockoutEnd.HasValue && u.Key.LockoutEnd > DateTimeOffset.Now,
                     Roles = u.SelectMany(x => x.Roles)
                 }).ToListAsync();
                 

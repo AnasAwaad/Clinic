@@ -49,4 +49,11 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
             .Where(a => a.Id == id);
     }
 
+    public IQueryable<Appointment> GetAllQueryable()
+    {
+        return _context.Set<Appointment>()
+            .Include(a => a.Patient)
+            .ThenInclude(a => a.User)
+            .Include(a => a.TimeSlot);
+    }
 }

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Clinic.Application.DTOs.Appointment;
+using Clinic.Application.DTOs.Prescription;
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
+using Clinic.Domain.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,9 +13,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.Services;
-public class AppointmentService(IUnitOfWork unitOfWork,IMapper mapper) : IAppointmentService
+public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppointmentService
 {
 
+    public async Task<Result<PaginatedList<AppointmentListResponse>>> GetAllAsync(int pageNumber,int pageSize)
+    {
+        var items = unitOfWork.Appointments.GetAllQueryable()
+            .ProjectTo<AppointmentListResponse>(mapper.ConfigurationProvider);
+
+        var result = await PaginatedList<AppointmentListResponse>.CreateAsync(items, pageNumber, pageSize);
+
+        return Result.Success(result);
+    }
     public async Task<Result<IEnumerable<TimeSlotResponse>>> GetAvailableSlotsAsync(string day)
     {
         var dayExists = await unitOfWork.Schedules.DayIsExists(day);
@@ -101,5 +112,4 @@ public class AppointmentService(IUnitOfWork unitOfWork,IMapper mapper) : IAppoin
         return Result.Success();
     }
 
-  
 }
