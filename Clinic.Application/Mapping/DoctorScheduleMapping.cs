@@ -26,7 +26,9 @@ public class DoctorScheduleMapping : Profile
         // appointment
         CreateMap<Appointment, AppointmentResponse>()
             .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => $"{src.Doctor.User.FirstName} {src.Doctor.User.LastName}"))
-            .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.TimeSlot.StartTime.ToString("HH:mm tt")));
+            .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.TimeSlot.StartTime))
+            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.User.FirstName} {src.Patient.User.LastName}"));
+            
 
 
         CreateMap<Appointment, AppointmentDetailsResponse>()

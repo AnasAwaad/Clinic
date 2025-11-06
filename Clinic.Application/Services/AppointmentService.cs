@@ -1,16 +1,10 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Clinic.Application.DTOs.Appointment;
-using Clinic.Application.DTOs.Prescription;
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
 using Clinic.Domain.Helpers;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Clinic.Application.Services;
 public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppointmentService
@@ -25,6 +19,27 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
 
         return Result.Success(result);
     }
+
+    public async Task<Result<List<AppointmentResponse>>> GetInRangeAsync(DateTime start,DateTime end)
+    {
+        if (end <= start)
+            return Result.Failure<List<AppointmentResponse>>(CommonErrors.InvalidRange);
+
+        const int MAX_RANGE_DAYS = 92;
+        if ((end - start).TotalDays > MAX_RANGE_DAYS)
+            return Result.Failure<List<AppointmentResponse>>(CommonErrors.RangeTooLarge);
+
+        var query = unitOfWork.Appointments.QueryInRange(DateOnly.FromDateTime(start), DateOnly.FromDateTime(end));
+
+        var list = await query
+            .ProjectTo<AppointmentResponse>(mapper.ConfigurationProvider)
+            .ToListAsync();
+
+        return Result.Success(list);
+    }
+
+
+
     public async Task<Result<IEnumerable<TimeSlotResponse>>> GetAvailableSlotsAsync(string day)
     {
         var dayExists = await unitOfWork.Schedules.DayIsExists(day);
@@ -58,14 +73,15 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
         return Result.Success(response);
     }
 
-    public async Task<Result<AppointmentResponse>> CreateAsync(string userId,AppointmentRequest request)
+    // create appointment by patient
+    public async Task<Result<AppointmentResponse>> CreateAsync(AppointmentRequest request)
     {
         var doctor = await unitOfWork.Doctors.GetByIdAsync(request.DoctorId);
 
         if(doctor is null) 
             return Result.Failure<AppointmentResponse>(DoctorErrors.DoctorNotFound);
 
-        var patient = await unitOfWork.Patients.GetByUserIdAsync(userId);
+        var patient = await unitOfWork.Patients.GetByIdAsync(request.PatientId);
 
         if(patient is null)
             return Result.Failure<AppointmentResponse>(PatientErrors.PatientNotFound);
@@ -94,6 +110,9 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
 
         return Result.Success(mapper.Map<AppointmentResponse>(appointment));
     }
+
+    
+
 
     public async Task<Result> CancelAsync(string userId, int id)
     {

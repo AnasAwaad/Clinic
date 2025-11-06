@@ -2,6 +2,7 @@
 using Clinic.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
     public Task<Appointment?> GetByIdAndPatientAsync(int appointmentId, string userId)
     {
         return _context.Set<Appointment>()
-            .Include(a=>a.TimeSlot)
+            .Include(a => a.TimeSlot)
             .FirstOrDefaultAsync(a => a.Id == appointmentId && a.Patient.UserId == userId);
     }
 
@@ -55,5 +56,19 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
             .Include(a => a.Patient)
             .ThenInclude(a => a.User)
             .Include(a => a.TimeSlot);
+    }
+
+
+    public IQueryable<Appointment> QueryInRange(DateOnly start, DateOnly end)
+    {
+        return _context.Set<Appointment>()
+            .AsNoTracking()
+            .Include(a => a.Patient)
+            .ThenInclude(a => a.User)
+            .Include(a => a.TimeSlot)
+            .Where(a => a.Date < end && a.Date> start)
+            .OrderBy(a => a.Date)
+            .ThenBy(a => a.TimeSlot.StartTime);
+
     }
 }

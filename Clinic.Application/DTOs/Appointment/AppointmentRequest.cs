@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Clinic.Application.DTOs.Appointment;
 public record AppointmentRequest(
+    int PatientId,
     int DoctorId,
     int TimeSlotId,
     DateOnly Date,

@@ -11,9 +11,10 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     [HasPermission(Permissions.AddAppointments)]
     public async Task<IActionResult> Book([FromBody] AppointmentRequest request)
     {
-        var result = await appointmentService.CreateAsync(User.GetUserId(), request);
+        var result = await appointmentService.CreateAsync(request);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
+
 
     [HttpGet("available/{date}")]
     [HasPermission(Permissions.GetTimeSlots)]
@@ -28,6 +29,14 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     public async Task<IActionResult> GetAll([FromQuery]int pageNumber = 1 , [FromQuery] int pageSize = 10)
     {
         var result = await appointmentService.GetAllAsync(pageNumber,pageSize);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+
+    [HttpGet("range")]
+    [HasPermission(Permissions.GetAppointments)]
+    public async Task<IActionResult> GetRange([FromQuery] DateTime start, [FromQuery] DateTime end)
+    {
+        var result = await appointmentService.GetInRangeAsync(start, end);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
