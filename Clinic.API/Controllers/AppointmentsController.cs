@@ -63,4 +63,19 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
         var result = await appointmentService.CancelAsync(User.GetUserId(), id);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromBody] BulkDeleteRequest request)
+    {
+        var result = await appointmentService.DeleteManyAsync(request.Ids);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete([FromRoute]int id)
+    {
+        var result = await appointmentService.DeleteAsync(id);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
 }

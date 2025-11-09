@@ -4,6 +4,7 @@ using Clinic.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251109113422_AddIsDeletedColumnsToAppointment")]
+    partial class AddIsDeletedColumnsToAppointment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,7 +190,7 @@ namespace Clinic.Infrastructure.Data.Migrations
                             Id = "556c1c99-2d3a-4988-a80a-46ab2f14ea71",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "1b6c6b17-9a0c-4db4-aef5-a52b0c1d9bc9",
+                            ConcurrencyStamp = "de5155e9-037d-4e83-9a78-1197a77ea0ad",
                             Email = "Admin@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Admin",
@@ -197,9 +200,9 @@ namespace Clinic.Infrastructure.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBRud8ku1I8VQRPxC64P60SMiEcn94ZfOm03yL5xPSQeNvlAuASXwLiJ2fGydbK9jw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMZafmp34LJIwk91eq/bAyoeDzKQ4Mhm8BR4obJKRMNIWbmtfj9iH4XVRFtV3ynhSA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "19116bd0-f035-4e7d-8a7a-901affa3c8ed",
+                            SecurityStamp = "ef311d18-1678-4d3f-b84a-f05e134547f0",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
@@ -208,7 +211,7 @@ namespace Clinic.Infrastructure.Data.Migrations
                             Id = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "daec1842-cbed-4e9a-aa8f-37c9303ddc20",
+                            ConcurrencyStamp = "f3c85c21-1888-4179-9631-f12c639cedfb",
                             Email = "Doctor@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Doctor",
@@ -218,9 +221,9 @@ namespace Clinic.Infrastructure.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "DOCTOR@GMAIL.COM",
                             NormalizedUserName = "DOCTOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKtY0mrqOWW23U4ob2Whlc2S5W/eTUgjWeTbTjulAvyhrWCAa6cEmJrsFvRj8d+FbA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIss2KnwfAz6wHD+ko5h76MkHjS4kUz5y7ZZX4tM4nAnmK8HVdF3hg5j7LTzAhn5YA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ee61ddab-9e75-4025-bc2b-1e18b3c41acb",
+                            SecurityStamp = "b2422ed9-8f2a-40c0-a5ee-519af5a6ac23",
                             TwoFactorEnabled = false,
                             UserName = "Doctor"
                         },
@@ -229,7 +232,7 @@ namespace Clinic.Infrastructure.Data.Migrations
                             Id = "402ddff0-09e1-425f-b41b-2fc1ec5668b0",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "4943e983-d0db-4cbe-9f46-aa90ffd11131",
+                            ConcurrencyStamp = "c324086c-eca4-4e59-89be-204789c8ff93",
                             Email = "Secretary@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Secretary",
@@ -239,9 +242,9 @@ namespace Clinic.Infrastructure.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SECRETARY@GMAIL.COM",
                             NormalizedUserName = "SECRETARY",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJuPEEdbe9MeoehZqGqOhDPsSD0PnS7GmfbKlJXu0o193Z2KurC6sd+/ea7gNF02Hg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJslWNSyrP6lEiDBz1CSkkbPOYJJYdJkUvh9rxOBrM2zmArnksswjR9f8nDte9fqOw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f325e0b1-8ee9-4830-9d89-a0004bd697d4",
+                            SecurityStamp = "57e7af20-2ae2-47a3-a752-b29b1bd9b6cf",
                             TwoFactorEnabled = false,
                             UserName = "Secretary"
                         });
@@ -511,41 +514,6 @@ namespace Clinic.Infrastructure.Data.Migrations
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("MedicalRecords");
-                });
-
-            modelBuilder.Entity("Clinic.Domain.Entities.Message", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("SenderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Clinic.Domain.Entities.Patient", b =>
@@ -1245,25 +1213,6 @@ namespace Clinic.Infrastructure.Data.Migrations
                     b.Navigation("Patient");
 
                     b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("Clinic.Domain.Entities.Message", b =>
-                {
-                    b.HasOne("Clinic.Domain.Entities.ApplicationUser", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Clinic.Domain.Entities.ApplicationUser", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("Clinic.Domain.Entities.Patient", b =>

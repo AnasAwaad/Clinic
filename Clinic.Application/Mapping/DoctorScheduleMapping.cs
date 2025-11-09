@@ -74,6 +74,9 @@ public class DoctorScheduleMapping : Profile
         CreateMap<Appointment, AppointmentListResponse>()
             .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.User.FirstName} {src.Patient.User.LastName}"))
             .ForMember(x => x.PhoneNumber, opt => opt.MapFrom(src => src.Patient.User.PhoneNumber))
+            .ForMember(x => x.Email, opt => opt.MapFrom(src => src.Patient.User.Email))
+            .ForMember(x => x.Gender, opt => opt.MapFrom(src => src.Patient.User.Gender))
+            .ForMember(x => x.Address, opt => opt.MapFrom(src => src.Patient.User.Address))
             .ForMember(x => x.ImageUrl, opt => opt.MapFrom(src => src.Patient.User.ImageUrl))
             .ForMember(x => x.StartTime, opt => opt.MapFrom(src => src.TimeSlot.StartTime))
             .ForMember(x => x.EndTime, opt => opt.MapFrom(src => src.TimeSlot.EndTime));

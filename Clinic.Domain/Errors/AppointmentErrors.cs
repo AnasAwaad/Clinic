@@ -12,4 +12,5 @@ public static class AppointmentErrors
     public static readonly Error TimeSlotAlreadyBooked = new("Appointment.TimeSlotAlreadyBooked", "Time slot already booked", StatusCodes.Status400BadRequest);
     public static readonly Error ActiveAppointmentExists = new("Appointment.ActiveAppointmentExists", "The pateint already has active appointment", StatusCodes.Status400BadRequest);
     public static readonly Error AlreadyCancelled = new("Appointment.AlreadyCancelled", "Appintment is aleardy canceled", StatusCodes.Status400BadRequest);
+    public static readonly Error NoIdsProvided = new("Appointment.NoIdsProvided", "No ids is provided", StatusCodes.Status400BadRequest);
 }

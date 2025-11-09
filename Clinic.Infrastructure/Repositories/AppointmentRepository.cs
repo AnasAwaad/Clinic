@@ -71,4 +71,22 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
             .ThenBy(a => a.TimeSlot.StartTime);
 
     }
+
+    public async Task DeleteManyAsync(List<int> idList)
+    {
+        await _context.Set<Appointment>()
+            .Where(a => idList.Contains(a.Id))
+            .ExecuteUpdateAsync(s=>s
+                .SetProperty(a=>a.IsDeleted, true)
+                .SetProperty(a=>a.DeletedOn,DateTime.UtcNow));
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        await _context.Set<Appointment>()
+            .Where(a => a.Id == id)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(a => a.IsDeleted, true)
+                .SetProperty(a => a.DeletedOn, DateTime.UtcNow));
+    }
 }

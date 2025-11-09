@@ -14,4 +14,6 @@ public interface IAppointmentRepository : IGenericRepository<Appointment>
     Task<bool> HasActiveAppointmentAsync(int patientId, DateOnly now);
     Task<Appointment?> GetByIdAndPatientAsync(int appointmentId, string userId);
     IQueryable<Appointment> GetByIdWithDetails(int id);
+    Task DeleteAsync(int id);
+    Task DeleteManyAsync(List<int> idList);
 }

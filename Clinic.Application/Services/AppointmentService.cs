@@ -131,4 +131,28 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
         return Result.Success();
     }
 
+    public async Task<Result> DeleteManyAsync(List<int> ids)
+    {
+        var idList = ids.Distinct().ToList();
+
+        if(idList.Count == 0)
+            return Result.Failure(AppointmentErrors.NoIdsProvided);
+
+        await unitOfWork.Appointments.DeleteManyAsync(idList);
+
+        return Result.Success();
+    }
+
+
+    public async Task<Result> DeleteAsync(int id)
+    {
+        var appointment = await unitOfWork.Appointments.GetByIdAsync(id);
+
+        if (appointment == null)
+            return Result.Failure(AppointmentErrors.AppointmentNotFound);
+
+        await unitOfWork.Appointments.DeleteAsync(id);
+
+        return Result.Success();
+    }
 }

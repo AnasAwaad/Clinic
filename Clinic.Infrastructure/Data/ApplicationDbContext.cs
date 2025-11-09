@@ -23,8 +23,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<MedicalRecord> MedicalRecords { get; set; }
     public DbSet<Prescription> Prescriptions { get; set; }
     public DbSet<PrescriptionItem> PrescriptionItems { get; set; }
+    public DbSet<Message> Messages { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        var appt = builder.Entity<Appointment>();
+
+        appt.HasQueryFilter(a => !a.IsDeleted);
+
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
