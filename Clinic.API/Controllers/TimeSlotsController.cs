@@ -21,12 +21,13 @@ public class TimeSlotsController(IDoctorScheduleService scheduleService) : Contr
 
     [HttpGet("timeslots")]
     [HasPermission(Permissions.GetTimeSlots)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(DateOnly? date)
     {
-        var result = await scheduleService.GetAllAsync();
+        var result = await scheduleService.GetAllAsync(date);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
-    
+
+
     [HttpGet("timeslots/{id}")]
     [HasPermission(Permissions.GetTimeSlots)]
     public async Task<IActionResult> GetById([FromRoute] int id)
@@ -35,7 +36,7 @@ public class TimeSlotsController(IDoctorScheduleService scheduleService) : Contr
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
-    [HttpPut("timeslots/{id}")]
+    [HttpPut("timeslots/{id:int}")]
     [HasPermission(Permissions.UpdateTimeSlots)]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] TimeSlotRequest request)
     {

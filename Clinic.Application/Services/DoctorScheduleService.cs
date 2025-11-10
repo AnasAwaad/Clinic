@@ -43,9 +43,9 @@ public class DoctorScheduleService(IUnitOfWork unitOfWork, IMapper mapper) : IDo
         return Result.Success(mapper.Map<TimeSlotResponse>(timeSlot));
 
     }
-    public async Task<Result<TimeSlotListResponse>> GetAllAsync()
+    public async Task<Result<TimeSlotListResponse>> GetAllAsync(DateOnly? date)
     {
-        var slots = await unitOfWork.Schedules.GetAllWithTimesAsync();
+        var slots = await unitOfWork.Schedules.GetAllWithTimesAsync(date);
 
         var result = mapper.Map<IEnumerable<DaySlotResponse>>(slots);
 

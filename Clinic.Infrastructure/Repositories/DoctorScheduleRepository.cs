@@ -22,11 +22,27 @@ internal class DoctorScheduleRepository : GenericRepository<DoctorSchedule>, IDo
         return await context.AnyAsync(ds => ds.Day == day);
     }
 
-    public async Task<IEnumerable<DoctorSchedule>> GetAllWithTimesAsync()
+    public async Task<IEnumerable<DoctorSchedule>> GetAllWithTimesAsync(DateOnly? date)
     {
-        return await context
-            .Include(ds => ds.TimeSlots)
-            .AsNoTracking()
+        var query = context
+           .AsNoTracking()
+           .Select(ds => new DoctorSchedule
+           {
+               Day = ds.Day,
+               TimeSlots = ds.TimeSlots
+                   .Where(ts => !ts.IsBooked)
+                   .ToList()
+           });
+
+        if (date is not null)
+        {
+            var dayName = date.Value.DayOfWeek.ToString();
+
+            query = query.Where(ds => ds.Day == dayName);
+        }
+
+        return await query
+            .Where(ds => ds.TimeSlots.Any())
             .ToListAsync();
     }
 

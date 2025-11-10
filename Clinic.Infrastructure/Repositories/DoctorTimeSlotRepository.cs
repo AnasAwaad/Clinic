@@ -1,9 +1,6 @@
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Clinic.Infrastructure.Repositories;
 internal class DoctorTimeSlotRepository : GenericRepository<DoctorTimeSlot>, IDoctorTimeSlotRepository

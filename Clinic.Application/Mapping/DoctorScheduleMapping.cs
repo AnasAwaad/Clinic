@@ -5,11 +5,6 @@ using Clinic.Application.DTOs.MedicalRecord;
 using Clinic.Application.DTOs.Prescription;
 using Clinic.Application.DTOs.Role;
 using Clinic.Application.DTOs.User;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Clinic.Application.Mapping;
 public class DoctorScheduleMapping : Profile
@@ -26,8 +21,10 @@ public class DoctorScheduleMapping : Profile
         // appointment
         CreateMap<Appointment, AppointmentResponse>()
             .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => $"{src.Doctor.User.FirstName} {src.Doctor.User.LastName}"))
-            .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.TimeSlot.StartTime))
-            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.User.FirstName} {src.Patient.User.LastName}"));
+            .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.TimeSlot.StartTime))
+            .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.TimeSlot.EndTime))
+            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.User.FirstName} {src.Patient.User.LastName}"))
+            .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Patient.User.ImageUrl));
             
 
 
