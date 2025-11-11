@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Clinic.Application.DTOs.Prescription;
 public class PrescriptionRequest
 {
-    public int PatientId { get; set; }
+    public string PatientId { get; set; }
     public DateOnly Date { get; set; }
     public int Age { get; set; }
     public string Diagnosis { get; set; } = string.Empty;

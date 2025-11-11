@@ -2,6 +2,7 @@
 using Clinic.Application.DTOs.Appointment;
 using Clinic.Application.DTOs.Auth;
 using Clinic.Application.DTOs.MedicalRecord;
+using Clinic.Application.DTOs.Patient;
 using Clinic.Application.DTOs.Prescription;
 using Clinic.Application.DTOs.Role;
 using Clinic.Application.DTOs.User;
@@ -20,18 +21,18 @@ public class DoctorScheduleMapping : Profile
 
         // appointment
         CreateMap<Appointment, AppointmentResponse>()
-            .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => $"{src.Doctor.User.FirstName} {src.Doctor.User.LastName}"))
+            .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => $"{src.Doctor.FirstName} {src.Doctor.LastName}"))
             .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.TimeSlot.StartTime))
             .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.TimeSlot.EndTime))
-            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.User.FirstName} {src.Patient.User.LastName}"))
-            .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Patient.User.ImageUrl));
+            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName} {src.Patient.LastName}"))
+            .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Patient.ImageUrl));
             
 
 
         CreateMap<Appointment, AppointmentDetailsResponse>()
-            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.User.FirstName} {src.Patient.User.LastName}"))
+            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName}   {src.Patient.LastName}"))
             .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.TimeSlot.StartTime.ToString("HH:mm tt")))
-            .ForMember(dest => dest.PatientPhoneNumber, opt => opt.MapFrom(src => src.Patient.User.PhoneNumber));
+            .ForMember(dest => dest.PatientPhoneNumber, opt => opt.MapFrom(src => src.Patient.PhoneNumber));
 
         CreateMap<AppointmentRequest, Appointment>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Booked"));
@@ -44,7 +45,7 @@ public class DoctorScheduleMapping : Profile
 
         // prescription
         CreateMap<Prescription, PrescriptionResponse>()
-            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.User.FirstName} {src.Patient.User.LastName}"));
+            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName} {src.Patient.LastName}"));
 
         CreateMap<PrescriptionItem, PrescriptionItemResponse>();
 
@@ -52,7 +53,7 @@ public class DoctorScheduleMapping : Profile
         CreateMap<PrescriptionItemRequest, PrescriptionItem>();
 
         CreateMap<Prescription, PrescriptionListResponse>()
-            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.User.FirstName} {src.Patient.User.LastName}"));
+            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName}   {src.Patient.LastName}"));
 
         //user
         CreateMap<ApplicationUser, UserProfileResponse>();
@@ -69,14 +70,23 @@ public class DoctorScheduleMapping : Profile
 
         // appointment
         CreateMap<Appointment, AppointmentListResponse>()
-            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.User.FirstName} {src.Patient.User.LastName}"))
-            .ForMember(x => x.PhoneNumber, opt => opt.MapFrom(src => src.Patient.User.PhoneNumber))
-            .ForMember(x => x.Email, opt => opt.MapFrom(src => src.Patient.User.Email))
-            .ForMember(x => x.Gender, opt => opt.MapFrom(src => src.Patient.User.Gender))
-            .ForMember(x => x.Address, opt => opt.MapFrom(src => src.Patient.User.Address))
-            .ForMember(x => x.ImageUrl, opt => opt.MapFrom(src => src.Patient.User.ImageUrl))
+            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName}   {src.Patient.LastName}"))
+            .ForMember(x => x.PhoneNumber, opt => opt.MapFrom(src => src.Patient.PhoneNumber))
+            .ForMember(x => x.Email, opt => opt.MapFrom(src => src.Patient.Email))
+            .ForMember(x => x.Gender, opt => opt.MapFrom(src => src.Patient.Gender))
+            .ForMember(x => x.Address, opt => opt.MapFrom(src => src.Patient.Address))
+            .ForMember(x => x.ImageUrl, opt => opt.MapFrom(src => src.Patient.ImageUrl))
             .ForMember(x => x.StartTime, opt => opt.MapFrom(src => src.TimeSlot.StartTime))
             .ForMember(x => x.EndTime, opt => opt.MapFrom(src => src.TimeSlot.EndTime));
+
+
+        // patient
+        CreateMap<Patient, PatientResposne>()
+            .ForMember(x => x.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
+
+
+        CreateMap<PatientRequest, Patient>()
+            .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => true));
 
 
     }

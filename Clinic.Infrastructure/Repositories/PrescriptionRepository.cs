@@ -18,7 +18,7 @@ public class PrescriptionRepository : GenericRepository<Prescription>, IPrescrip
     {
         return _context.Set<Prescription>()
             .Include(p => p.Items)
-            .Include(p=>p.Patient.User)
+            .Include(p=>p.Patient)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 

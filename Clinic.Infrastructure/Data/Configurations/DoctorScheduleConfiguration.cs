@@ -18,13 +18,13 @@ internal class DoctorScheduleConfiguration : IEntityTypeConfiguration<DoctorSche
             .HasMaxLength(100);
 
         builder.HasData([
-            new DoctorSchedule { Id = 1, Day = "Monday", DoctorId = 1 },
-            new DoctorSchedule { Id = 2, Day = "Tuesday", DoctorId = 1 },
-            new DoctorSchedule { Id = 3, Day = "Wednesday", DoctorId = 1 },
-            new DoctorSchedule { Id = 4, Day = "Thursday", DoctorId = 1 },
-            new DoctorSchedule { Id = 5, Day = "Friday", DoctorId = 1 },
-            new DoctorSchedule { Id = 6, Day = "Saturday", DoctorId = 1 },
-            new DoctorSchedule { Id = 7, Day = "Sunday", DoctorId = 1 },
+            new DoctorSchedule { Id = 1, Day = "Monday", DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+            new DoctorSchedule { Id = 2, Day = "Tuesday", DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+            new DoctorSchedule { Id = 3, Day = "Wednesday", DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+            new DoctorSchedule { Id = 4, Day = "Thursday", DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+            new DoctorSchedule { Id = 5, Day = "Friday", DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+            new DoctorSchedule { Id = 6, Day = "Saturday", DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+            new DoctorSchedule { Id = 7, Day = "Sunday", DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
 
         ]);
     }

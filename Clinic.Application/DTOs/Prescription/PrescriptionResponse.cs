@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Clinic.Application.DTOs.Prescription;
+﻿namespace Clinic.Application.DTOs.Prescription;
 public class PrescriptionResponse
 {
     public int Id { get; set; }
-    public int PatientId { get; set; }
+    public string PatientId { get; set; } = string.Empty;
     public string PatientName { get; set; } = string.Empty;
     public DateOnly Date { get; set; }
     public int Age { get; set; }

@@ -8,8 +8,8 @@ namespace Clinic.Domain.Entities;
 public class Appointment : AuditableEntity
 {
     public int Id { get; set; }
-    public int PatientId { get; set; }
-    public int DoctorId { get; set; }
+    public string PatientId { get; set; } = string.Empty;
+    public string DoctorId { get; set; } = string.Empty;
     public DateOnly Date { get; set; }
     public string Status { get; set; } = string.Empty;
     public int TimeSlotId { get; set; }

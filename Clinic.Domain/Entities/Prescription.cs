@@ -8,7 +8,7 @@ namespace Clinic.Domain.Entities;
 public class Prescription : AuditableEntity
 {
     public int Id { get; set; }
-    public int PatientId { get; set; }
+    public string PatientId { get; set; } = string.Empty;
     public int? MedicalRecordId { get; set; }
     public MedicalRecord? MedicalRecord { get; set; }
     public DateOnly Date { get; set; }

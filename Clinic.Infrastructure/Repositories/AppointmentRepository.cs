@@ -20,19 +20,18 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
     {
         return _context.Set<Appointment>()
             .Include(a => a.TimeSlot)
-            .FirstOrDefaultAsync(a => a.Id == appointmentId && a.Patient.UserId == userId);
+            .FirstOrDefaultAsync(a => a.Id == appointmentId && a.Patient.Id == userId);
     }
 
     public IQueryable<Appointment> GetAllByPatientId(string userId)
     {
         return _context.Set<Appointment>()
             .Include(x => x.Doctor)
-            .ThenInclude(x => x.User)
             .Include(x => x.TimeSlot)
-            .Where(x => x.Patient.UserId == userId);
+            .Where(x => x.Patient.Id == userId);
     }
 
-    public Task<bool> HasActiveAppointmentAsync(int patientId, DateOnly now)
+    public Task<bool> HasActiveAppointmentAsync(string patientId, DateOnly now)
     {
         return _context.Set<Appointment>()
             .AnyAsync(x => x.PatientId == patientId
@@ -45,7 +44,6 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
         return _context.Set<Appointment>()
             .Include(a => a.Patient)
             .Include(a => a.Doctor)
-            .ThenInclude(d => d.User)
             .Include(a => a.TimeSlot)
             .Where(a => a.Id == id);
     }
@@ -54,7 +52,6 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
     {
         return _context.Set<Appointment>()
             .Include(a => a.Patient)
-            .ThenInclude(a => a.User)
             .Include(a => a.TimeSlot);
     }
 
@@ -64,7 +61,6 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
         return _context.Set<Appointment>()
             .AsNoTracking()
             .Include(a => a.Patient)
-            .ThenInclude(a => a.User)
             .Include(a => a.TimeSlot)
             .Where(a => a.Date < end && a.Date> start)
             .OrderBy(a => a.Date)

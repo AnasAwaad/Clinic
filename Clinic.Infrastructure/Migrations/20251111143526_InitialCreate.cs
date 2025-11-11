@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Clinic.Infrastructure.Data.Migrations
+namespace Clinic.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -36,6 +36,8 @@ namespace Clinic.Infrastructure.Data.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDisabled = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -168,33 +170,45 @@ namespace Clinic.Infrastructure.Data.Migrations
                 name: "Doctors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Specialization = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    YearOfExperience = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    YearOfExperience = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Doctors", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Doctors_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
+                        name: "FK_Doctors_AspNetUsers_Id",
+                        column: x => x.Id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Doctors_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Doctors_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Messages_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -204,22 +218,18 @@ namespace Clinic.Infrastructure.Data.Migrations
                 name: "Patients",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Patients", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Patients_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Patients_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -252,7 +262,7 @@ namespace Clinic.Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Day = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    DoctorId = table.Column<int>(type: "int", nullable: false)
+                    DoctorId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -271,8 +281,8 @@ namespace Clinic.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PatientId = table.Column<int>(type: "int", nullable: false),
-                    DoctorId = table.Column<int>(type: "int", nullable: false),
+                    PatientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DoctorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Diagnosis = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Treatment = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -337,11 +347,13 @@ namespace Clinic.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MedicalRecordId = table.Column<int>(type: "int", nullable: false),
-                    MedicationName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Dosage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Duration = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PatientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    MedicalRecordId = table.Column<int>(type: "int", nullable: true),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    Age = table.Column<int>(type: "int", nullable: false),
+                    Diagnosis = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NextVisit = table.Column<DateOnly>(type: "date", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -365,6 +377,11 @@ namespace Clinic.Infrastructure.Data.Migrations
                         name: "FK_Prescriptions_MedicalRecords_MedicalRecordId",
                         column: x => x.MedicalRecordId,
                         principalTable: "MedicalRecords",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Prescriptions_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -375,13 +392,15 @@ namespace Clinic.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PatientId = table.Column<int>(type: "int", nullable: false),
-                    DoctorId = table.Column<int>(type: "int", nullable: false),
+                    PatientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DoctorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TimeSlotId = table.Column<int>(type: "int", nullable: false),
                     ReasonForVisit = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     VisitType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -421,25 +440,98 @@ namespace Clinic.Infrastructure.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "PrescriptionItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Dosage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Frequency = table.Column<int>(type: "int", nullable: false),
+                    Days = table.Column<int>(type: "int", nullable: false),
+                    Instructions = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PrescriptionId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PrescriptionItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PrescriptionItems_Prescriptions_PrescriptionId",
+                        column: x => x.PrescriptionId,
+                        principalTable: "Prescriptions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "IsDefault", "IsDeleted", "Name", "NormalizedName" },
                 values: new object[,]
                 {
                     { "0d1fe96c-7786-4ce6-8647-38da6886a662", "1166ed41-1fa1-4d1f-9b6e-251a1706d31f", false, false, "Doctor", "DOCTOR" },
-                    { "92787aec-1266-4a2d-8a2d-6ea48f5a4811", "aee5e2f5-46b1-4ff7-8520-23fb69d75abd", false, false, "SuperAdmin", "SUPERADMIN" },
+                    { "92787aec-1266-4a2d-8a2d-6ea48f5a4811", "aee5e2f5-46b1-4ff7-8520-23fb69d75abd", false, false, "Admin", "ADMIN" },
                     { "e6a5b8c2-6254-4279-866b-c916377576db", "0da76d1d-fcd3-41cd-bdf7-44f17e6e75e2", false, false, "Secretary", "SECRETARY" },
                     { "f4c051d8-f995-492c-8ef8-515417105616", "09e9d343-f279-48ad-98a1-96a37468d186", true, false, "Patient", "PATIENT" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "ImageUrl", "IsDisabled", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "Gender", "ImageUrl", "IsDisabled", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "402ddff0-09e1-425f-b41b-2fc1ec5668b0", 0, "4cbe59c4-655e-40c0-8ea3-70808dc2ed94", "Secretary@gmail.com", true, "Secretary", null, false, "", false, null, "SECRETARY@GMAIL.COM", "SECRETARY", "AQAAAAIAAYagAAAAEKVk45ul5ac7BLuBI9n7BQoe6ub6hFuWWkKGSXBMJFP/uUGIhWptFuL5jwQP6ANlcw==", null, false, "c2519875-25a7-471a-87ca-01abdd03b709", false, "Secretary" },
-                    { "556c1c99-2d3a-4988-a80a-46ab2f14ea71", 0, "e7ac5cea-1980-4a87-9a55-f042e9b7a250", "SuperAdmin@gmail.com", true, "Super", null, false, "Admin", false, null, "SUPERADMIN@GMAIL.COM", "SUPERADMIN", "AQAAAAIAAYagAAAAEDeQAhQk2nHxJoiok2KcnxdxolYPBHfPc4SFEcfxN9rzRdAVUtcuHGwudqgYYpHq6Q==", null, false, "dbef0310-28a7-4fa4-948b-dc062261e252", false, "SuperAdmin" },
-                    { "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e", 0, "d8c16dae-e626-4b30-bb0a-703226e61aad", "Doctor@gmail.com", true, "Doctor", null, false, "", false, null, "DOCTOR@GMAIL.COM", "DOCTOR", "AQAAAAIAAYagAAAAELmo7xuF4iA8LIjVy6iasqZAf33CZVoycNHcjtj+pVeQ1CXUMfT/cpX/hjPmSu7Q1g==", null, false, "6b005e9b-8a11-494e-88ad-7d4bb3ee397b", false, "Doctor" }
+                    { "402ddff0-09e1-425f-b41b-2fc1ec5668b0", 0, "", "9063c5b7-4b04-4257-b39f-2c4f16e0dcc9", "Secretary@gmail.com", true, "Secretary", "", null, false, "", false, null, "SECRETARY@GMAIL.COM", "SECRETARY", "AQAAAAIAAYagAAAAEHY+lcm9kZsx2jII0ILtg9P8Ar5bq+nllLEXHHt39DO/A2aZ78bgXxqjk75SSAozMw==", null, false, "073f077e-eb46-4509-949b-75ca143b980b", false, "Secretary" },
+                    { "556c1c99-2d3a-4988-a80a-46ab2f14ea71", 0, "", "efe64d5c-d9f8-437d-afb7-d49bd38fd4d1", "Admin@gmail.com", true, "Admin", "", null, false, "", false, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEHGQZYJLCI7P437nU7LKXmE7cHxsQJB/GZjSmjj8IvTsEL8uttVSWYmaVF2F9pPxYQ==", null, false, "b6823b6b-87ef-4e26-912b-e4159f03dee7", false, "Admin" },
+                    { "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e", 0, "", "96170b75-f69e-42e2-a553-bd02b809382a", "Doctor@gmail.com", true, "Doctor", "", null, false, "", false, null, "DOCTOR@GMAIL.COM", "DOCTOR", "AQAAAAIAAYagAAAAEPu5ZfftUbhx4d2Q4klMh1sM6uOBYFTabZF0jo2FMl5a4eAXZ5Ac2qVu/sPfgMDcSA==", null, false, "d7712924-d85a-45bc-86d8-a371841ae2ba", false, "Doctor" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoleClaims",
+                columns: new[] { "Id", "ClaimType", "ClaimValue", "RoleId" },
+                values: new object[,]
+                {
+                    { 1, "permissions", "timeslots:read", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 2, "permissions", "timeslots:add", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 3, "permissions", "timeslots:update", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 4, "permissions", "timeslots:delete", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 5, "permissions", "medicalrecords:read", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 6, "permissions", "medicalrecords:add", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 7, "permissions", "medicalrecords:update", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 8, "permissions", "medicalrecords:delete", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 9, "permissions", "prescriptions:read", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 10, "permissions", "prescriptions:add", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 11, "permissions", "prescriptions:update", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 12, "permissions", "prescriptions:delete", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 13, "permissions", "appointments:read", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 14, "permissions", "appointments:read-own", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 15, "permissions", "appointments:add", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 16, "permissions", "appointments:update", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 17, "permissions", "appointments:cancel", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 18, "permissions", "appointments:delete", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 19, "permissions", "users:read", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 20, "permissions", "users:add", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 21, "permissions", "users:update", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 22, "permissions", "roles:read", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 23, "permissions", "roles:add", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 24, "permissions", "roles:update", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 25, "permissions", "results:read", "92787aec-1266-4a2d-8a2d-6ea48f5a4811" },
+                    { 26, "permissions", "medicalrecords:read", "0d1fe96c-7786-4ce6-8647-38da6886a662" },
+                    { 27, "permissions", "medicalrecords:add", "0d1fe96c-7786-4ce6-8647-38da6886a662" },
+                    { 28, "permissions", "medicalrecords:update", "0d1fe96c-7786-4ce6-8647-38da6886a662" },
+                    { 29, "permissions", "prescriptions:read", "0d1fe96c-7786-4ce6-8647-38da6886a662" },
+                    { 30, "permissions", "prescriptions:add", "0d1fe96c-7786-4ce6-8647-38da6886a662" },
+                    { 31, "permissions", "prescriptions:update", "0d1fe96c-7786-4ce6-8647-38da6886a662" },
+                    { 32, "permissions", "prescriptions:delete", "0d1fe96c-7786-4ce6-8647-38da6886a662" },
+                    { 33, "permissions", "appointments:read", "0d1fe96c-7786-4ce6-8647-38da6886a662" },
+                    { 34, "permissions", "appointments:read", "e6a5b8c2-6254-4279-866b-c916377576db" },
+                    { 35, "permissions", "appointments:add", "e6a5b8c2-6254-4279-866b-c916377576db" },
+                    { 36, "permissions", "appointments:cancel", "e6a5b8c2-6254-4279-866b-c916377576db" },
+                    { 37, "permissions", "timeslots:read", "e6a5b8c2-6254-4279-866b-c916377576db" },
+                    { 38, "permissions", "users:read", "e6a5b8c2-6254-4279-866b-c916377576db" },
+                    { 39, "permissions", "appointments:add", "f4c051d8-f995-492c-8ef8-515417105616" },
+                    { 40, "permissions", "appointments:read-own", "f4c051d8-f995-492c-8ef8-515417105616" },
+                    { 41, "permissions", "appointments:cancel", "f4c051d8-f995-492c-8ef8-515417105616" },
+                    { 42, "permissions", "timeslots:read", "f4c051d8-f995-492c-8ef8-515417105616" }
                 });
 
             migrationBuilder.InsertData(
@@ -454,21 +546,21 @@ namespace Clinic.Infrastructure.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Doctors",
-                columns: new[] { "Id", "CreatedById", "CreatedOn", "Specialization", "UpdatedById", "UpdatedOn", "UserId", "YearOfExperience" },
-                values: new object[] { 1, "556c1c99-2d3a-4988-a80a-46ab2f14ea71", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cardiology", null, null, "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e", 10 });
+                columns: new[] { "Id", "Specialization", "YearOfExperience" },
+                values: new object[] { "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e", "Cardiology", 10 });
 
             migrationBuilder.InsertData(
                 table: "DoctorSchedules",
                 columns: new[] { "Id", "Day", "DoctorId" },
                 values: new object[,]
                 {
-                    { 1, "Monday", 1 },
-                    { 2, "Tuesday", 1 },
-                    { 3, "Wednesday", 1 },
-                    { 4, "Thursday", 1 },
-                    { 5, "Friday", 1 },
-                    { 6, "Saturday", 1 },
-                    { 7, "Sunday", 1 }
+                    { 1, "Monday", "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+                    { 2, "Tuesday", "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+                    { 3, "Wednesday", "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+                    { 4, "Thursday", "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+                    { 5, "Friday", "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+                    { 6, "Saturday", "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" },
+                    { 7, "Sunday", "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -536,21 +628,6 @@ namespace Clinic.Infrastructure.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Doctors_CreatedById",
-                table: "Doctors",
-                column: "CreatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Doctors_UpdatedById",
-                table: "Doctors",
-                column: "UpdatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Doctors_UserId",
-                table: "Doctors",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DoctorSchedules_DoctorId",
                 table: "DoctorSchedules",
                 column: "DoctorId");
@@ -576,10 +653,19 @@ namespace Clinic.Infrastructure.Data.Migrations
                 column: "UpdatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Patients_UserId",
-                table: "Patients",
-                column: "UserId",
-                unique: true);
+                name: "IX_Messages_ReceiverId",
+                table: "Messages",
+                column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_SenderId",
+                table: "Messages",
+                column: "SenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PrescriptionItems_PrescriptionId",
+                table: "PrescriptionItems",
+                column: "PrescriptionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Prescriptions_CreatedById",
@@ -590,6 +676,11 @@ namespace Clinic.Infrastructure.Data.Migrations
                 name: "IX_Prescriptions_MedicalRecordId",
                 table: "Prescriptions",
                 column: "MedicalRecordId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Prescriptions_PatientId",
+                table: "Prescriptions",
+                column: "PatientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Prescriptions_UpdatedById",
@@ -624,7 +715,10 @@ namespace Clinic.Infrastructure.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Prescriptions");
+                name: "Messages");
+
+            migrationBuilder.DropTable(
+                name: "PrescriptionItems");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
@@ -636,16 +730,19 @@ namespace Clinic.Infrastructure.Data.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "MedicalRecords");
+                name: "Prescriptions");
 
             migrationBuilder.DropTable(
                 name: "DoctorSchedules");
 
             migrationBuilder.DropTable(
-                name: "Patients");
+                name: "MedicalRecords");
 
             migrationBuilder.DropTable(
                 name: "Doctors");
+
+            migrationBuilder.DropTable(
+                name: "Patients");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

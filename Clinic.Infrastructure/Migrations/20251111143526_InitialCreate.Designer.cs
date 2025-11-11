@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Clinic.Infrastructure.Data.Migrations
+namespace Clinic.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251109132545_AddMessagesTable")]
-    partial class AddMessagesTable
+    [Migration("20251111143526_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -105,8 +105,8 @@ namespace Clinic.Infrastructure.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -184,13 +184,15 @@ namespace Clinic.Infrastructure.Data.Migrations
 
                     b.ToTable("AspNetUsers", (string)null);
 
+                    b.UseTptMappingStrategy();
+
                     b.HasData(
                         new
                         {
                             Id = "556c1c99-2d3a-4988-a80a-46ab2f14ea71",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "1b6c6b17-9a0c-4db4-aef5-a52b0c1d9bc9",
+                            ConcurrencyStamp = "efe64d5c-d9f8-437d-afb7-d49bd38fd4d1",
                             Email = "Admin@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Admin",
@@ -200,39 +202,18 @@ namespace Clinic.Infrastructure.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBRud8ku1I8VQRPxC64P60SMiEcn94ZfOm03yL5xPSQeNvlAuASXwLiJ2fGydbK9jw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHGQZYJLCI7P437nU7LKXmE7cHxsQJB/GZjSmjj8IvTsEL8uttVSWYmaVF2F9pPxYQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "19116bd0-f035-4e7d-8a7a-901affa3c8ed",
+                            SecurityStamp = "b6823b6b-87ef-4e26-912b-e4159f03dee7",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
-                        },
-                        new
-                        {
-                            Id = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e",
-                            AccessFailedCount = 0,
-                            Address = "",
-                            ConcurrencyStamp = "daec1842-cbed-4e9a-aa8f-37c9303ddc20",
-                            Email = "Doctor@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Doctor",
-                            Gender = "",
-                            IsDisabled = false,
-                            LastName = "",
-                            LockoutEnabled = false,
-                            NormalizedEmail = "DOCTOR@GMAIL.COM",
-                            NormalizedUserName = "DOCTOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKtY0mrqOWW23U4ob2Whlc2S5W/eTUgjWeTbTjulAvyhrWCAa6cEmJrsFvRj8d+FbA==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "ee61ddab-9e75-4025-bc2b-1e18b3c41acb",
-                            TwoFactorEnabled = false,
-                            UserName = "Doctor"
                         },
                         new
                         {
                             Id = "402ddff0-09e1-425f-b41b-2fc1ec5668b0",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "4943e983-d0db-4cbe-9f46-aa90ffd11131",
+                            ConcurrencyStamp = "9063c5b7-4b04-4257-b39f-2c4f16e0dcc9",
                             Email = "Secretary@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Secretary",
@@ -242,9 +223,9 @@ namespace Clinic.Infrastructure.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SECRETARY@GMAIL.COM",
                             NormalizedUserName = "SECRETARY",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJuPEEdbe9MeoehZqGqOhDPsSD0PnS7GmfbKlJXu0o193Z2KurC6sd+/ea7gNF02Hg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHY+lcm9kZsx2jII0ILtg9P8Ar5bq+nllLEXHHt39DO/A2aZ78bgXxqjk75SSAozMw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f325e0b1-8ee9-4830-9d89-a0004bd697d4",
+                            SecurityStamp = "073f077e-eb46-4509-949b-75ca143b980b",
                             TwoFactorEnabled = false,
                             UserName = "Secretary"
                         });
@@ -271,14 +252,16 @@ namespace Clinic.Infrastructure.Data.Migrations
                     b.Property<DateTime>("DeletedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
+                    b.Property<string>("DoctorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PatientId")
-                        .HasColumnType("int");
+                    b.Property<string>("PatientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ReasonForVisit")
                         .IsRequired()
@@ -316,61 +299,6 @@ namespace Clinic.Infrastructure.Data.Migrations
                     b.ToTable("Appointments");
                 });
 
-            modelBuilder.Entity("Clinic.Domain.Entities.Doctor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedById")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Specialization")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("UpdatedById")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("YearOfExperience")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Doctors");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedById = "556c1c99-2d3a-4988-a80a-46ab2f14ea71",
-                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Specialization = "Cardiology",
-                            UserId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e",
-                            YearOfExperience = 10
-                        });
-                });
-
             modelBuilder.Entity("Clinic.Domain.Entities.DoctorSchedule", b =>
                 {
                     b.Property<int>("Id")
@@ -384,8 +312,9 @@ namespace Clinic.Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
+                    b.Property<string>("DoctorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -398,43 +327,43 @@ namespace Clinic.Infrastructure.Data.Migrations
                         {
                             Id = 1,
                             Day = "Monday",
-                            DoctorId = 1
+                            DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e"
                         },
                         new
                         {
                             Id = 2,
                             Day = "Tuesday",
-                            DoctorId = 1
+                            DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e"
                         },
                         new
                         {
                             Id = 3,
                             Day = "Wednesday",
-                            DoctorId = 1
+                            DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e"
                         },
                         new
                         {
                             Id = 4,
                             Day = "Thursday",
-                            DoctorId = 1
+                            DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e"
                         },
                         new
                         {
                             Id = 5,
                             Day = "Friday",
-                            DoctorId = 1
+                            DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e"
                         },
                         new
                         {
                             Id = 6,
                             Day = "Saturday",
-                            DoctorId = 1
+                            DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e"
                         },
                         new
                         {
                             Id = 7,
                             Day = "Sunday",
-                            DoctorId = 1
+                            DoctorId = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e"
                         });
                 });
 
@@ -487,11 +416,13 @@ namespace Clinic.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
+                    b.Property<string>("DoctorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("PatientId")
-                        .HasColumnType("int");
+                    b.Property<string>("PatientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Treatment")
                         .IsRequired()
@@ -551,36 +482,6 @@ namespace Clinic.Infrastructure.Data.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("Clinic.Domain.Entities.Patient", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Gender")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Patients");
-                });
-
             modelBuilder.Entity("Clinic.Domain.Entities.Prescription", b =>
                 {
                     b.Property<int>("Id")
@@ -615,8 +516,9 @@ namespace Clinic.Infrastructure.Data.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PatientId")
-                        .HasColumnType("int");
+                    b.Property<string>("PatientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UpdatedById")
                         .HasColumnType("nvarchar(450)");
@@ -1092,6 +994,57 @@ namespace Clinic.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Clinic.Domain.Entities.Doctor", b =>
+                {
+                    b.HasBaseType("Clinic.Domain.Entities.ApplicationUser");
+
+                    b.Property<string>("Specialization")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("YearOfExperience")
+                        .HasColumnType("int");
+
+                    b.ToTable("Doctors");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e",
+                            AccessFailedCount = 0,
+                            Address = "",
+                            ConcurrencyStamp = "96170b75-f69e-42e2-a553-bd02b809382a",
+                            Email = "Doctor@gmail.com",
+                            EmailConfirmed = true,
+                            FirstName = "Doctor",
+                            Gender = "",
+                            IsDisabled = false,
+                            LastName = "",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "DOCTOR@GMAIL.COM",
+                            NormalizedUserName = "DOCTOR",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPu5ZfftUbhx4d2Q4klMh1sM6uOBYFTabZF0jo2FMl5a4eAXZ5Ac2qVu/sPfgMDcSA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "d7712924-d85a-45bc-86d8-a371841ae2ba",
+                            TwoFactorEnabled = false,
+                            UserName = "Doctor",
+                            Specialization = "Cardiology",
+                            YearOfExperience = 10
+                        });
+                });
+
+            modelBuilder.Entity("Clinic.Domain.Entities.Patient", b =>
+                {
+                    b.HasBaseType("Clinic.Domain.Entities.ApplicationUser");
+
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .IsRequired()
+                        .HasColumnType("date");
+
+                    b.ToTable("Patients");
+                });
+
             modelBuilder.Entity("Clinic.Domain.Entities.ApplicationUser", b =>
                 {
                     b.OwnsMany("Clinic.Domain.Entities.RefreshToken", "RefreshTokens", b1 =>
@@ -1170,31 +1123,6 @@ namespace Clinic.Infrastructure.Data.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
-            modelBuilder.Entity("Clinic.Domain.Entities.Doctor", b =>
-                {
-                    b.HasOne("Clinic.Domain.Entities.ApplicationUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Clinic.Domain.Entities.ApplicationUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.HasOne("Clinic.Domain.Entities.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("UpdatedBy");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Clinic.Domain.Entities.DoctorSchedule", b =>
                 {
                     b.HasOne("Clinic.Domain.Entities.Doctor", "Doctor")
@@ -1267,17 +1195,6 @@ namespace Clinic.Infrastructure.Data.Migrations
                     b.Navigation("Receiver");
 
                     b.Navigation("Sender");
-                });
-
-            modelBuilder.Entity("Clinic.Domain.Entities.Patient", b =>
-                {
-                    b.HasOne("Clinic.Domain.Entities.ApplicationUser", "User")
-                        .WithOne()
-                        .HasForeignKey("Clinic.Domain.Entities.Patient", "UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Clinic.Domain.Entities.Prescription", b =>
@@ -1375,7 +1292,20 @@ namespace Clinic.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Clinic.Domain.Entities.Doctor", b =>
                 {
-                    b.Navigation("MedicalRecords");
+                    b.HasOne("Clinic.Domain.Entities.ApplicationUser", null)
+                        .WithOne()
+                        .HasForeignKey("Clinic.Domain.Entities.Doctor", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Clinic.Domain.Entities.Patient", b =>
+                {
+                    b.HasOne("Clinic.Domain.Entities.ApplicationUser", null)
+                        .WithOne()
+                        .HasForeignKey("Clinic.Domain.Entities.Patient", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Clinic.Domain.Entities.DoctorSchedule", b =>
@@ -1383,14 +1313,19 @@ namespace Clinic.Infrastructure.Data.Migrations
                     b.Navigation("TimeSlots");
                 });
 
-            modelBuilder.Entity("Clinic.Domain.Entities.Patient", b =>
-                {
-                    b.Navigation("Appointments");
-                });
-
             modelBuilder.Entity("Clinic.Domain.Entities.Prescription", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Clinic.Domain.Entities.Doctor", b =>
+                {
+                    b.Navigation("MedicalRecords");
+                });
+
+            modelBuilder.Entity("Clinic.Domain.Entities.Patient", b =>
+                {
+                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }

@@ -9,6 +9,8 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
     {
         builder.HasKey(u => u.Id);
 
+        builder.UseTptMappingStrategy();
+
         builder.Property(u => u.FirstName).HasMaxLength(100);
         builder.Property(u => u.LastName).HasMaxLength(100);
 
@@ -36,20 +38,7 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
         };
         //admin.PasswordHash = hasher.HashPassword(admin, "Pa$$w0rd");
 
-        var doctor = new ApplicationUser
-        {
-            Id = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e",
-            FirstName = "Doctor",
-            LastName = "",
-            UserName = "Doctor",
-            NormalizedUserName = "DOCTOR",
-            Email = "Doctor@gmail.com",
-            NormalizedEmail = "DOCTOR@GMAIL.COM",
-            EmailConfirmed = true,
-            SecurityStamp = Guid.NewGuid().ToString(),
-            ConcurrencyStamp = Guid.NewGuid().ToString()
-        };
-        doctor.PasswordHash = hasher.HashPassword(doctor, "Pa$$w0rd");
+        
 
         var secretary = new ApplicationUser
         {
@@ -66,6 +55,6 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
         };
         secretary.PasswordHash = hasher.HashPassword(secretary, "Secretary@123");
 
-        builder.HasData(admin, doctor, secretary);
+        builder.HasData(admin, secretary);
     }
 }

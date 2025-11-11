@@ -14,18 +14,25 @@ internal class PatientRespository : GenericRepository<Patient>, IPatientReposito
     {
         var now = DateOnly.FromDateTime(DateTime.Now);
         return await _context.Set<Patient>()
-            .Where(p => !p.User.IsDisabled && !p.Appointments.Any(a=>a.Date > now && a.Status=="Booked"))
+            .Where(p => !p.IsDisabled && !p.Appointments.Any(a=>a.Date > now && a.Status=="Booked"))
             .Select(p => new PatientActiveResponse
             {
                 Id = p.Id,
-                FullName = $"{p.User.FirstName} {p.User.LastName}",
-                ImageUrl = p.User.ImageUrl,
-                PhoneNumber = p.User.PhoneNumber
+                FullName = $"{p.FirstName} {p.LastName}",
+                ImageUrl = p.ImageUrl,
+                PhoneNumber = p.PhoneNumber
             }).ToListAsync();
+    }
+
+    public IQueryable<Patient> GetAllWithDetailsQueryable()
+    {
+        return  _context.Set<Patient>()
+            .AsNoTracking()
+            .AsQueryable();
     }
 
     public Task<Patient?> GetByUserIdAsync(string userId)
     {
-        return _context.Set<Patient>().SingleOrDefaultAsync(u => u.UserId == userId);
+        return _context.Set<Patient>().SingleOrDefaultAsync(u => u.Id == userId);
     }
 }

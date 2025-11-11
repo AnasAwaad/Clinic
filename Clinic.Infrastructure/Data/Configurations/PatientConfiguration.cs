@@ -14,21 +14,12 @@ public class PatientConfiguration:IEntityTypeConfiguration<Patient>
 {
     public void Configure(EntityTypeBuilder<Patient> builder)
     {
-        // Primary Key
-        builder.HasKey(p => p.Id);
 
         // Properties
         builder.Property(p => p.DateOfBirth).IsRequired();
         builder.Property(p => p.Address).HasMaxLength(500);
 
-        // Index on UserId
-        builder.HasIndex(p => p.UserId).IsUnique();
 
-        // One-to-One with AspNetUsers
-        builder.HasOne(p=>p.User)
-               .WithOne()
-               .HasForeignKey<Patient>(p => p.UserId)
-               .IsRequired();
         
     }
 }
