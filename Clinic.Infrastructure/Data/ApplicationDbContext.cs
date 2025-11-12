@@ -24,6 +24,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Prescription> Prescriptions { get; set; }
     public DbSet<PrescriptionItem> PrescriptionItems { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<ConnectionSession> ConnectionSessions { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         var appt = builder.Entity<Appointment>();

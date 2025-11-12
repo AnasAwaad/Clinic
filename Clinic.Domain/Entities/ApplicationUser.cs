@@ -15,6 +15,8 @@ public class ApplicationUser : IdentityUser
     public string? Address { get; set; } = string.Empty;
     public string? ImageUrl { get; set; }
     public bool IsDisabled { get; set; }
+    public bool IsOnline { get; set; }
+    public DateTime? LastSeen { get; set; }
     public List<RefreshToken> RefreshTokens { get; set; } = [];
 }
 

@@ -14,5 +14,6 @@ public class OnlineUserDto
     public string UserName { get; set; } = string.Empty;
     public string? ImageUrl { get; set; }
     public bool IsOnline { get; set; }
+    public DateTime? LastSeen { get; set; }
     public int UnReadCount { get; set; }
 }

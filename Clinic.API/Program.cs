@@ -1,4 +1,5 @@
-﻿using Clinic.Application.Extensions;
+﻿using Clinic.API.Hubs;
+using Clinic.Application.Extensions;
 using Clinic.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +30,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapHub<ChatHub>("hubs/chat");
 app.MapControllers();
 
 app.Run();

@@ -11,6 +11,6 @@ public static class UserExtensions
 
     public static string GetUserName(this ClaimsPrincipal user)
     {
-        return user.FindFirstValue(ClaimTypes.Name)!;
+        return user.Identity!.Name!;
     }
 }

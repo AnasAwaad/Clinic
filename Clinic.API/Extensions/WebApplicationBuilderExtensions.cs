@@ -18,6 +18,7 @@ public static class WebApplicationBuilderExtensions
     {
         builder.Services.AddControllers();
 
+        builder.Services.AddSignalR();
 
         builder.Services.AddEndpointsApiExplorer();
 
@@ -25,9 +26,13 @@ public static class WebApplicationBuilderExtensions
         {
             opt.AddPolicy("CorsPolicy", options =>
             {
-                options.AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin();
+                //options.AllowAnyHeader()
+                //.AllowAnyMethod()
+                //.AllowAnyOrigin();
+                options.WithOrigins("http://localhost:4200","http://127.0.0.1:4200")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
             });
         });
 
@@ -116,7 +121,28 @@ public static class WebApplicationBuilderExtensions
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtSettings?.Issuer,
                 ValidAudience = jwtSettings?.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings?.Key!))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings?.Key!)),
+
+                NameClaimType = "name"
+            };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/chat"))
+                    {
+                        context.Token = accessToken; 
+                    }
+                    return Task.CompletedTask;
+                },
+                OnAuthenticationFailed = context =>
+                {
+                    Console.WriteLine($"JWT failed: {context.Exception.Message}");
+                    return Task.CompletedTask;
+                }
             };
         });
 
