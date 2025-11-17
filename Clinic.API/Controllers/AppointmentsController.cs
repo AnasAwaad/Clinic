@@ -64,8 +64,16 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 
+    [HttpPut("{id}")]
+    [HasPermission(Permissions.UpdateAppointments)]
+    public async Task<IActionResult> Update([FromRoute]int id ,[FromBody] AppointmentRequest request)
+    {
+        var result = await appointmentService.UpdateAsync(id, request);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+
     [HttpDelete]
-    public async Task<IActionResult> Delete([FromBody] BulkDeleteRequest request)
+    public async Task<IActionResult> DeleteBulk([FromBody] BulkDeleteRequest request)
     {
         var result = await appointmentService.DeleteManyAsync(request.Ids);
         return result.IsSuccess ? NoContent() : result.ToProblem();

@@ -146,13 +146,42 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
 
     public async Task<Result> DeleteAsync(int id)
     {
-        var appointment = await unitOfWork.Appointments.GetByIdAsync(id);
+        var appointment = await unitOfWork.Appointments.GetByIdWithTimeSlotAsync(id);
 
         if (appointment == null)
             return Result.Failure(AppointmentErrors.AppointmentNotFound);
 
-        await unitOfWork.Appointments.DeleteAsync(id);
+        appointment.IsDeleted = true;
+        appointment.DeletedOn = DateTime.Now;
+        appointment.TimeSlot.IsBooked = false;
 
+        await unitOfWork.SaveAsync();
+
+        return Result.Success();
+    }
+
+    public async Task<Result> UpdateAsync(int id, AppointmentRequest request)
+    {
+        var appointment = await unitOfWork.Appointments.GetByIdWithTimeSlotAsync(id);
+
+        if (appointment == null)
+            return Result.Failure(AppointmentErrors.AppointmentNotFound);
+
+        appointment.TimeSlot.IsBooked = false;
+
+        mapper.Map(request, appointment);
+
+        var timeSlot = await unitOfWork.TimeSlots.GetByIdAsync(request.TimeSlotId);
+
+        if(timeSlot is null)
+            return Result.Failure(DoctorScheduleErrors.TimeSlotNotFound);
+
+        if (timeSlot.IsBooked)
+            return Result.Failure(DoctorScheduleErrors.BookedTimeSlot);
+
+        timeSlot.IsBooked = true;
+
+        await unitOfWork.SaveAsync();
         return Result.Success();
     }
 }

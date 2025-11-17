@@ -13,7 +13,7 @@ public class AccountController(IUserService userService) : ControllerBase
     public async Task<IActionResult> Info()
     {
         var result = await userService.GetProfileAsync(User.GetUserId());
-
+        
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 

@@ -30,7 +30,6 @@ internal class DoctorScheduleRepository : GenericRepository<DoctorSchedule>, IDo
            {
                Day = ds.Day,
                TimeSlots = ds.TimeSlots
-                   .Where(ts => !ts.IsBooked)
                    .ToList()
            });
 

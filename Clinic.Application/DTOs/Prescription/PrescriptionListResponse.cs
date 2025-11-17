@@ -9,6 +9,7 @@ public class PrescriptionListResponse
 {
     public int Id { get; set; }
     public string PatientName { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
     public DateOnly Date { get; set; }
     public int Age { get; set; }
     public string Diagnosis { get; set; } = string.Empty;

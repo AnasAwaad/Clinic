@@ -14,18 +14,11 @@ namespace Clinic.API.Hubs;
 [Authorize]
 public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbContext dbContext) : Hub
 {
-    //public static readonly ConcurrentDictionary<string, OnlineUserDto> onlineUsers = new();
 
     public override async Task OnConnectedAsync()
     {
         var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier)
                     ?? throw new InvalidOperationException("UserId missing");
-
-
-        //var httpContext = Context.GetHttpContext();
-        //var receiverId = httpContext?.Request.Query["senderId"].ToString();
-        //var userName = Context.User.GetUserName();
-        //var currentUser =await userManager.FindByNameAsync(userName);
 
         var connectionId = Context.ConnectionId;
 
@@ -38,121 +31,101 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
 
         var user = await userManager.FindByIdAsync(userId);
 
+        if(user is null)
+            return;
+
         user.IsOnline = true;
         user.LastSeen = DateTime.Now;
 
         await dbContext.SaveChangesAsync();
 
-        await Clients.User(userId).SendAsync("OnlineUsers", await GetAllUsers(userId));
-
-        await Clients.Others.SendAsync("UserBecameOnline", new
+        var onlineUser = new OnlineUserDto
         {
             Id = user.Id,
-            userName = user.UserName,
-            firstName = user.FirstName,
-            lastName = user.LastName,
-            imageUrl = user.ImageUrl
-        });
+            UserName = user.UserName!,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            ImageUrl = user.ImageUrl
+        };
+
+        await Clients.User(userId).SendAsync("OnlineUsers", await GetAllUsers(userId));
+        await Clients.AllExcept(userId).SendAsync("NotifyOnlineUser", onlineUser);
+
+        await Clients.Others.SendAsync("UserBecameOnline", onlineUser);
 
         await base.OnConnectedAsync();
 
-
-        //if (onlineUsers.ContainsKey(userName))
-        //{
-        //    onlineUsers[userName].ConnectionId = connectionId;
-        //}
-        //else
-        //{
-        //    var user = new OnlineUserDto
-        //    {
-        //        ConnectionId = connectionId,
-        //        UserName = userName,
-        //        FirstName = currentUser.FirstName,
-        //        LastName = currentUser.LastName,
-        //        ImageUrl = currentUser.ImageUrl,
-        //    };
-
-        //    onlineUsers.TryAdd(userName, user);
-
-        //    await Clients.AllExcept(connectionId).SendAsync("Notify", currentUser);
-        //}
-
-        //if (!string.IsNullOrEmpty(receiverId))
-        //{
-        //    await LoadMessages(receiverId);
-        //}
-
-        //await Clients.User(currentUser.Id).SendAsync("OnlineUsers", await GetAllUsers());
     }
 
     public async Task SendMessage(MessageRequestDto request)
     {
-        //var newMsg = new Message
-        //{
-        //    SenderId = Context.User.GetUserId(),
-        //    ReceiverId = request.ReceiverId,
-        //    Content = request.Content,
-        //    CreatedDate = DateTime.UtcNow,
-        //    IsRead = false,
-        //};
+        var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? throw new InvalidOperationException("UserId missing");
 
-        //dbContext.Messages.Add(newMsg);
-        //await dbContext.SaveChangesAsync();
+        var newMsg = new Message
+        {
+            SenderId = userId,
+            ReceiverId = request.ReceiverId,
+            Content = request.Content,
+            CreatedDate = DateTime.UtcNow,
+            IsRead = false,
+        };
 
-        //await Clients.User(request.ReceiverId).SendAsync("ReceiveNewMessage", newMsg);
+        dbContext.Messages.Add(newMsg);
+        await dbContext.SaveChangesAsync();
+
+        await Clients.User(request.ReceiverId).SendAsync("ReceiveNewMessage", newMsg);
     }
 
 
-    public async Task NotifyTyping(string recipientUserName)
+    public async Task NotifyTyping(string recipientUserId)
     {
-        //var senderUserName = Context.User.GetUserName();
-        //if (senderUserName is null)
-        //    return;
-        //var connectionId = onlineUsers.Values.FirstOrDefault(x => x.UserName == recipientUserName)?.ConnectionId;
+        var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? throw new InvalidOperationException("UserId missing");
 
-        //if(connectionId is not null)
-        //{
-        //    await Clients.Client(connectionId).SendAsync("NotifyTypingToUser", senderUserName);
-        //}
+        await Clients.User(recipientUserId).SendAsync("NotifyTypingToUser",userId);
     }
 
     public async Task LoadMessages(string recipientId,int pageNumber = 1)
     {
-        //int pageSize = 10;
-        //var userName = Context.User.GetUserName();
-        //var currentUser = await userManager.FindByNameAsync(userName);
+        int pageSize = 10;
+        var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? throw new InvalidOperationException("UserId missing");
 
-        //if (currentUser is null)
-        //    return;
+        var user = await userManager.FindByIdAsync(userId);
 
-        //List<MessageResponseDto> messages = await dbContext.Messages
-        //    .Where(m => (m.ReceiverId == recipientId && m.SenderId == currentUser.Id) || (m.ReceiverId == currentUser.Id && m.SenderId == recipientId))
-        //    .OrderByDescending(x => x.CreatedDate)
-        //    .Skip((pageNumber - 1) * pageSize)
-        //    .Take(pageSize)
-        //    .OrderBy(x => x.CreatedDate)
-        //    .Select(x => new MessageResponseDto
-        //    {
-        //        Id = x.Id,
-        //        Content = x.Content,
-        //        CreatedDate = x.CreatedDate,
-        //        ReceiverId = x.ReceiverId,
-        //        SenderId = x.SenderId
-        //    }).ToListAsync();
+        if (user == null)
+            return;
+        var count = await dbContext.Messages.CountAsync(m => (m.ReceiverId == recipientId && m.SenderId == userId) || (m.ReceiverId == userId && m.SenderId == recipientId));
 
+        var messages = await dbContext.Messages
+            .Where(m => (m.ReceiverId == recipientId && m.SenderId == userId) || (m.ReceiverId == userId && m.SenderId == recipientId))
+            .OrderByDescending(m => m.CreatedDate)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .OrderBy(m => m.CreatedDate)
+            .Select(m => new MessageResponseDto
+            {
+                Id = m.Id,
+                Content = m.Content,
+                CreatedDate = m.CreatedDate,
+                ReceiverId = m.ReceiverId,
+                SenderId = m.SenderId,
+                IsRead = m.IsRead
+            }).ToListAsync();
 
-        //foreach (var message in messages)
-        //{
-        //    var msg =await dbContext.Messages.FirstOrDefaultAsync(x => x.Id == message.Id);
+        foreach (var message in messages)
+        {
+            if(message is not null && message.ReceiverId == userId)
+            {
+                message.IsRead = true;
+                await dbContext.SaveChangesAsync();
+            }
+        }
 
-        //    if(msg is not null && msg.ReceiverId == currentUser.Id)
-        //    {
-        //        msg.IsRead = true;
-        //        await dbContext.SaveChangesAsync();
-        //    }
-        //}
-
-        //await Clients.User(currentUser.Id).SendAsync("ReceiveMessageList", messages);
+        var totalPages = count/pageSize + 1;
+        Console.WriteLine(totalPages);
+        await Clients.User(userId).SendAsync("ReceiveMessageList", messages,totalPages);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
@@ -174,6 +147,10 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
 
         
         var user = await userManager.FindByIdAsync(userId);
+
+        if(user is null)
+            return;
+
         user.IsOnline = false;
         user.LastSeen = DateTime.Now;
 
@@ -182,11 +159,6 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
         await Clients.Others.SendAsync("UserWentOffline", new {user.Id,user.LastSeen});
 
         await base.OnDisconnectedAsync(exception);
-
-        //var userName = Context.User.GetUserName();
-
-        //onlineUsers.TryRemove(userName, out _);
-        //await Clients.All.SendAsync("OnlineUsers", await GetAllUsers());
     }
     private async Task<IEnumerable<OnlineUserDto>> GetAllUsers(string viewerId)
     {
@@ -195,7 +167,7 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
             Id = u.Id,
             FirstName = u.FirstName,
             LastName = u.LastName,
-            UserName = u.UserName,
+            UserName = u.UserName!,
             ImageUrl = u.ImageUrl,
             IsOnline = u.IsOnline,
             LastSeen = u.LastSeen,

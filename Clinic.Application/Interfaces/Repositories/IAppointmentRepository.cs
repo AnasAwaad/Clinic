@@ -13,7 +13,7 @@ public interface IAppointmentRepository : IGenericRepository<Appointment>
     IQueryable<Appointment> QueryInRange(DateOnly start, DateOnly end);
     Task<bool> HasActiveAppointmentAsync(string patientId, DateOnly now);
     Task<Appointment?> GetByIdAndPatientAsync(int appointmentId, string userId);
+    Task<Appointment?> GetByIdWithTimeSlotAsync(int appointmentId);
     IQueryable<Appointment> GetByIdWithDetails(int id);
-    Task DeleteAsync(int id);
     Task DeleteManyAsync(List<int> idList);
 }

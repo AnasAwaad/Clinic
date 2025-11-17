@@ -70,19 +70,39 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
 
     public async Task DeleteManyAsync(List<int> idList)
     {
+        await using var transcation = await _context.Database.BeginTransactionAsync();
+
+        // Soft-delete appointments 
         await _context.Set<Appointment>()
             .Where(a => idList.Contains(a.Id))
-            .ExecuteUpdateAsync(s=>s
-                .SetProperty(a=>a.IsDeleted, true)
-                .SetProperty(a=>a.DeletedOn,DateTime.UtcNow));
-    }
-
-    public async Task DeleteAsync(int id)
-    {
-        await _context.Set<Appointment>()
-            .Where(a => a.Id == id)
             .ExecuteUpdateAsync(s => s
                 .SetProperty(a => a.IsDeleted, true)
                 .SetProperty(a => a.DeletedOn, DateTime.UtcNow));
+
+        // Collect the related TimeSlot IDs
+        var timeSlotIds = await _context.Set<Appointment>()
+            .Where(a => idList.Contains(a.Id) && a.TimeSlot != null)
+            .Select(a => a.TimeSlotId)
+            .Distinct()
+            .ToListAsync();
+
+        if (timeSlotIds.Any())
+        {
+            await _context.Set<DoctorTimeSlot>()
+                .Where(x => timeSlotIds.Contains(x.Id))
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(s => s.IsBooked, false));
+        }
+
+        await transcation.CommitAsync();
+    }
+
+
+    public async Task<Appointment?> GetByIdWithTimeSlotAsync(int appointmentId)
+    {
+        return await _context.Set<Appointment>()
+            .Where(a => a.Id == appointmentId)
+            .Include(a => a.TimeSlot)
+            .FirstOrDefaultAsync();
     }
 }

@@ -26,12 +26,11 @@ public class DoctorScheduleMapping : Profile
             .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.TimeSlot.EndTime))
             .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName} {src.Patient.LastName}"))
             .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Patient.ImageUrl));
-            
+
 
 
         CreateMap<Appointment, AppointmentDetailsResponse>()
             .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName}   {src.Patient.LastName}"))
-            .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.TimeSlot.StartTime.ToString("HH:mm tt")))
             .ForMember(dest => dest.PatientPhoneNumber, opt => opt.MapFrom(src => src.Patient.PhoneNumber));
 
         CreateMap<AppointmentRequest, Appointment>()
@@ -53,10 +52,12 @@ public class DoctorScheduleMapping : Profile
         CreateMap<PrescriptionItemRequest, PrescriptionItem>();
 
         CreateMap<Prescription, PrescriptionListResponse>()
-            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName}   {src.Patient.LastName}"));
+            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName}   {src.Patient.LastName}"))
+            .ForMember(x => x.ImageUrl, opt => opt.MapFrom(src => src.Patient.ImageUrl));
 
         //user
         CreateMap<ApplicationUser, UserProfileResponse>();
+
         CreateMap<ApplicationUser, UserResponse>();
         CreateMap<CreateUserRequest, ApplicationUser>()
             .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => true));
