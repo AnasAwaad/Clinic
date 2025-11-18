@@ -106,6 +106,7 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
         var appointment = mapper.Map<Appointment>(request);
         appointment.PatientId = patient.Id;
         timeSlot.IsBooked = true;
+        timeSlot.BookedAt = DateTime.Now;
 
 
         await unitOfWork.Appointments.AddAsync(appointment);

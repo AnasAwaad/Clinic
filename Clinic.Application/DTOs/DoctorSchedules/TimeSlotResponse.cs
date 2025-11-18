@@ -11,5 +11,5 @@ public record TimeSlotResponse(
     TimeOnly EndTime,
     bool IsBooked,
     bool IsDeleted,
-    DateTime BookedAt
+    DateTime? BookedAt
 );

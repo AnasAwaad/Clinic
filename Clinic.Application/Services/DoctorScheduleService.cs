@@ -1,13 +1,6 @@
 ﻿using AutoMapper;
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Clinic.Application.Services;
 public class DoctorScheduleService(IUnitOfWork unitOfWork, IMapper mapper) : IDoctorScheduleService
 {
@@ -34,7 +27,8 @@ public class DoctorScheduleService(IUnitOfWork unitOfWork, IMapper mapper) : IDo
         {
             ScheduleId = schedule.Id,
             StartTime = startTime,
-            EndTime = endTime
+            EndTime = endTime,
+            BookedAt = null
         };
 
         await unitOfWork.TimeSlots.AddAsync(timeSlot);
