@@ -7,7 +7,7 @@ namespace Clinic.API.Controllers;
 public class PatientsController(IPatientService patientService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int pageNumber, [FromQuery] int pageSize)
+    public async Task<IActionResult> GetAll([FromQuery] int pageNumber=1, [FromQuery] int pageSize=10)
     {
         var result = await patientService.GetAll(pageNumber, pageSize);
         return Ok(result.Value);

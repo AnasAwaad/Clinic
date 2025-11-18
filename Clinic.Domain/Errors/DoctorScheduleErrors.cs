@@ -14,4 +14,6 @@ public static class DoctorScheduleErrors
     public static readonly Error InvalidTimeRange = new("DoctorSchedule.InvalidTimeRange", "Start time must be before end time.", StatusCodes.Status400BadRequest);
     public static readonly Error InvalidDay = new("DoctorSchedule.InvalidDay", "Invalid day", StatusCodes.Status400BadRequest);
     public static readonly Error OverlappingTimeSlot = new("DoctorSchedule.OverlappingTimeSlot", "the time slot overlaps with an existing slot", StatusCodes.Status400BadRequest);
+    public static readonly Error CannotDeleteBookedTimeSlot = new("DoctorSchedule.CannotDeleteBookedTimeSlot", "Cannot delete a booked time slot", StatusCodes.Status400BadRequest);
+    public static readonly Error CannotUpdateBookedTimeSlot = new("DoctorSchedule.CannotUpdateBookedTimeSlot", "Cannot update a booked time slot", StatusCodes.Status400BadRequest);
 }

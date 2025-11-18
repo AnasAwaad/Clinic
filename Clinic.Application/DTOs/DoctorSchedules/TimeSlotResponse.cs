@@ -9,5 +9,7 @@ public record TimeSlotResponse(
     int Id,
     TimeOnly StartTime,
     TimeOnly EndTime,
-    bool IsBooked
+    bool IsBooked,
+    bool IsDeleted,
+    DateTime BookedAt
 );

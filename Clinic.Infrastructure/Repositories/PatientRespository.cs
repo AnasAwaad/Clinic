@@ -14,7 +14,7 @@ internal class PatientRespository : GenericRepository<Patient>, IPatientReposito
     {
         var now = DateOnly.FromDateTime(DateTime.Now);
         return await _context.Set<Patient>()
-            .Where(p => !p.IsDisabled && !p.Appointments.Any(a=>a.Date > now && a.Status=="Booked"))
+            .Where(p => !p.IsDisabled)
             .Select(p => new PatientActiveResponse
             {
                 Id = p.Id,

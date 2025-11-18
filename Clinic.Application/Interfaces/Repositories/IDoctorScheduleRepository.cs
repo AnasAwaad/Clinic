@@ -10,5 +10,5 @@ public interface IDoctorScheduleRepository : IGenericRepository<DoctorSchedule>
 {
     Task<bool> DayIsExists(string day);
     Task<DoctorSchedule> GetByDayAsync(string day);
-    Task<IEnumerable<DoctorSchedule>> GetAllWithTimesAsync(DateOnly? date);
+    Task<IEnumerable<DoctorSchedule>> GetAllWithTimesAsync(bool includeDeleted);
 }

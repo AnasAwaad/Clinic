@@ -19,11 +19,12 @@ public class TimeSlotsController(IDoctorScheduleService scheduleService) : Contr
             : result.ToProblem();
     }
 
+
     [HttpGet("timeslots")]
     [HasPermission(Permissions.GetTimeSlots)]
-    public async Task<IActionResult> GetAll(DateOnly? date)
+    public async Task<IActionResult> GetAllActive([FromQuery] bool includeDeleted = false)
     {
-        var result = await scheduleService.GetAllAsync(date);
+        var result = await scheduleService.GetAllAsync(includeDeleted);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
@@ -36,7 +37,7 @@ public class TimeSlotsController(IDoctorScheduleService scheduleService) : Contr
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
-    [HttpPut("timeslots/{id:int}")]
+    [HttpPut("timeslots/{id}")]
     [HasPermission(Permissions.UpdateTimeSlots)]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] TimeSlotRequest request)
     {
@@ -44,11 +45,11 @@ public class TimeSlotsController(IDoctorScheduleService scheduleService) : Contr
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 
-    [HttpDelete("timeslots/{id}")]
+    [HttpPut("timeslots/{id}/toggle-status")]
     [HasPermission(Permissions.DeleteTimeSlots)]
-    public async Task<IActionResult> Delete([FromRoute] int id)
+    public async Task<IActionResult> ToggleStatus([FromRoute] int id)
     {
-        var result = await scheduleService.DeleteAsync(id);
+        var result = await scheduleService.ToggleStatusAsync(id);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 }

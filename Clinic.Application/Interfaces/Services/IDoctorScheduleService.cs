@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Services;
 public interface IDoctorScheduleService
 {
-    Task<Result<TimeSlotListResponse>> GetAllAsync(DateOnly? date);
+    Task<Result<TimeSlotListResponse>> GetAllAsync(bool includeDeleted);
     Task<Result<TimeSlotResponse>> GetByIdAsync(int id);
     Task<Result<TimeSlotResponse>> CreateAsync(string day, TimeSlotRequest request);
     Task<Result> UpdateAsync(int id, TimeSlotRequest request);
-    Task<Result> DeleteAsync(int id);
+    Task<Result> ToggleStatusAsync(int id);
 }

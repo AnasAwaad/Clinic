@@ -100,6 +100,9 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
         if(timeSlot.IsBooked)
             return Result.Failure<AppointmentResponse>(AppointmentErrors.TimeSlotAlreadyBooked);
 
+        if(timeSlot.IsDeleted)
+            return Result.Failure<AppointmentResponse>(DoctorScheduleErrors.TimeSlotNotFound);
+
         var appointment = mapper.Map<Appointment>(request);
         appointment.PatientId = patient.Id;
         timeSlot.IsBooked = true;

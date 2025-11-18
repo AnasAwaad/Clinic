@@ -43,21 +43,24 @@ public class DoctorScheduleService(IUnitOfWork unitOfWork, IMapper mapper) : IDo
         return Result.Success(mapper.Map<TimeSlotResponse>(timeSlot));
 
     }
-    public async Task<Result<TimeSlotListResponse>> GetAllAsync(DateOnly? date)
+    public async Task<Result<TimeSlotListResponse>> GetAllAsync(bool includeDeleted)
     {
-        var slots = await unitOfWork.Schedules.GetAllWithTimesAsync(date);
+        var slots = await unitOfWork.Schedules.GetAllWithTimesAsync(includeDeleted);
 
         var result = mapper.Map<IEnumerable<DaySlotResponse>>(slots);
 
         return Result.Success(new TimeSlotListResponse { Slots = result});
     } 
-    public async Task<Result> DeleteAsync(int id)
+    public async Task<Result> ToggleStatusAsync(int id)
     {
         var timeSlot = await unitOfWork.TimeSlots.GetByIdAsync(id);
         if (timeSlot is null)
             return Result.Failure(DoctorScheduleErrors.TimeSlotNotFound);
 
-        await unitOfWork.TimeSlots.DeleteAsync(timeSlot);
+        if(timeSlot.IsBooked)
+            return Result.Failure(DoctorScheduleErrors.CannotDeleteBookedTimeSlot);
+
+        timeSlot.IsDeleted = !timeSlot.IsDeleted;
         await unitOfWork.SaveAsync();
 
         return Result.Success();
@@ -79,7 +82,10 @@ public class DoctorScheduleService(IUnitOfWork unitOfWork, IMapper mapper) : IDo
         if (timeSlot is null)
             return Result.Failure<TimeSlotResponse>(DoctorScheduleErrors.TimeSlotNotFound);
 
-        timeSlot = mapper.Map(request, timeSlot);
+        if(timeSlot.IsBooked)
+            return Result.Failure(DoctorScheduleErrors.CannotUpdateBookedTimeSlot);
+        
+        mapper.Map(request, timeSlot);
 
         await unitOfWork.SaveAsync();
         return Result.Success();

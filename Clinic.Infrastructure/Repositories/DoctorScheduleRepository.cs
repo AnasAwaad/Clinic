@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Infrastructure.Repositories;
+
 internal class DoctorScheduleRepository : GenericRepository<DoctorSchedule>, IDoctorScheduleRepository
 {
     private readonly DbSet<DoctorSchedule> context;
@@ -22,7 +23,7 @@ internal class DoctorScheduleRepository : GenericRepository<DoctorSchedule>, IDo
         return await context.AnyAsync(ds => ds.Day == day);
     }
 
-    public async Task<IEnumerable<DoctorSchedule>> GetAllWithTimesAsync(DateOnly? date)
+    public async Task<IEnumerable<DoctorSchedule>> GetAllWithTimesAsync(bool includeDeleted)
     {
         var query = context
            .AsNoTracking()
@@ -30,15 +31,9 @@ internal class DoctorScheduleRepository : GenericRepository<DoctorSchedule>, IDo
            {
                Day = ds.Day,
                TimeSlots = ds.TimeSlots
-                   .ToList()
+                .Where(ts => includeDeleted || !ts.IsDeleted)
+                .ToList()
            });
-
-        if (date is not null)
-        {
-            var dayName = date.Value.DayOfWeek.ToString();
-
-            query = query.Where(ds => ds.Day == dayName);
-        }
 
         return await query
             .Where(ds => ds.TimeSlots.Any())
