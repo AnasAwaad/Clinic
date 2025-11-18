@@ -6,6 +6,7 @@ using Clinic.Application.DTOs.Patient;
 using Clinic.Application.DTOs.Prescription;
 using Clinic.Application.DTOs.Role;
 using Clinic.Application.DTOs.User;
+using Clinic.Application.Mapping.Resolvers;
 
 namespace Clinic.Application.Mapping;
 public class DoctorScheduleMapping : Profile
@@ -85,11 +86,14 @@ public class DoctorScheduleMapping : Profile
 
         // patient
         CreateMap<Patient, PatientResposne>()
-            .ForMember(x => x.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
+            .ForMember(x => x.LastVisit,opt => opt.MapFrom(src=>src.Appointments.Count() > 0 ? src.Appointments.OrderByDescending(a=>a.Date).FirstOrDefault()!.Date.ToString() : ""))
+            .ForMember(x=>x.ImageUrl,opt=>opt.MapFrom<PatientImageResolver>());
 
 
         CreateMap<PatientRequest, Patient>()
             .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => true));
+
+        CreateMap<UpdatePatientRequest, Patient>();
 
 
     }

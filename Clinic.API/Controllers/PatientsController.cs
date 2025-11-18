@@ -1,5 +1,7 @@
-﻿using Clinic.Application.DTOs.Patient;
+﻿using Clinic.Application.DTOs.Common;
+using Clinic.Application.DTOs.Patient;
 using Microsoft.AspNetCore.Mvc;
+using System.Buffers;
 
 namespace Clinic.API.Controllers;
 [Route("api/[controller]")]
@@ -7,31 +9,45 @@ namespace Clinic.API.Controllers;
 public class PatientsController(IPatientService patientService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int pageNumber=1, [FromQuery] int pageSize=10)
+    public async Task<IActionResult> GetAll([FromQuery] RequestFilters request)
     {
-        var result = await patientService.GetAll(pageNumber, pageSize);
+        var result = await patientService.GetAllAsync(request);
         return Ok(result.Value);
     }
 
     [HttpGet("active")]
     public async Task<IActionResult> GetAllActivePatients()
     {
-        var result = await patientService.GetAllActivePatients();
+        var result = await patientService.GetAllActivePatientsAsync();
         return Ok(result.Value);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody]PatientRequest request)
+    public async Task<IActionResult> Create([FromForm]PatientRequest request)
     {
         var result = await patientService.CreateAsync(request);
         return result.IsSuccess ? CreatedAtAction(nameof(GetById), new { id = result.Value.Id }, result.Value) : result.ToProblem();
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update([FromRoute]string id,[FromForm] UpdatePatientRequest request)
+    {
+        var result = await patientService.UpdateAsync(id,request);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromRoute]string id)
     {
-        var result = await patientService.GetById(id);
-        return Ok(result.Value);
+        var result = await patientService.GetByIdAsync(id);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete([FromRoute] string id)
+    {
+        var result = await patientService.DeleteAsync(id);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 }
 

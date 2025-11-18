@@ -11,9 +11,9 @@ public class PrescriptionsController(IPrescriptionService prescriptionService) :
 {
     [HttpGet]
     [HasPermission(Permissions.GetPrescriptions)]
-    public async Task<IActionResult> GetAll([FromQuery]int pageNumber =1, [FromQuery] int pageSize=10)
+    public async Task<IActionResult> GetAll([FromQuery] string? searchValue,[FromQuery]int pageNumber =1, [FromQuery] int pageSize=10)
     {
-        var result = await prescriptionService.GetAllAsync(pageNumber,pageSize);
+        var result = await prescriptionService.GetAllAsync(searchValue,pageNumber,pageSize);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 

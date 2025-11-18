@@ -1,4 +1,5 @@
-﻿using Clinic.Application.DTOs.Patient;
+﻿using Clinic.Application.DTOs.Common;
+using Clinic.Application.DTOs.Patient;
 using Clinic.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,5 +12,5 @@ public interface IPatientRepository : IGenericRepository<Patient>
 {
     Task<Patient?> GetByUserIdAsync(string userId);
     Task<IEnumerable<PatientActiveResponse>> GetAllActiveAsync();
-    IQueryable<Patient> GetAllWithDetailsQueryable();
+    IQueryable<Patient> GetAllWithDetailsQueryable(RequestFilters filters);
 }

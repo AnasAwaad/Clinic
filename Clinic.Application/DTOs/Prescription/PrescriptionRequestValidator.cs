@@ -24,10 +24,6 @@ internal class PrescriptionRequestValidator : AbstractValidator<PrescriptionRequ
         RuleFor(x => x.Diagnosis)
             .NotEmpty();
 
-
-        RuleFor(x => x.NextVisit)
-            .NotEmpty();
-
         RuleFor(x => x.Notes)
             .NotEmpty();
 

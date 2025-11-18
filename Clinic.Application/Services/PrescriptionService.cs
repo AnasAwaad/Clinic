@@ -43,9 +43,9 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
         return Result.Success();
     }
 
-    public async Task<Result<PaginatedList<PrescriptionListResponse>>> GetAllAsync(int pageNumber,int pageSize)
+    public async Task<Result<PaginatedList<PrescriptionListResponse>>> GetAllAsync(string? searchValue,int pageNumber,int pageSize)
     {
-        var items = unitOfWork.Prescriptions.GetAllWithItemsQueryable()
+        var items = unitOfWork.Prescriptions.GetAllWithItemsQueryable(searchValue)
             .ProjectTo<PrescriptionListResponse>(mapper.ConfigurationProvider);
 
         var result = await PaginatedList<PrescriptionListResponse>.CreateAsync(items, pageNumber, pageSize);
@@ -118,7 +118,6 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
         prescription.PatientId = request.PatientId;
         prescription.Age = request.Age;
         prescription.Diagnosis = request.Diagnosis;
-        prescription.NextVisit = request.NextVisit;
         prescription.Notes = request.Notes;
         prescription.Date = request.Date;
 

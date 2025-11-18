@@ -4,6 +4,7 @@ using Clinic.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251118150548_updateBookedAtCol1")]
+    partial class updateBookedAtCol1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,9 +131,6 @@ namespace Clinic.Infrastructure.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("bit");
 
@@ -198,21 +198,20 @@ namespace Clinic.Infrastructure.Migrations
                             Id = "556c1c99-2d3a-4988-a80a-46ab2f14ea71",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "446237fd-8491-476b-a8fa-8a4de5c95781",
+                            ConcurrencyStamp = "7940de75-c3c3-40b4-8c2f-794560db782c",
                             Email = "Admin@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Admin",
                             Gender = "",
-                            IsDeleted = false,
                             IsDisabled = false,
                             IsOnline = false,
                             LastName = "",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPwCXNPA09FPh1CHo1F16PfVlPYTtYZisYPU5Uku12CHm8YGFiV96EhdYiJ4IMzCkQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEK3RyUvjPN+E0B6OI+lLD+wj8EZAA2R+4HRnedftNa63kwe+6+FSBL5fRzbW7xhnNg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "76dc4133-9f6e-4d24-bca3-1c7382478fbf",
+                            SecurityStamp = "a18bd741-a03a-454d-9c42-35ba3fe557cf",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
@@ -221,21 +220,20 @@ namespace Clinic.Infrastructure.Migrations
                             Id = "402ddff0-09e1-425f-b41b-2fc1ec5668b0",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "b0d223c2-c36a-4103-b581-d478cea63329",
+                            ConcurrencyStamp = "43edaffa-d755-4d60-9825-aed549b1a3f4",
                             Email = "Secretary@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Secretary",
                             Gender = "",
-                            IsDeleted = false,
                             IsDisabled = false,
                             IsOnline = false,
                             LastName = "",
                             LockoutEnabled = false,
                             NormalizedEmail = "SECRETARY@GMAIL.COM",
                             NormalizedUserName = "SECRETARY",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHxjYctCLPPBbZXeGp7/lWv8mVJ8yJ0A74lXDWldpsiZG3Lm8B88pEI2+L2C2apCYg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOFtJ39LEjEuaUa0PRG6+h5pAno7do1ydXxeiprVyQ0b7RUYd4V+Up6cxfdUC4fTPQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "bc224d0a-84ea-4904-be90-c22c58cba5a8",
+                            SecurityStamp = "1280fd08-edd0-4227-afcd-680ff96489c3",
                             TwoFactorEnabled = false,
                             UserName = "Secretary"
                         });
@@ -1054,21 +1052,20 @@ namespace Clinic.Infrastructure.Migrations
                             Id = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "38be2e82-cb37-417b-9d22-208fc6ef1baa",
+                            ConcurrencyStamp = "beeb6da0-13fb-41e7-86c5-c187b0313225",
                             Email = "Doctor@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Doctor",
                             Gender = "",
-                            IsDeleted = false,
                             IsDisabled = false,
                             IsOnline = false,
                             LastName = "",
                             LockoutEnabled = false,
                             NormalizedEmail = "DOCTOR@GMAIL.COM",
                             NormalizedUserName = "DOCTOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEA8dhh7Ws7KCV4I/BFcmeeLfrIbVMi8aQOqXWP93DNDEMVomXQalePozMkAe2Io0yQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGgCvKJDm5GWvZ1b2UeyZ/RCiSu/p4Wnq6NNUk9Wg6JTUhXRUWxVgjlhtDmtrYTOoQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c29d894b-dda3-4831-8119-e7118a59986b",
+                            SecurityStamp = "6fc4e788-78a9-40a5-a614-e8ca14d69efa",
                             TwoFactorEnabled = false,
                             UserName = "Doctor",
                             Specialization = "Cardiology",

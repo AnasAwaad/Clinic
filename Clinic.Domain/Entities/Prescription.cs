@@ -14,7 +14,6 @@ public class Prescription : AuditableEntity
     public DateOnly Date { get; set; }
     public int Age { get; set; }
     public string Diagnosis { get; set; } = string.Empty;
-    public DateOnly NextVisit { get; set; }
     public string? Notes { get; set; }
     public ICollection<PrescriptionItem> Items { get; set; } = new List<PrescriptionItem>();
     public Patient Patient { get; set; } = default!;

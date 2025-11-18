@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Clinic.Application.DTOs.Common;
 using Clinic.Application.DTOs.Patient;
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
@@ -35,7 +36,7 @@ public class PatientService(UserManager<ApplicationUser> userManager,
 
         if (!result.Succeeded)
         {
-            var error = result.Errors.FirstOrDefault();
+            var error = result.Errors.First();
             return Result.Failure<PatientResposne>(new Error(error.Code, error.Description,StatusCodes.Status400BadRequest));
         }
 
@@ -47,38 +48,95 @@ public class PatientService(UserManager<ApplicationUser> userManager,
         return Result.Success(mapper.Map<PatientResposne>(user));
     }
 
-    public Task<Result> Delete(int id)
+    public async Task<Result> UpdateAsync(string id, UpdatePatientRequest request)
     {
-        throw new NotImplementedException();
+        var emailExists = await userManager.Users.AnyAsync(u => u.Email == request.Email && u.Id != id);
+
+        if (emailExists)
+            return Result.Failure(UserErrors.DuplicatedEmail);
+
+        var userNameExists = await userManager.Users.AnyAsync(u => u.UserName == request.UserName && u.Id != id);
+
+        if (userNameExists)
+            return Result.Failure(UserErrors.DuplicatedUsername);
+
+        var user = await userManager.FindByIdAsync(id);
+
+        if (user is null || user.IsDeleted)
+            return Result.Failure(PatientErrors.PatientNotFound);
+
+        mapper.Map(request, user);
+
+        if (request.Image is not null)
+        {
+            var imageUrl = await fileService.UploadFileAsync(request.Image, "uploads/profiles");
+            user.ImageUrl = imageUrl;
+        }
+        else
+            user.ImageUrl = "/uploads/profiles/avatar.jpg";
+
+        var result = await userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+        {
+            var error = result.Errors.FirstOrDefault();
+            return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
+        }
+
+        await unitOfWork.SaveAsync();
+
+        return Result.Success();
+
+    }
+    public async Task<Result> DeleteAsync(string id)
+    {
+        var patient = await unitOfWork.Patients.GetByIdAsync(id);
+
+
+        if (patient is null)
+            return Result.Failure(PatientErrors.PatientNotFound);
+
+        if (patient.IsDeleted)
+            return Result.Failure(PatientErrors.PatientAlreadyDeleted);
+
+        patient.IsDeleted = true;
+        await unitOfWork.SaveAsync();
+
+        return Result.Success();
     }
 
-    public async Task<Result<PaginatedList<PatientResposne>>> GetAll(int pageNumber , int pageSize)
+    public async Task<Result<PaginatedList<PatientResposne>>> GetAllAsync(RequestFilters filters)
     {
-        var items = unitOfWork.Patients.GetAllWithDetailsQueryable()
-            .ProjectTo<PatientResposne>(mapper.ConfigurationProvider);
+        var query = unitOfWork.Patients.GetAllWithDetailsQueryable(filters);
 
-        var result = await PaginatedList<PatientResposne>.CreateAsync(items, pageNumber, pageSize);
+        var paginatedPatients = await PaginatedList<Patient>
+                                      .CreateAsync(query, filters.PageNumber, filters.PageSize);
+
+        var mappedItems = mapper.Map<List<PatientResposne>>(paginatedPatients.Items);
+
+        var result = new PaginatedList<PatientResposne>(
+            mappedItems,
+            paginatedPatients.TotalCount,
+            paginatedPatients.PageNumber,
+            paginatedPatients.TotalPages
+        );
 
         return Result.Success(result);
     }
 
-    public async Task<Result<IEnumerable<PatientActiveResponse>>> GetAllActivePatients()
+    public async Task<Result<IEnumerable<PatientActiveResponse>>> GetAllActivePatientsAsync()
     {
         return Result.Success(await unitOfWork.Patients.GetAllActiveAsync());
     }
 
-    public async Task<Result<PatientResposne>> GetById(string id)
+    public async Task<Result<PatientResposne>> GetByIdAsync(string id)
     {
         var patient =await unitOfWork.Patients.GetByIdAsync(id);
 
-        if (patient is null)
+        if (patient is null || patient.IsDeleted)
             return Result.Failure<PatientResposne>(PatientErrors.PatientNotFound);
 
         return Result.Success(mapper.Map<PatientResposne>(patient));
     }
 
-    public Task<Result> Update(int id, PatientRequest request)
-    {
-        throw new NotImplementedException();
-    }
 }

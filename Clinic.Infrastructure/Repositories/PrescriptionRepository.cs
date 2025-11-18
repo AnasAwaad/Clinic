@@ -1,6 +1,7 @@
 ﻿using Clinic.Application.Interfaces.Repositories;
 using Clinic.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +23,11 @@ public class PrescriptionRepository : GenericRepository<Prescription>, IPrescrip
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
-    public IQueryable<Prescription> GetAllWithItemsQueryable()
+    public IQueryable<Prescription> GetAllWithItemsQueryable(string? searchValue)
     {
         return _context.Set<Prescription>()
             .Include(p => p.Items)
+            .Where(p => string.IsNullOrEmpty(searchValue) || p.Patient.FirstName.Contains(searchValue.Trim()) || p.Patient.LastName.Contains(searchValue.Trim()))
             .AsQueryable();
     }
 }
