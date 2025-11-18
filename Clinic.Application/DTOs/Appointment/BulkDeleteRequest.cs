@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.DTOs.Appointment;
-public class BulkDeleteRequest
+public class BulkDeleteRequest<T>
 {
-    public List<int> Ids { get; set; } = new();
+    public List<T> Ids { get; set; } = new();
 }

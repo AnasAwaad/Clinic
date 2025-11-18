@@ -12,6 +12,13 @@ internal class PatientRespository : GenericRepository<Patient>, IPatientReposito
     {
     }
 
+    public void DeleteMany(List<string> idList)
+    {
+        _context.Set<Patient>()
+            .Where(x => idList.Contains(x.Id))
+            .ExecuteUpdate(p => p.SetProperty(x => x.IsDeleted, true));
+    }
+
     public async Task<IEnumerable<PatientActiveResponse>> GetAllActiveAsync()
     {
         var now = DateOnly.FromDateTime(DateTime.Now);

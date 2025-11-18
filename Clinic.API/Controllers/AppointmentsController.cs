@@ -73,7 +73,7 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteBulk([FromBody] BulkDeleteRequest request)
+    public async Task<IActionResult> DeleteBulk([FromBody] BulkDeleteRequest<int> request)
     {
         var result = await appointmentService.DeleteManyAsync(request.Ids);
         return result.IsSuccess ? NoContent() : result.ToProblem();

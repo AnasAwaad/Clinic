@@ -11,4 +11,5 @@ public interface IPatientService
     Task<Result<PatientResposne>> CreateAsync(PatientRequest request);
     Task<Result> UpdateAsync(string id, UpdatePatientRequest request);
     Task<Result> DeleteAsync(string id);
+    Result DeleteMany(List<string> ids);
 }

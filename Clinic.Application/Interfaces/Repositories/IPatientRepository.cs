@@ -13,4 +13,5 @@ public interface IPatientRepository : IGenericRepository<Patient>
     Task<Patient?> GetByUserIdAsync(string userId);
     Task<IEnumerable<PatientActiveResponse>> GetAllActiveAsync();
     IQueryable<Patient> GetAllWithDetailsQueryable(RequestFilters filters);
+    void DeleteMany(List<string> idList);
 }

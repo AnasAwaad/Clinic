@@ -16,5 +16,5 @@ public class UpdatePatientRequest
     public DateOnly DateOfBirth { get; set; }
     public string? Address { get; set; }
     public string Gender { get; set; } = string.Empty;
-    public FormFile? Image { get; set; }
+    public IFormFile? Image { get; set; }
 }

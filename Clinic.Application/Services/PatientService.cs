@@ -116,8 +116,8 @@ public class PatientService(UserManager<ApplicationUser> userManager,
 
         var result = new PaginatedList<PatientResposne>(
             mappedItems,
-            paginatedPatients.TotalCount,
             paginatedPatients.PageNumber,
+            paginatedPatients.TotalCount,
             paginatedPatients.TotalPages
         );
 
@@ -139,4 +139,15 @@ public class PatientService(UserManager<ApplicationUser> userManager,
         return Result.Success(mapper.Map<PatientResposne>(patient));
     }
 
+    public Result DeleteMany(List<string> ids)
+    {
+        var idList = ids.Distinct().ToList();
+
+        if (idList.Count == 0)
+            return Result.Failure(PatientErrors.NoIdsProvided);
+
+        unitOfWork.Patients.DeleteMany(idList);
+
+        return Result.Success();
+    }
 }

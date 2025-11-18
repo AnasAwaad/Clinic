@@ -1,5 +1,7 @@
-﻿using Clinic.Application.DTOs.Common;
+﻿using Clinic.Application.DTOs.Appointment;
+using Clinic.Application.DTOs.Common;
 using Clinic.Application.DTOs.Patient;
+using Clinic.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Buffers;
 
@@ -49,5 +51,13 @@ public class PatientsController(IPatientService patientService) : ControllerBase
         var result = await patientService.DeleteAsync(id);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
+
+    [HttpDelete]
+    public IActionResult DeleteBulk([FromBody] BulkDeleteRequest<string> request)
+    {
+        var result = patientService.DeleteMany(request.Ids);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+
 }
 
