@@ -20,5 +20,6 @@ public static class UserErrors
     public static readonly Error InvalidCode = new("User.InvalidCode", "Invalid code", StatusCodes.Status400BadRequest);
     public static readonly Error EmailAlreadyConfirmed = new("User.EmailAlreadyConfirmed", "Email already confirmed", StatusCodes.Status400BadRequest);
     public static readonly Error InvalidRoles = new("Role.InvalidRoles", "Invalid roles", StatusCodes.Status400BadRequest);
-
+    public static readonly Error InvalidGoogleToken = new("User.InvalidGoogleToken", "Invalid google token", StatusCodes.Status400BadRequest);
+    public static readonly Error InvalidExternalLogin = new("User.InvalidExternalLogin", "Invalid external login", StatusCodes.Status400BadRequest);
 }

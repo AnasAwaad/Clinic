@@ -18,5 +18,5 @@ public interface IAuthService
     Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request);
     Task<Result> SendResetPasswordCodeAsync(string email);
     Task<Result> ResetPasswordAsync(ResetPasswordRequest request);
-    //Task<Result<LoginResult>> LoginWithGoogle(ClaimsPrincipal claimsPrincipal);
+    Task<Result<AuthResponse>> LoginWithGoogleAsync(ExternalAuthDto externalAuth);
 }

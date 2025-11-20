@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 
 namespace Clinic.Application.Services;
 internal class AuthService(UserManager<ApplicationUser> userManager,
@@ -21,7 +22,8 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
     IMapper mapper,
     IHttpContextAccessor httpContextAccessor,
     IEmailSender emailSender,
-    ILogger<AuthService> logger) : IAuthService
+    ILogger<AuthService> logger,
+    IGoogleAuthService googleAuthService) : IAuthService
 {
     private readonly int _refreshTokenExpiryDays = 14;
 
@@ -132,69 +134,6 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         return Result.Success();
     }
 
-    //public async Task<Result<LoginResult>> LoginWithGoogle(ClaimsPrincipal claimsPrincipal)
-    //{
-    //    if (claimsPrincipal is null)
-    //        return Result<LoginResult>.Failure("Claim principal is null");
-
-    //    var email = claimsPrincipal.FindFirstValue(ClaimTypes.Email);
-
-    //    if(email is null)
-    //        return Result<LoginResult>.Failure("Email is null");
-
-    //    var user = await userManager.FindByEmailAsync(email);
-
-    //    if(user is null)
-    //    {
-    //        var newUser = new ApplicationUser
-    //        {
-    //            UserName = email,
-    //            Email = email,
-    //            FirstName = claimsPrincipal.FindFirstValue(ClaimTypes.GivenName) ?? string.Empty,
-    //            LastName = claimsPrincipal.FindFirstValue(ClaimTypes.Surname) ?? string.Empty,
-    //            EmailConfirmed = true
-    //        };
-
-    //        var result = await userManager.CreateAsync(newUser);
-
-    //        if (!result.Succeeded)
-    //            return Result<LoginResult>.Failure(string.Join(", ", result.Errors.Select(e => e.Description)));
-
-    //        var roleResult = await userManager.AddToRoleAsync(newUser, AppRoles.Patient);
-    //        if (!roleResult.Succeeded)
-    //            return Result<LoginResult>.Failure("Failureed to assign role");
-
-    //        user = newUser;
-    //    }
-
-    //    var info = new UserLoginInfo("Google",
-    //        claimsPrincipal.FindFirstValue(ClaimTypes.Email) ?? string.Empty,
-    //        "Google");
-
-    //    var existingLogins = await userManager.GetLoginsAsync(user);
-    //    var alreadyLinked = existingLogins.Any(l => l.LoginProvider == "Google" && l.ProviderKey == email);
-
-    //    if (!alreadyLinked)
-    //    {
-    //        var loginResult = await userManager.AddLoginAsync(user, info);
-    //        if (!loginResult.Succeeded)
-    //            return Result<LoginResult>.Failure(string.Join(", ", loginResult.Errors.Select(e => e.Description)));
-    //    }
-
-
-    //    var role = await userManager.GetRolesAsync(user);
-    //    var token = tokenService.GenerateToken(user, role.First());
-
-    //    var resultResponse = new LoginResult
-    //    {
-    //        Token = token,
-    //        Email = user.Email!,
-    //        FirstName = user.FirstName,
-    //        LastName = user.LastName
-    //    };
-
-    //    return Result<LoginResult>.Success(resultResponse, "Logged in successfully.");
-    //}
 
     public async Task<Result> RegisterAsync(RegisterRequest request)
     {
@@ -393,6 +332,104 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
             });
 
         await emailSender.SendEmailAsync(user.Email!, "Change password", emailBody);
+
+    }
+
+    public async Task<Result<AuthResponse>> LoginWithGoogleAsync(ExternalAuthDto externalAuth)
+    {
+        #region validate token and save user
+        // validate token
+        var payload = await googleAuthService.ValidateIdTokenAsync(externalAuth.IdToken);
+        if (payload is null)
+            return Result.Failure<AuthResponse>(UserErrors.InvalidGoogleToken);
+
+        var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
+
+        // try find user by external login
+        var user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+
+        if (user is null)
+        {
+            // not linked -> try find by email
+            user = await userManager.FindByEmailAsync(payload.Email);
+
+            if (user is null)
+            {
+                // create new user
+                user = new ApplicationUser
+                {
+                    Email = payload.Email,
+                    UserName = payload.Email,
+                    FirstName = payload.FirstName,
+                    LastName = payload.LastName,
+                    ImageUrl = payload.Picture
+                };
+
+                var createResult = await userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    var error = createResult.Errors.First();
+                    return Result.Failure<AuthResponse>(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
+                }
+
+                var roleResult = await userManager.AddToRoleAsync(user, AppRoles.Patient);
+            }
+
+            // add the external login 
+            var addLoginResult = await userManager.AddLoginAsync(user, info);
+            if (!addLoginResult.Succeeded)
+            {
+                // possible race or duplicate external login — try to recover by re-querying
+                var existing = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                if (existing is not null)
+                {
+                    user = existing;
+                }
+                else
+                {
+                    var e = addLoginResult.Errors.FirstOrDefault();
+                    return Result.Failure<AuthResponse>(new Error(e?.Code ?? "login_error", e?.Description ?? "Failed to add external login", StatusCodes.Status400BadRequest));
+                }
+            }
+        }
+
+        if (user is null)
+            return Result.Failure<AuthResponse>(UserErrors.InvalidExternalLogin);
+
+        #endregion
+
+        #region Generate token and refresh token
+        var userRoles = await userManager.GetRolesAsync(user);
+        var userPermissions = await unitOfWork.Roles.GetUserPermissionsAsync(userRoles);
+
+        // generate token and refresh token
+        (string token, int expiresIn) = jwtProvider.GenerateToken(user, userRoles, userPermissions!);
+
+        var refreshToken = GenerateRefreshToken();
+        var refreshTokenExpiration = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
+
+        user.RefreshTokens.Add(new RefreshToken
+        {
+            Token = refreshToken,
+            ExpiresOn = refreshTokenExpiration
+        });
+        await userManager.UpdateAsync(user);
+
+        var response = new AuthResponse
+        {
+            Id = user.Id,
+            Email = user.Email!,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Token = token,
+            ExpiresIn = expiresIn,
+            RefreshToken = refreshToken,
+            RefreshTokenExpiration = refreshTokenExpiration
+        };
+
+        #endregion
+
+        return Result.Success<AuthResponse>(response);
 
     }
 }

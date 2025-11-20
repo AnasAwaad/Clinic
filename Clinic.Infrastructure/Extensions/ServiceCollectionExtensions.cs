@@ -22,6 +22,9 @@ public static class ServiceCollectionExtensions
         var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
 
+        var clientId = configuration["Authentication:Google:ClientId"]
+                           ?? throw new InvalidOperationException("Google ClientId missing");
+
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -30,6 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
+        services.AddScoped<IGoogleAuthService>(_ => new GoogleAuthService(clientId));
 
         return services;
     }
