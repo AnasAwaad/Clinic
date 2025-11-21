@@ -20,8 +20,5 @@
     <ProjectReference Include="..\Clinic.Application\Clinic.Application.csproj" />
     <ProjectReference Include="..\Clinic.Infrastructure\Clinic.Infrastructure.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="wwwroot\uploads\" />
-  </ItemGroup>
 
 </Project>

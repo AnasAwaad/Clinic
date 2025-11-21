@@ -147,9 +147,6 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(user, AppRoles.Patient);
-            await unitOfWork.Patients.AddAsync(new Patient { Id = user.Id });
-
-            await unitOfWork.SaveAsync();
 
             // Send confirmation email to user
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);

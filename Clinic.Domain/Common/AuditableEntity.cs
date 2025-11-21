@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 namespace Clinic.Domain.Common;
 public class AuditableEntity
 {
-    public string CreatedById { get; set; } = string.Empty;
+    public string? CreatedById { get; set; }
     public DateTime CreatedOn { get; set; }
     public string? UpdatedById { get; set; }
     public DateTime? UpdatedOn { get; set; }
     public ApplicationUser CreatedBy { get; set; } = default!;
     public ApplicationUser? UpdatedBy { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTime DeletedOn { get; set; }
 }

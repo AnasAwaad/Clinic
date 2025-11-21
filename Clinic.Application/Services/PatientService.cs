@@ -30,7 +30,7 @@ public class PatientService(UserManager<ApplicationUser> userManager,
             user.ImageUrl = imageUrl;
         }
         else
-            user.ImageUrl = "/uploads/profiles/avatar.jpg";
+            user.ImageUrl = "/uploads/uploads/profiles/avatar.png";
 
         var result = await userManager.CreateAsync(user, request.Password);
 
@@ -65,15 +65,17 @@ public class PatientService(UserManager<ApplicationUser> userManager,
         if (user is null || user.IsDeleted)
             return Result.Failure(PatientErrors.PatientNotFound);
 
-        mapper.Map(request, user);
+        string? imageUrl;
 
         if (request.Image is not null)
         {
-            var imageUrl = await fileService.UploadFileAsync(request.Image, "uploads/profiles");
-            user.ImageUrl = imageUrl;
+            imageUrl = await fileService.UploadFileAsync(request.Image, "uploads/profiles");
         }
         else
-            user.ImageUrl = "/uploads/profiles/avatar.jpg";
+            imageUrl = user.ImageUrl;
+
+        mapper.Map(request, user);
+        user.ImageUrl = imageUrl;
 
         var result = await userManager.UpdateAsync(user);
 
@@ -107,19 +109,20 @@ public class PatientService(UserManager<ApplicationUser> userManager,
 
     public async Task<Result<PaginatedList<PatientResposne>>> GetAllAsync(RequestFilters filters)
     {
-        var query = unitOfWork.Patients.GetAllWithDetailsQueryable(filters);
+        var query = unitOfWork.Patients.GetAllWithDetailsQueryable(filters)
+            .ProjectTo<PatientResposne>(mapper.ConfigurationProvider);
 
-        var paginatedPatients = await PaginatedList<Patient>
+        var result = await PaginatedList<PatientResposne>
                                       .CreateAsync(query, filters.PageNumber, filters.PageSize);
 
-        var mappedItems = mapper.Map<List<PatientResposne>>(paginatedPatients.Items);
+        //var mappedItems = mapper.Map<List<PatientResposne>>(paginatedPatients.Items);
 
-        var result = new PaginatedList<PatientResposne>(
-            mappedItems,
-            paginatedPatients.PageNumber,
-            paginatedPatients.TotalCount,
-            paginatedPatients.TotalPages
-        );
+        //var result = new PaginatedList<PatientResposne>(
+        //    mappedItems,
+        //    paginatedPatients.PageNumber,
+        //    paginatedPatients.TotalCount,
+        //    paginatedPatients.TotalPages
+        //);
 
         return Result.Success(result);
     }

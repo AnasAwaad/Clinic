@@ -37,7 +37,7 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
         if (prescription is null)
             return Result.Failure(PrescriptionErrors.PrescriptionNotFound);
 
-        await unitOfWork.Prescriptions.DeleteAsync(prescription);
+        prescription.IsDeleted = true;
         await unitOfWork.SaveAsync();
 
         return Result.Success();
@@ -102,7 +102,7 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
             prescription.Items.Add(mapper.Map<PrescriptionItem>(item));
 
         foreach (var item in deletedItems)
-            await unitOfWork.PrescriptionItems.DeleteAsync(item);
+            item.IsDeleted = true;
 
 
         foreach (var item in exitingItems)

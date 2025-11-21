@@ -18,16 +18,16 @@ public class PrescriptionRepository : GenericRepository<Prescription>, IPrescrip
     public Task<Prescription?> GetByIdWithItemsAsync(int id)
     {
         return _context.Set<Prescription>()
-            .Include(p => p.Items)
+            .Include(p => p.Items.Where(i=>!i.IsDeleted))
             .Include(p=>p.Patient)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
     }
 
     public IQueryable<Prescription> GetAllWithItemsQueryable(string? searchValue)
     {
         return _context.Set<Prescription>()
             .Include(p => p.Items)
-            .Where(p => string.IsNullOrEmpty(searchValue) || p.Patient.FirstName.Contains(searchValue.Trim()) || p.Patient.LastName.Contains(searchValue.Trim()))
+            .Where(p => !p.IsDeleted && (string.IsNullOrEmpty(searchValue) || p.Patient.FirstName.Contains(searchValue.Trim()) || p.Patient.LastName.Contains(searchValue.Trim())))
             .AsQueryable();
     }
 }

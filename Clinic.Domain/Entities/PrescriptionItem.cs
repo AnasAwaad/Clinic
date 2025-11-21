@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Domain.Entities;
-public class PrescriptionItem
+public class PrescriptionItem : AuditableEntity
 {
 
     public int Id { get; set; }
