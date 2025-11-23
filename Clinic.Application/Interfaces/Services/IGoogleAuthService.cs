@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Services;
 public interface IGoogleAuthService
 {
-    public record GoogleUserDto(string Subject, string Email, string FirstName,string LastName, string Picture);
+    public record GoogleUserDto(string Subject, string Email, string FullName, string Picture);
 
     Task<GoogleUserDto?> ValidateIdTokenAsync(string idToken);
 }

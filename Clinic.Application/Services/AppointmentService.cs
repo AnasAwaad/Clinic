@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Clinic.Application.DTOs.Appointment;
+using Clinic.Application.DTOs.Common;
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
 using Clinic.Domain.Helpers;
@@ -10,12 +11,12 @@ namespace Clinic.Application.Services;
 public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppointmentService
 {
 
-    public async Task<Result<PaginatedList<AppointmentListResponse>>> GetAllAsync(int pageNumber,int pageSize)
+    public async Task<Result<PaginatedList<AppointmentListResponse>>> GetAllAsync(RequestFilters filters)
     {
-        var items = unitOfWork.Appointments.GetAllQueryable()
+        var items = unitOfWork.Appointments.GetAllQueryable(filters)
             .ProjectTo<AppointmentListResponse>(mapper.ConfigurationProvider);
 
-        var result = await PaginatedList<AppointmentListResponse>.CreateAsync(items, pageNumber, pageSize);
+        var result = await PaginatedList<AppointmentListResponse>.CreateAsync(items, filters.PageNumber, filters.PageSize);
 
         return Result.Success(result);
     }

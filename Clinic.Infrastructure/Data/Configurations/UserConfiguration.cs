@@ -11,8 +11,7 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
 
         builder.UseTptMappingStrategy();
 
-        builder.Property(u => u.FirstName).HasMaxLength(100);
-        builder.Property(u => u.LastName).HasMaxLength(100);
+        builder.Property(u => u.FullName).HasMaxLength(100);
 
         builder
             .OwnsMany(x => x.RefreshTokens)
@@ -25,8 +24,7 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
         var admin = new ApplicationUser
         {
             Id = "556c1c99-2d3a-4988-a80a-46ab2f14ea71",
-            FirstName = "Admin",
-            LastName = "",
+            FullName = "Admin",
             UserName = "Admin",
             NormalizedUserName = "ADMIN",
             Email = "Admin@gmail.com",
@@ -43,8 +41,7 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
         var secretary = new ApplicationUser
         {
             Id = "402ddff0-09e1-425f-b41b-2fc1ec5668b0",
-            FirstName = "Secretary",
-            LastName = "",
+            FullName = "Secretary",
             UserName = "Secretary",
             NormalizedUserName = "SECRETARY",
             Email = "Secretary@gmail.com",

@@ -1,5 +1,4 @@
 ﻿using Clinic.Application.Interfaces.Services;
-using Clinic.Application.Mapping.Resolvers;
 using Clinic.Application.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -38,7 +37,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IFileService, FileService>();
 
         services.AddHttpContextAccessor();
-        services.AddTransient<PatientImageResolver>();
 
 
 

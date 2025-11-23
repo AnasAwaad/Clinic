@@ -28,8 +28,7 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
                 select new
                 {
                     u.Id,
-                    u.FirstName,
-                    u.LastName,
+                    u.FullName,
                     u.Email,
                     u.UserName,
                     u.PhoneNumber,
@@ -37,12 +36,11 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
                     u.LockoutEnd,
                     Roles = roles.Select(r => r.Name).ToList()
                 })
-                .GroupBy(u => new { u.Id, u.FirstName, u.LastName, u.Email, u.UserName, u.PhoneNumber ,u.IsDisabled,u.LockoutEnd})
+                .GroupBy(u => new { u.Id, u.FullName, u.Email, u.UserName, u.PhoneNumber ,u.IsDisabled,u.LockoutEnd})
                 .Select(u => new UserResponse
                 {
                     Id = u.Key.Id,
-                    FirstName = u.Key.FirstName,
-                    LastName = u.Key.LastName,
+                    FullName = u.Key.FullName,
                     Email = u.Key.Email,
                     UserName = u.Key.UserName,
                     PhoneNumber = u.Key.PhoneNumber,

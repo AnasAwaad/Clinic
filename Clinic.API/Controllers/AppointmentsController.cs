@@ -1,4 +1,5 @@
 ﻿using Clinic.Application.DTOs.Appointment;
+using Clinic.Application.DTOs.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,9 +27,9 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
 
     [HttpGet]
     [HasPermission(Permissions.GetAppointments)]
-    public async Task<IActionResult> GetAll([FromQuery]int pageNumber = 1 , [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll([FromQuery] RequestFilters request)
     {
-        var result = await appointmentService.GetAllAsync(pageNumber,pageSize);
+        var result = await appointmentService.GetAllAsync(request);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 

@@ -63,8 +63,7 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
             {
                 Id = user.Id,
                 Email = user.Email!,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
+                FullName = user.FullName,
                 Token = token,
                 ExpiresIn = expiresIn,
                 RefreshToken = refreshToken,
@@ -210,8 +209,7 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         {
             Id = user.Id,
             Email = user.Email!,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
+            FullName = user.FullName,
             Token = newToken,
             ExpiresIn = expiresIn,
             RefreshToken = newRefreshToken,
@@ -309,7 +307,7 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         var emailBody = EmailBodyBuilder.GenerateEmailBody("EmailConfirmation",
             new Dictionary<string, string>
             {
-                { "{{name}}", user.FirstName },
+                { "{{name}}", user.FullName },
                 { "{{action_url}}", $"{origin}/auth/emailConfirmation?userId={user.Id}&code={code}" }
             });
 
@@ -324,7 +322,7 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         var emailBody = EmailBodyBuilder.GenerateEmailBody("ForgetPassword",
             new Dictionary<string, string>
             {
-                { "{{name}}", user.FirstName },
+                { "{{name}}", user.FullName },
                 { "{{action_url}}", $"{origin}/auth/forgetPassword?email={user.Email}&code={code}" }
             });
 
@@ -357,8 +355,7 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
                 {
                     Email = payload.Email,
                     UserName = payload.Email,
-                    FirstName = payload.FirstName,
-                    LastName = payload.LastName,
+                    FullName = payload.FullName,
                     ImageUrl = payload.Picture
                 };
 
@@ -416,8 +413,7 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         {
             Id = user.Id,
             Email = user.Email!,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
+            FullName = user.FullName,
             Token = token,
             ExpiresIn = expiresIn,
             RefreshToken = refreshToken,

@@ -43,8 +43,7 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
         {
             Id = user.Id,
             UserName = user.UserName!,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
+            FullName = user.FullName,
             ImageUrl = user.ImageUrl
         };
 
@@ -165,8 +164,7 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
         var users =await userManager.Users.Select(u => new OnlineUserDto
         {
             Id = u.Id,
-            FirstName = u.FirstName,
-            LastName = u.LastName,
+            FullName = u.FullName,
             UserName = u.UserName!,
             ImageUrl = u.ImageUrl,
             IsOnline = u.IsOnline,

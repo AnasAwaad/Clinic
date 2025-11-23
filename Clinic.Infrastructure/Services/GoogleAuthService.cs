@@ -27,7 +27,7 @@ internal class GoogleAuthService : IGoogleAuthService
             };
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
             
-            return new GoogleUserDto(Subject: payload.Subject,Email: payload.Email,FirstName: payload.GivenName,LastName:payload.FamilyName,Picture: payload.Picture);
+            return new GoogleUserDto(Subject: payload.Subject,Email: payload.Email,FullName: payload.GivenName,Picture: payload.Picture);
         }
         catch (Exception ex)
         {

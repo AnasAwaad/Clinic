@@ -115,15 +115,6 @@ public class PatientService(UserManager<ApplicationUser> userManager,
         var result = await PaginatedList<PatientResposne>
                                       .CreateAsync(query, filters.PageNumber, filters.PageSize);
 
-        //var mappedItems = mapper.Map<List<PatientResposne>>(paginatedPatients.Items);
-
-        //var result = new PaginatedList<PatientResposne>(
-        //    mappedItems,
-        //    paginatedPatients.PageNumber,
-        //    paginatedPatients.TotalCount,
-        //    paginatedPatients.TotalPages
-        //);
-
         return Result.Success(result);
     }
 

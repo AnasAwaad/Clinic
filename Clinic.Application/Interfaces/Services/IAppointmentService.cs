@@ -1,4 +1,5 @@
 ﻿using Clinic.Application.DTOs.Appointment;
+using Clinic.Application.DTOs.Common;
 using Clinic.Domain.Helpers;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ public interface IAppointmentService
 {
     Task<Result<IEnumerable<TimeSlotResponse>>> GetAvailableSlotsAsync(string day);
     Task<Result<List<AppointmentResponse>>> GetInRangeAsync(DateTime start, DateTime end);
-    Task<Result<PaginatedList<AppointmentListResponse>>> GetAllAsync(int pageNumber, int pageSize);
+    Task<Result<PaginatedList<AppointmentListResponse>>> GetAllAsync(RequestFilters filters);
     Task<Result<List<AppointmentResponse>>> GetByUserAsync(string userId);
     Task<Result<AppointmentDetailsResponse>> GetAsync(int id);
     Task<Result<AppointmentResponse>> CreateAsync(AppointmentRequest request);

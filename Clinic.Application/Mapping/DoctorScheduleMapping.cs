@@ -6,7 +6,6 @@ using Clinic.Application.DTOs.Patient;
 using Clinic.Application.DTOs.Prescription;
 using Clinic.Application.DTOs.Role;
 using Clinic.Application.DTOs.User;
-using Clinic.Application.Mapping.Resolvers;
 
 namespace Clinic.Application.Mapping;
 public class DoctorScheduleMapping : Profile
@@ -22,16 +21,16 @@ public class DoctorScheduleMapping : Profile
 
         // appointment
         CreateMap<Appointment, AppointmentResponse>()
-            .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => $"{src.Doctor.FirstName} {src.Doctor.LastName}"))
+            .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor.FullName))
             .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.TimeSlot.StartTime))
             .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.TimeSlot.EndTime))
-            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName} {src.Patient.LastName}"))
+            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient.FullName))
             .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Patient.ImageUrl));
 
 
 
         CreateMap<Appointment, AppointmentDetailsResponse>()
-            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName}   {src.Patient.LastName}"))
+            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient.FullName))
             .ForMember(dest => dest.PatientPhoneNumber, opt => opt.MapFrom(src => src.Patient.PhoneNumber))
             .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.TimeSlot.StartTime))
             .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.TimeSlot.EndTime));
@@ -47,7 +46,7 @@ public class DoctorScheduleMapping : Profile
 
         // prescription
         CreateMap<Prescription, PrescriptionResponse>()
-            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName} {src.Patient.LastName}"));
+            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => src.Patient.FullName));
 
         CreateMap<PrescriptionItem, PrescriptionItemResponse>();
 
@@ -55,7 +54,7 @@ public class DoctorScheduleMapping : Profile
         CreateMap<PrescriptionItemRequest, PrescriptionItem>();
 
         CreateMap<Prescription, PrescriptionListResponse>()
-            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName}   {src.Patient.LastName}"))
+            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => src.Patient.FullName))
             .ForMember(x => x.ImageUrl, opt => opt.MapFrom(src => src.Patient.ImageUrl));
 
         //user
@@ -64,6 +63,7 @@ public class DoctorScheduleMapping : Profile
         CreateMap<ApplicationUser, UserResponse>();
         CreateMap<CreateUserRequest, ApplicationUser>()
             .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => true));
+
         CreateMap<UpdateUserRequest, ApplicationUser>();
 
         // auth
@@ -74,7 +74,7 @@ public class DoctorScheduleMapping : Profile
 
         // appointment
         CreateMap<Appointment, AppointmentListResponse>()
-            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName}   {src.Patient.LastName}"))
+            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => src.Patient.FullName))
             .ForMember(x => x.PhoneNumber, opt => opt.MapFrom(src => src.Patient.PhoneNumber))
             .ForMember(x => x.Email, opt => opt.MapFrom(src => src.Patient.Email))
             .ForMember(x => x.Gender, opt => opt.MapFrom(src => src.Patient.Gender))
@@ -86,8 +86,7 @@ public class DoctorScheduleMapping : Profile
 
         // patient
         CreateMap<Patient, PatientResposne>()
-            .ForMember(x => x.LastVisit,opt => opt.MapFrom(src=>src.Appointments.Count() > 0 ? src.Appointments.OrderByDescending(a=>a.Date).FirstOrDefault()!.Date.ToString() : ""))
-            .ForMember(x=>x.ImageUrl,opt=>opt.MapFrom<PatientImageResolver>());
+            .ForMember(x => x.LastVisit, opt => opt.MapFrom(src => src.Appointments.Count() > 0 ? src.Appointments.OrderByDescending(a => a.Date).FirstOrDefault()!.Date.ToString() : ""));
 
 
         CreateMap<PatientRequest, Patient>()

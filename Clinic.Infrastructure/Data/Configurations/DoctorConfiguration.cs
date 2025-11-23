@@ -22,8 +22,7 @@ internal class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
         var doctor = new Doctor
         {
             Id = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e",
-            FirstName = "Doctor",
-            LastName = "",
+            FullName = "Doctor",
             UserName = "Doctor",
             NormalizedUserName = "DOCTOR",
             Email = "Doctor@gmail.com",

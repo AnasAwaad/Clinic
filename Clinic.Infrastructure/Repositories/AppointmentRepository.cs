@@ -1,4 +1,5 @@
-﻿using Clinic.Application.Interfaces.Repositories;
+﻿using Clinic.Application.DTOs.Common;
+using Clinic.Application.Interfaces.Repositories;
 using Clinic.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Dynamic.Core;
+
 
 namespace Clinic.Infrastructure.Repositories;
 internal class AppointmentRepository : GenericRepository<Appointment>, IAppointmentRepository
@@ -48,11 +51,29 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
             .Where(a => a.Id == id);
     }
 
-    public IQueryable<Appointment> GetAllQueryable()
+    public IQueryable<Appointment> GetAllQueryable(RequestFilters filters)
     {
-        return _context.Set<Appointment>()
+        var query = _context.Set<Appointment>()
+            .Where(a => !a.IsDeleted);
+
+        if (!string.IsNullOrEmpty(filters.SearchValue))
+        {
+            var searchValue = filters.SearchValue.Trim();
+            query = query.Where(x =>
+                x.Patient.FullName.Contains(searchValue) ||
+                x.Patient.PhoneNumber!.Contains(searchValue) ||
+                x.Date.ToString().Contains(searchValue));
+        }
+
+        if (!string.IsNullOrEmpty(filters.SortColumn))
+        {
+            query = query.OrderBy($"{filters.SortColumn} {filters.SortDirection}");
+        }
+
+        return query
             .Include(a => a.Patient)
-            .Include(a => a.TimeSlot);
+            .Include(a => a.TimeSlot)
+            .AsQueryable();
     }
 
 

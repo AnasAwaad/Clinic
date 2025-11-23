@@ -27,7 +27,7 @@ internal class PatientRespository : GenericRepository<Patient>, IPatientReposito
             .Select(p => new PatientActiveResponse
             {
                 Id = p.Id,
-                FullName = $"{p.FirstName} {p.LastName}",
+                FullName = p.FullName,
                 ImageUrl = p.ImageUrl,
                 PhoneNumber = p.PhoneNumber
             }).ToListAsync();
@@ -44,8 +44,7 @@ internal class PatientRespository : GenericRepository<Patient>, IPatientReposito
         {
             var searchValue = filters.SearchValue.Trim();
             query = query.Where(p =>
-                p.FirstName.Contains(searchValue) ||
-                p.LastName.Contains(searchValue) ||
+                p.FullName.Contains(searchValue) ||
                 p.Email.Contains(searchValue) ||
                 p.PhoneNumber.Contains(searchValue));
         }

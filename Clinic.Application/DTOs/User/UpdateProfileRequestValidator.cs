@@ -11,11 +11,7 @@ public class UpdateProfileRequestValidator : AbstractValidator<UpdateProfileRequ
 {
     public UpdateProfileRequestValidator()
     {
-        RuleFor(x => x.FirstName)
-            .NotEmpty()
-            .MaximumLength(100);
-
-        RuleFor(x => x.LastName)
+        RuleFor(x => x.FullName)
             .NotEmpty()
             .MaximumLength(100);
 

@@ -27,7 +27,7 @@ public class PrescriptionRepository : GenericRepository<Prescription>, IPrescrip
     {
         return _context.Set<Prescription>()
             .Include(p => p.Items)
-            .Where(p => !p.IsDeleted && (string.IsNullOrEmpty(searchValue) || p.Patient.FirstName.Contains(searchValue.Trim()) || p.Patient.LastName.Contains(searchValue.Trim())))
+            .Where(p => !p.IsDeleted && (string.IsNullOrEmpty(searchValue) || p.Patient.FullName.Contains(searchValue.Trim())))
             .AsQueryable();
     }
 }
