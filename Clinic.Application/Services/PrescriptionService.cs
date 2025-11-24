@@ -5,6 +5,7 @@ using Clinic.Application.DTOs.Prescription;
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
 using Clinic.Domain.Helpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.Services;
-internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPrescriptionService
+internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper,IPrescriptionPdfGenerator prescriptionPdfGenerator) : IPrescriptionService
 {
     public async Task<Result<PrescriptionResponse>> CreateAsync(PrescriptionRequest request)
     {
@@ -63,10 +64,55 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
         return Result.Success(mapper.Map<PrescriptionResponse>(prescription));
     }
 
-    public async Task<Result<Prescription>> PrintPdf(int id)
+    public async Task<Result<byte[]>> PrintPrescriptionPdf(int id)
     {
         var prescription = await unitOfWork.Prescriptions.GetByIdWithItemsAsync(id);
-        throw new NotImplementedException();
+
+        if (prescription is null)
+            return Result.Failure<byte[]>(PrescriptionErrors.PrescriptionNotFound);
+
+        var settings = await unitOfWork.ClinicSettings.GetByIdAsync(1);
+
+        if (settings is null)
+            return Result.Failure<byte[]>(new Error("NotFountClinicSettings", "Clinic settings not configured", StatusCodes.Status400BadRequest));
+
+        var model = MapToPdfModel(prescription, settings);
+        return Result.Success(prescriptionPdfGenerator.Generate(model));
+    }
+
+    private PrescriptionPdfModel MapToPdfModel(Prescription prescription,ClinicSettings settings)
+    {
+        return new PrescriptionPdfModel
+        {
+            PatientId = prescription.PatientId,
+            ClinicName = settings.ClinicName,
+            ClinicAddress = settings.ClinicAddress,
+            ClinicPhone = settings.ClinicPhone,
+            ClinicLogo = settings.LogoUrl,
+            ClinicTiming = BuildClinicTiming(settings),
+            DoctorName = settings.DoctorName,
+            DoctorDegrees = settings.DoctorDegree,
+            DoctorRegNo = settings.DoctorRegNo,
+            Date = prescription.Date,
+            PatientName = prescription.Patient.FullName,
+            PatientGenderAge = $"{prescription.Patient.Gender} / {prescription.Age} Y",
+            PatientAddress = prescription.Patient.Address,
+            Diagnosis = prescription.Diagnosis,
+            Notes = prescription.Notes,
+            Items = prescription.Items.Select(x => new PrescriptionItemPdf
+            {
+                Days = x.Days,
+                Dosage = x.Dosage,
+                Frequency = x.Frequency,
+                Instructions = x.Instructions,
+                Name = x.Name
+            }).ToList(),
+        };
+    }
+
+    private string BuildClinicTiming(ClinicSettings settings)
+    {
+        return $"Timing: {settings.WorkHours.Monday.Open} - {settings.WorkHours.Monday.Close}";
     }
 
     public async Task<Result> UpdateAsync(int id, PrescriptionRequest request)

@@ -15,5 +15,5 @@ public interface IPrescriptionService
     Task<Result<PaginatedList<PrescriptionListResponse>>> GetAllAsync(string? searchValue ,int pageNumber,int pageSize);
     Task<Result> UpdateAsync(int id, PrescriptionRequest request);
     Task<Result> DeleteAsync(int id);
-    Task<Result<Prescription>> PrintPdf(int id);
+    Task<Result<byte[]>> PrintPrescriptionPdf(int id);
 }
