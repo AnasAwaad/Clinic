@@ -11,6 +11,7 @@ public class OnlineUserDto
     public string ConnectionId { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
     public string? ImageUrl { get; set; }
     public bool IsOnline { get; set; }
     public DateTime? LastSeen { get; set; }

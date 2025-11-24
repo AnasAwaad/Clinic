@@ -44,7 +44,8 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
             Id = user.Id,
             UserName = user.UserName!,
             FullName = user.FullName,
-            ImageUrl = user.ImageUrl
+            ImageUrl = user.ImageUrl,
+            PhoneNumber = user.PhoneNumber
         };
 
         await Clients.User(userId).SendAsync("OnlineUsers", await GetAllUsers(userId));
@@ -73,7 +74,7 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
         dbContext.Messages.Add(newMsg);
         await dbContext.SaveChangesAsync();
 
-        await Clients.User(request.ReceiverId).SendAsync("ReceiveNewMessage", newMsg);
+        await Clients.Users(request.ReceiverId,userId).SendAsync("ReceiveNewMessage", newMsg);
     }
 
 
@@ -83,6 +84,51 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
                     ?? throw new InvalidOperationException("UserId missing");
 
         await Clients.User(recipientUserId).SendAsync("NotifyTypingToUser",userId);
+    }
+    public async Task DeleteMessage(int messageId)
+    {
+        var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? throw new InvalidOperationException("UserId missing");
+
+        var user = await userManager.FindByIdAsync(userId);
+
+        if (user == null)
+            return;
+
+        var message = await dbContext.Messages
+            .Where(m=>m.Id==messageId && m.SenderId==userId)
+            .FirstOrDefaultAsync();
+
+        if(message == null)
+            return;
+
+        dbContext.Messages.Remove(message);
+        await dbContext.SaveChangesAsync();
+        
+        await Clients.Users(userId,message.ReceiverId).SendAsync("DeletedMessage",message);
+    }
+
+    public async Task UpdateMessage(UpdateMessageRequestDto request)
+    {
+        var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? throw new InvalidOperationException("UserId missing");
+
+        var user = await userManager.FindByIdAsync(userId);
+
+        if (user == null)
+            return;
+
+        var message = await dbContext.Messages
+            .Where(m => m.Id == request.Id && m.SenderId == userId)
+            .FirstOrDefaultAsync();
+
+        if (message == null) return;
+
+        message.Content = request.Content;
+
+        await dbContext.SaveChangesAsync();
+
+        await Clients.Users(userId, message.ReceiverId).SendAsync("UpdatedMessage", message);
     }
 
     public async Task LoadMessages(string recipientId,int pageNumber = 1)
@@ -103,24 +149,17 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .OrderBy(m => m.CreatedDate)
-            .Select(m => new MessageResponseDto
-            {
-                Id = m.Id,
-                Content = m.Content,
-                CreatedDate = m.CreatedDate,
-                ReceiverId = m.ReceiverId,
-                SenderId = m.SenderId,
-                IsRead = m.IsRead
-            }).ToListAsync();
+            .ToListAsync();
 
         foreach (var message in messages)
         {
             if(message is not null && message.ReceiverId == userId)
             {
                 message.IsRead = true;
-                await dbContext.SaveChangesAsync();
             }
         }
+        await dbContext.SaveChangesAsync();
+
 
         var totalPages = count/pageSize + 1;
         Console.WriteLine(totalPages);
@@ -169,6 +208,7 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
             ImageUrl = u.ImageUrl,
             IsOnline = u.IsOnline,
             LastSeen = u.LastSeen,
+            PhoneNumber = u.PhoneNumber,
             UnReadCount = dbContext.Messages.Count(m => m.SenderId == u.Id && m.ReceiverId == viewerId && !m.IsRead)
         })
         .Where(u=>u.Id!=viewerId)
