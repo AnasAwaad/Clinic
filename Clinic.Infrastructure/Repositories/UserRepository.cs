@@ -24,7 +24,7 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
                 on u.Id equals ur.UserId
                 join r in _context.Set<ApplicationRole>()
                 on ur.RoleId equals r.Id into roles
-                where !roles.Any(x => x.Name == "Patient")
+                where !roles.Any(x => x.Name == "Patient") && !u.IsDeleted
                 select new
                 {
                     u.Id,

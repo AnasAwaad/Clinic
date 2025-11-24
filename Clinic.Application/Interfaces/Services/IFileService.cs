@@ -8,6 +8,6 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Services;
 public interface IFileService
 {
-    Task<string?> UploadFileAsync(IFormFile file, string folderName);
+    Task<string> UploadFileAsync(IFormFile file, string folderName);
     bool DeleteFile(string filePath);
 }

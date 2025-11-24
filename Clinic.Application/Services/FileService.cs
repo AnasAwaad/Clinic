@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Services;
 public class FileService(IWebHostEnvironment env) : IFileService
 {
-    public async Task<string?> UploadFileAsync(IFormFile file, string folderName)
+    public async Task<string> UploadFileAsync(IFormFile file, string folderName)
     {
         if (file == null || file.Length == 0)
             return null;

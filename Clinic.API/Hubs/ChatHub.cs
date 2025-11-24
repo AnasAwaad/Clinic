@@ -179,7 +179,7 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
 
         if (session != null)
         {
-            session.DisconnectedAt = DateTime.UtcNow;
+            dbContext.ConnectionSessions.Remove(session);
             await dbContext.SaveChangesAsync();
         }
 
@@ -200,21 +200,22 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
     }
     private async Task<IEnumerable<OnlineUserDto>> GetAllUsers(string viewerId)
     {
-        var users =await userManager.Users.Select(u => new OnlineUserDto
-        {
-            Id = u.Id,
-            FullName = u.FullName,
-            UserName = u.UserName!,
-            ImageUrl = u.ImageUrl,
-            IsOnline = u.IsOnline,
-            LastSeen = u.LastSeen,
-            PhoneNumber = u.PhoneNumber,
-            UnReadCount = dbContext.Messages.Count(m => m.SenderId == u.Id && m.ReceiverId == viewerId && !m.IsRead)
-        })
-        .Where(u=>u.Id!=viewerId)
-        .OrderByDescending(u => u.IsOnline)
-        .ToListAsync();
-
-        return users;
+        return await (from u in dbContext.Users 
+         join ur in dbContext.UserRoles on u.Id equals ur.UserId
+         join r in dbContext.Roles on ur.RoleId equals r.Id into roles
+         where !roles.Any(x=>x.Name == AppRoles.Patient) && u.Id!=viewerId && !u.IsDisabled && !u.IsDeleted
+         select new OnlineUserDto
+         {
+             Id = u.Id,
+             FullName = u.FullName,
+             UserName = u.UserName!,
+             ImageUrl = u.ImageUrl,
+             IsOnline = u.IsOnline,
+             LastSeen = u.LastSeen,
+             PhoneNumber = u.PhoneNumber,
+         })
+         .Distinct()
+         .OrderByDescending(u=>u.IsOnline)
+         .ToListAsync();
     }
 }

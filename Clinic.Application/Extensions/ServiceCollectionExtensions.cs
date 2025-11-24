@@ -33,6 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<IEmailSender, EmailService>();
         services.AddScoped<IPatientService, PatientService>();
+        services.AddScoped<IClinicSettingsService, ClinicSettingsService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IFileService, FileService>();
 

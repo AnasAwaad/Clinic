@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Clinic.Application.DTOs.Appointment;
 using Clinic.Application.DTOs.Auth;
+using Clinic.Application.DTOs.Clinic;
 using Clinic.Application.DTOs.MedicalRecord;
 using Clinic.Application.DTOs.Patient;
 using Clinic.Application.DTOs.Prescription;
@@ -93,6 +94,10 @@ public class DoctorScheduleMapping : Profile
             .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => true));
 
         CreateMap<UpdatePatientRequest, Patient>();
+
+        // clinic
+        CreateMap<ClinicSettings, ClinicSettingsResponse>();
+        CreateMap<ClinicSettingsRequest, ClinicSettings>();
 
 
     }

@@ -63,6 +63,12 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper) : IPre
         return Result.Success(mapper.Map<PrescriptionResponse>(prescription));
     }
 
+    public async Task<Result<Prescription>> PrintPdf(int id)
+    {
+        var prescription = await unitOfWork.Prescriptions.GetByIdWithItemsAsync(id);
+        throw new NotImplementedException();
+    }
+
     public async Task<Result> UpdateAsync(int id, PrescriptionRequest request)
     {
         var patient = await unitOfWork.Patients.GetByIdAsync(request.PatientId);

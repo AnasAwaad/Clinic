@@ -32,7 +32,7 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
         var user = await userManager.Users
             .FirstOrDefaultAsync(x=>x.Email!.Equals(request.EmailOrUsername) || x.UserName!.Equals(request.EmailOrUsername));
 
-        if (user is null)
+        if (user is null || user.IsDeleted)
             return Result.Failure<AuthResponse>(UserErrors.InvalidCredentials);
 
         if (user.IsDisabled)

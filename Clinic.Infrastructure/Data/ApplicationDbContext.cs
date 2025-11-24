@@ -22,6 +22,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<DoctorTimeSlot> TimeSlots { get; set; }
     public DbSet<MedicalRecord> MedicalRecords { get; set; }
     public DbSet<Prescription> Prescriptions { get; set; }
+    public DbSet<ClinicSettings> ClinicSettings { get; set; }
     public DbSet<PrescriptionItem> PrescriptionItems { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<ConnectionSession> ConnectionSessions { get; set; }

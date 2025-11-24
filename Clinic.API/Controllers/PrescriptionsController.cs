@@ -50,4 +50,14 @@ public class PrescriptionsController(IPrescriptionService prescriptionService) :
         var result = await prescriptionService.DeleteAsync(id);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
+
+    [HttpGet("{id}/print-pdf")]
+    public async Task<IActionResult> PrintPrescriptionPdf([FromRoute] int id)
+    {
+        var result = await prescriptionService.PrintPdf(id);
+        //var pdfBytes = result.GeneratePdf();
+
+        //return File(pdfBytes, "application/pdf", "prescription.pdf");
+        return Ok(result.Value);
+    }
 }
