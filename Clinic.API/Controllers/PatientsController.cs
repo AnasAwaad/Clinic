@@ -59,5 +59,11 @@ public class PatientsController(IPatientService patientService) : ControllerBase
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 
+    [HttpGet("{patientId}/details")]
+    public async Task<ActionResult<PatientProfileResponse>> GetPatientProfileDetails(string patientId)
+    {
+        var result = await patientService.GetPatientProfileDetailsAsync(patientId);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
 }
 

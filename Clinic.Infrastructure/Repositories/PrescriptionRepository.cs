@@ -30,4 +30,12 @@ public class PrescriptionRepository : GenericRepository<Prescription>, IPrescrip
             .Where(p => !p.IsDeleted && (string.IsNullOrEmpty(searchValue) || p.Patient.FullName.Contains(searchValue.Trim())))
             .AsQueryable();
     }
+
+    public IQueryable<Prescription> GetAllByPatientIdWithItemsQueryable(string patientId)
+    {
+        return _context.Set<Prescription>()
+            .Include(p => p.Items)
+            .Where(p => !p.IsDeleted && p.Patient.Id == patientId)
+            .AsQueryable();
+    }
 }

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Clinic.Application.DTOs.Appointment;
 using Clinic.Application.DTOs.Common;
 using Clinic.Application.DTOs.Patient;
+using Clinic.Application.DTOs.Prescription;
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
 using Clinic.Domain.Helpers;
@@ -143,5 +145,38 @@ public class PatientService(UserManager<ApplicationUser> userManager,
         unitOfWork.Patients.DeleteMany(idList);
 
         return Result.Success();
+    }
+
+    public async Task<Result<PatientProfileResponse>> GetPatientProfileDetailsAsync(string patientId)
+    {
+        var patient = await unitOfWork.Patients.GetByIdAsync(patientId);
+
+        if (patient is null)
+            return Result.Failure<PatientProfileResponse>(PatientErrors.PatientNotFound);
+
+        var appointments =await unitOfWork.Appointments
+            .GetAllByPatientId(patientId)
+            .ProjectTo<AppointmentHistoryResponse>(mapper.ConfigurationProvider)
+            .ToListAsync();
+
+        var prescriptions =await unitOfWork.Prescriptions
+            .GetAllByPatientIdWithItemsQueryable(patientId)
+            .ProjectTo<PrescriptionHistoryResponse>(mapper.ConfigurationProvider)
+            .ToListAsync();
+
+
+        var patientInfo = mapper.Map<PatientInfoResponse>(patient);
+        var latestAppointment = appointments.OrderByDescending(x => x.Date).FirstOrDefault();
+        patientInfo.Status = latestAppointment?.Status ?? "New Patient";
+
+
+        var result =  new PatientProfileResponse
+        {
+            PatientInformation = patientInfo,
+            AppointmentHistory = appointments,
+            PrescriptionHistory = prescriptions
+        };
+
+        return Result.Success(result);
     }
 }

@@ -100,6 +100,36 @@ public class DoctorScheduleMapping : Profile
         CreateMap<ClinicSettingsRequest, ClinicSettings>();
 
 
+        // appointment
+        CreateMap<Appointment, AppointmentHistoryResponse>()
+            .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.ToString("yyyy-MM-dd")))
+            .ForMember(dest => dest.AppointmentId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.TimeSlot.StartTime));
+
+
+        // patient
+        CreateMap<Patient, PatientInfoResponse>()
+            .ForMember(dest => dest.PatientId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth.HasValue ? src.DateOfBirth.Value.ToString("yyyy-MM-dd") : null))
+            .ForMember(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.DateOfBirth)))
+            .ForMember(dest => dest.Status, opt => opt.Ignore());
+
+        // prescription
+        CreateMap<Prescription, PrescriptionHistoryResponse>()
+            .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.ToString("yyyy-MM-dd")))
+            .ForMember(dest => dest.PrescriptionId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.MedicationItems, opt => opt.MapFrom(src => src.Items.Select(i => i.Name).ToList()));
+
     }
 
+    // Helper method to calculate age
+    private static int CalculateAge(DateOnly? dob)
+    {
+        if (!dob.HasValue) return 0;
+        var today = DateTime.Today; // 2025
+        var dobDateTime = new DateTime(dob.Value.Year, dob.Value.Month, dob.Value.Day); // 2003
+        var age = today.Year - dobDateTime.Year; // 22
+        if (dobDateTime.Date > today.AddYears(-age)) age--; // 2003 > (2025-22) ? age-- 
+        return age;
+    }
 }

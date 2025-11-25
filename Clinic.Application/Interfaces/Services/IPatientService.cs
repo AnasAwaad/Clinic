@@ -12,4 +12,5 @@ public interface IPatientService
     Task<Result> UpdateAsync(string id, UpdatePatientRequest request);
     Task<Result> DeleteAsync(string id);
     Result DeleteMany(List<string> ids);
+    Task<Result<PatientProfileResponse>> GetPatientProfileDetailsAsync(string id);
 }

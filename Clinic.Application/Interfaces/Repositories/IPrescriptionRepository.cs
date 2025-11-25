@@ -9,4 +9,5 @@ public interface IPrescriptionRepository : IGenericRepository<Prescription>
 {
     Task<Prescription?> GetByIdWithItemsAsync(int id);
     IQueryable<Prescription> GetAllWithItemsQueryable(string? searchValue);
+    IQueryable<Prescription> GetAllByPatientIdWithItemsQueryable(string patientId);
 }
