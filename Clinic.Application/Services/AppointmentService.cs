@@ -119,9 +119,9 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
     
 
 
-    public async Task<Result> CancelAsync(string userId, int id)
+    public async Task<Result> CancelAsync(int id)
     {
-        var appointment = await unitOfWork.Appointments.GetByIdAndPatientAsync(id,userId);
+        var appointment = await unitOfWork.Appointments.GetByIdWithSlotAsync(id);
 
         if (appointment == null)
             return Result.Failure(AppointmentErrors.AppointmentNotFound);
@@ -129,10 +129,23 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
         if (appointment.Status == "Cancelled")
             return Result.Failure(AppointmentErrors.AlreadyCancelled);
 
-        appointment.Status = "Cancelled";
+        appointment.Status = "Cancelled"; // TODO: Use Enum
         appointment.TimeSlot.IsBooked = false;
         await unitOfWork.SaveAsync();
 
+        return Result.Success();
+    }
+
+    public async Task<Result> CompleteAsync(int id)
+    {
+        var appointment = await unitOfWork.Appointments.GetByIdAsync(id);
+
+        if (appointment == null)
+            return Result.Failure(AppointmentErrors.AppointmentNotFound);
+
+        appointment.Status = "Completed"; // TODO: Use Enum
+
+        await unitOfWork.SaveAsync();
         return Result.Success();
     }
 

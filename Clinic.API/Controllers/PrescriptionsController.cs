@@ -32,7 +32,7 @@ public class PrescriptionsController(IPrescriptionService prescriptionService) :
         var result = await prescriptionService.CreateAsync(request);
         if (!result.IsSuccess)
             return result.ToProblem();
-        return CreatedAtAction(nameof(GetById), new { id=result.Value.Id }, result.Value);
+        return Created();
     }
 
     [HttpPut("{id}")]

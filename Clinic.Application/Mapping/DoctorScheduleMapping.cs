@@ -31,10 +31,10 @@ public class DoctorScheduleMapping : Profile
 
 
         CreateMap<Appointment, AppointmentDetailsResponse>()
-            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient.FullName))
-            .ForMember(dest => dest.PatientPhoneNumber, opt => opt.MapFrom(src => src.Patient.PhoneNumber))
             .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.TimeSlot.StartTime))
             .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.TimeSlot.EndTime));
+
+        CreateMap<Patient, AppointmentPatientResponse>();
 
         CreateMap<AppointmentRequest, Appointment>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Booked"));
@@ -46,8 +46,8 @@ public class DoctorScheduleMapping : Profile
         CreateMap<MedicalRecordRequest, MedicalRecord>();
 
         // prescription
-        CreateMap<Prescription, PrescriptionResponse>()
-            .ForMember(x => x.PatientName, opt => opt.MapFrom(src => src.Patient.FullName));
+        CreateMap<Prescription, PrescriptionResponse>();
+        CreateMap<Patient, PrescriptionPatientResponse>();
 
         CreateMap<PrescriptionItem, PrescriptionItemResponse>();
 

@@ -19,11 +19,11 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
     }
 
 
-    public Task<Appointment?> GetByIdAndPatientAsync(int appointmentId, string userId)
+    public Task<Appointment?> GetByIdWithSlotAsync(int appointmentId)
     {
         return _context.Set<Appointment>()
             .Include(a => a.TimeSlot)
-            .FirstOrDefaultAsync(a => a.Id == appointmentId && a.Patient.Id == userId);
+            .FirstOrDefaultAsync(a => a.Id == appointmentId);
     }
 
     public IQueryable<Appointment> GetAllByPatientId(string userId)

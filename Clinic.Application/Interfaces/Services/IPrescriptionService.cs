@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Services;
 public interface IPrescriptionService
 {
-    Task<Result<PrescriptionResponse>> CreateAsync(PrescriptionRequest request);
+    Task<Result> CreateAsync(PrescriptionRequest request);
     Task<Result<PrescriptionResponse>> GetByIdAsync(int id);
     Task<Result<PaginatedList<PrescriptionListResponse>>> GetAllAsync(string? searchValue ,int pageNumber,int pageSize);
     Task<Result> UpdateAsync(int id, PrescriptionRequest request);

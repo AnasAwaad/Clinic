@@ -58,10 +58,18 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     }
 
     [HttpPut("{id}/cancel")]
-    [HasPermission(Permissions.CancelAppointments)]
+    [HasPermission(Permissions.UpdateAppointments)]
     public async Task<IActionResult> Cancel(int id)
     {
-        var result = await appointmentService.CancelAsync(User.GetUserId(), id);
+        var result = await appointmentService.CancelAsync(id);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+
+    [HttpPut("{id}/complete")]
+    [HasPermission(Permissions.UpdateAppointments)]
+    public async Task<IActionResult> Complete(int id)
+    {
+        var result = await appointmentService.CompleteAsync(id);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 

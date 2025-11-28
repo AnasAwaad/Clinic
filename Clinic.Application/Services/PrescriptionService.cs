@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Services;
 internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper,IPrescriptionPdfGenerator prescriptionPdfGenerator) : IPrescriptionService
 {
-    public async Task<Result<PrescriptionResponse>> CreateAsync(PrescriptionRequest request)
+    public async Task<Result> CreateAsync(PrescriptionRequest request)
     {
         var patient = await unitOfWork.Patients.GetByIdAsync(request.PatientId);
 
@@ -28,7 +28,7 @@ internal class PrescriptionService(IUnitOfWork unitOfWork,IMapper mapper,IPrescr
         await unitOfWork.Prescriptions.AddAsync(prescription);
         await unitOfWork.SaveAsync();
 
-        return Result.Success(mapper.Map<PrescriptionResponse>(prescription));
+        return Result.Success();
     }
 
     public async Task<Result> DeleteAsync( int id)
