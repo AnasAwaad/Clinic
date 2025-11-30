@@ -1,4 +1,5 @@
 ﻿using Clinic.Application.DTOs.Common;
+using Clinic.Application.DTOs.Result;
 using Clinic.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,5 +17,6 @@ public interface IAppointmentRepository : IGenericRepository<Appointment>
     Task<Appointment?> GetByIdWithSlotAsync(int appointmentId);
     Task<Appointment?> GetByIdWithTimeSlotAsync(int appointmentId);
     IQueryable<Appointment> GetByIdWithDetails(int id);
+    Task<IEnumerable<AppointmentsPerDayResponse>> GetAppointmentsPerDaysAsync();
     Task DeleteManyAsync(List<int> idList);
 }

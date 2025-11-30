@@ -1,5 +1,6 @@
 ﻿using Clinic.Application.DTOs.Common;
 using Clinic.Application.DTOs.Patient;
+using Clinic.Application.DTOs.Result;
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -61,5 +62,17 @@ internal class PatientRespository : GenericRepository<Patient>, IPatientReposito
     public Task<Patient?> GetByUserIdAsync(string userId)
     {
         return _context.Set<Patient>().SingleOrDefaultAsync(u => u.Id == userId);
+    }
+
+    public async Task<IEnumerable<PatientsPerDayResponse>> GetPatientsPerDaysAsync()
+    {
+        return await _context.Set<Patient>()
+            .Where(x => !x.IsDeleted || !x.IsDisabled)
+            .GroupBy(x => new { Date = DateOnly.FromDateTime(x.CreatedOn) })
+            .Select(x => new PatientsPerDayResponse
+            {
+                Date = x.Key.Date,
+                Count = x.Count()
+            }).ToListAsync();
     }
 }

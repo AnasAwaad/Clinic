@@ -12,5 +12,6 @@ public class PrescriptionRequest
     public int Age { get; set; }
     public string Diagnosis { get; set; } = string.Empty;
     public string? Notes { get; set; }
+    public string? NextVisit { get; set; }
     public ICollection<PrescriptionItemRequest> Items { get; set; } = [];
 }

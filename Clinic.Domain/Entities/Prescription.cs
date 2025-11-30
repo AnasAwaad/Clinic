@@ -15,6 +15,7 @@ public class Prescription : AuditableEntity
     public int Age { get; set; }
     public string Diagnosis { get; set; } = string.Empty;
     public string? Notes { get; set; }
+    public string? NextVisit { get; set; }
     public ICollection<PrescriptionItem> Items { get; set; } = new List<PrescriptionItem>();
     public Patient Patient { get; set; } = default!;
 }

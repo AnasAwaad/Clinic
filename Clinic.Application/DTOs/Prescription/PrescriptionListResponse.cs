@@ -13,6 +13,6 @@ public class PrescriptionListResponse
     public DateOnly Date { get; set; }
     public int Age { get; set; }
     public string Diagnosis { get; set; } = string.Empty;
-    public DateOnly NextVisit { get; set; }
+    public string? NextVisit { get; set; }
     public string? Notes { get; set; }
 }

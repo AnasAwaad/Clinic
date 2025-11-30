@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMedicalRecordService, MedicalRecordService>();
         services.AddScoped<IPrescriptionService, PrescriptionService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IResultService, ResultService>();
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<IEmailSender, EmailService>();
         services.AddScoped<IPatientService, PatientService>();

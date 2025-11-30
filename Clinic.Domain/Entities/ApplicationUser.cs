@@ -17,6 +17,8 @@ public class ApplicationUser : IdentityUser
     public bool IsDeleted { get; set; }
     public bool IsOnline { get; set; }
     public DateTime? LastSeen { get; set; }
+    public DateTime CreatedOn { get; set; } = DateTime.Now;
     public List<RefreshToken> RefreshTokens { get; set; } = [];
+
 }
 

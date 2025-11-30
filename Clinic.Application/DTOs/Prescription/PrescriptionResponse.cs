@@ -6,7 +6,7 @@ public class PrescriptionResponse
     public TimeOnly Time { get; set; }
     public string Age { get; set; } = string.Empty;
     public string Diagnosis { get; set; } = string.Empty;
-    public DateOnly NextVisit { get; set; }
+    public string? NextVisit { get; set; }
     public string? Notes { get; set; }
 
     public PrescriptionPatientResponse Patient { get; set; } = default!;

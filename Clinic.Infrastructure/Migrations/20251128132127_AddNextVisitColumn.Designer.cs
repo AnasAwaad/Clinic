@@ -4,6 +4,7 @@ using Clinic.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251128132127_AddNextVisitColumn")]
+    partial class AddNextVisitColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,9 +112,6 @@ namespace Clinic.Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -196,8 +196,7 @@ namespace Clinic.Infrastructure.Migrations
                             Id = "556c1c99-2d3a-4988-a80a-46ab2f14ea71",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "1589b135-88bd-4a2a-bcf1-1b5b980e5c3f",
-                            CreatedOn = new DateTime(2025, 11, 30, 17, 35, 7, 600, DateTimeKind.Local).AddTicks(4771),
+                            ConcurrencyStamp = "6a0d77fb-01cd-4749-95a8-81f8a4894825",
                             Email = "Admin@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Admin",
@@ -208,9 +207,9 @@ namespace Clinic.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGhno1earc7KRy+2euuGH1AzGt+wxkkTBAZij9A3vOtPqg43CNv9jusjBa0T6ytm9w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJNIiaDqwQwRfnt5VgETxoUBb/uWP4Wmd3M5k+0s/zi+Vl/2IJmuiU4SsDzWmj+IJQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "85a61fc4-83b4-42e4-a47c-78b9c0a98eb1",
+                            SecurityStamp = "85111a25-8dad-4d78-be8f-4450b814d786",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
@@ -219,8 +218,7 @@ namespace Clinic.Infrastructure.Migrations
                             Id = "402ddff0-09e1-425f-b41b-2fc1ec5668b0",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "2cc5e083-5722-4c4c-adcb-b028ea896376",
-                            CreatedOn = new DateTime(2025, 11, 30, 17, 35, 7, 700, DateTimeKind.Local).AddTicks(9418),
+                            ConcurrencyStamp = "9ada51ec-a011-4262-ae2c-81a710634f5e",
                             Email = "Secretary@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Secretary",
@@ -231,9 +229,9 @@ namespace Clinic.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SECRETARY@GMAIL.COM",
                             NormalizedUserName = "SECRETARY",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGiXIOQR0JVXQ+HqYieJncs6DMNGT3+D9UPI9no+QORh0dw3mFn26dwAJ2BbEHLJzw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEI4xDqB7YgOcEGpPtwNVHMZrt+Hoys9MHwBCU0wWbFALVX9a7VYH8OZQ5m1tyghBBA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "510eab40-0f8f-4a54-a0cf-916157b1077e",
+                            SecurityStamp = "cfd0b94f-60c2-4f42-b1e6-6078736dab57",
                             TwoFactorEnabled = false,
                             UserName = "Secretary"
                         });
@@ -1120,8 +1118,7 @@ namespace Clinic.Infrastructure.Migrations
                             Id = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "4e789bea-c44c-4b0a-a953-bf6e8856887a",
-                            CreatedOn = new DateTime(2025, 11, 30, 17, 35, 7, 505, DateTimeKind.Local).AddTicks(647),
+                            ConcurrencyStamp = "960297dd-8976-4bcd-a1cb-34d34b80d9ed",
                             Email = "Doctor@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Doctor",
@@ -1132,9 +1129,9 @@ namespace Clinic.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "DOCTOR@GMAIL.COM",
                             NormalizedUserName = "DOCTOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEP4RGZKgxaXzhFVkSNH91QR+c7DOlKIjAH/UJghVs8XRXKSNgkHHtoiUCthihtmp5w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEF6G4a4pZQB1YdQj5WL26UD+D9GoF+exYYxcmcRMrTzwnAFsEgZolmeiz4KYVQehGA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "46accb24-9f86-4b49-8108-852953456770",
+                            SecurityStamp = "eeaa8111-991e-4d88-91a4-94b781b960c9",
                             TwoFactorEnabled = false,
                             UserName = "Doctor",
                             Specialization = "Cardiology",

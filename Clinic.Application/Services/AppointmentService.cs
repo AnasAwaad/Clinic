@@ -116,8 +116,6 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
         return Result.Success(mapper.Map<AppointmentResponse>(appointment));
     }
 
-    
-
 
     public async Task<Result> CancelAsync(int id)
     {

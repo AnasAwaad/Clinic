@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
+using Clinic.Application.DTOs.Result;
 
 
 namespace Clinic.Infrastructure.Repositories;
@@ -125,5 +126,17 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
             .Where(a => a.Id == appointmentId)
             .Include(a => a.TimeSlot)
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<IEnumerable<AppointmentsPerDayResponse>> GetAppointmentsPerDaysAsync()
+    {
+        return await _context.Set<Appointment>()
+            .Where(x => !x.IsDeleted)
+            .GroupBy(x => new { x.Date })
+            .Select(x => new AppointmentsPerDayResponse
+            {
+                Date = x.Key.Date,
+                Count = x.Count()
+            }).ToListAsync();
     }
 }
