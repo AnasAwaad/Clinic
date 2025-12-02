@@ -21,4 +21,18 @@ public class ResultsController(IResultService resultService) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("appointment-status")]
+    public async Task<IActionResult> GetStatus([FromQuery] string period = "monthly",
+                                               [FromQuery] DateOnly? start = null,
+                                               [FromQuery] DateOnly? end = null,
+                                               [FromQuery] int? year = null,
+                                               CancellationToken ct = default)
+    {
+        // sanitize period
+        period = (period ?? "monthly").Trim().ToLowerInvariant();
+
+        var result = await resultService.GetStatusAsync(period, start, end, year, ct);
+        return Ok(result);
+    }
+
 }

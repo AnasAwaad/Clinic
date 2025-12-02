@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Clinic.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ public class Appointment : AuditableEntity
     public string PatientId { get; set; } = string.Empty;
     public string DoctorId { get; set; } = string.Empty;
     public DateOnly Date { get; set; }
-    public string Status { get; set; } = string.Empty;
+    public AppointmentStatus Status { get; set; }
     public int TimeSlotId { get; set; }
     public string ReasonForVisit { get; set; } = default!;
     public string VisitType { get; set; } = default!;

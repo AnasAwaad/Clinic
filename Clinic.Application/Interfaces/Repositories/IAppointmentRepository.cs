@@ -12,6 +12,7 @@ public interface IAppointmentRepository : IGenericRepository<Appointment>
 {
     IQueryable<Appointment> GetAllByPatientId(string userId);
     IQueryable<Appointment> GetAllQueryable(RequestFilters filters);
+    IQueryable<Appointment> GetAllQueryable();
     IQueryable<Appointment> QueryInRange(DateOnly start, DateOnly end);
     Task<bool> HasActiveAppointmentAsync(string patientId, DateOnly now);
     Task<Appointment?> GetByIdWithSlotAsync(int appointmentId);

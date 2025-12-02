@@ -10,4 +10,5 @@ public interface IResultService
 {
     Task<IEnumerable<PatientsPerDayResponse>> GetPatientsPerDayAsync();
     Task<IEnumerable<AppointmentsPerDayResponse>> GetAppointmentsPerDayAsync();
+    Task<AppointmentStatusResponse> GetStatusAsync(string period, DateOnly? start = null, DateOnly? end = null, int? year = null, CancellationToken cancellationToken = default);
 }

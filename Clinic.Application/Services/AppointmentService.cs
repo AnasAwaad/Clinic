@@ -4,6 +4,7 @@ using Clinic.Application.DTOs.Appointment;
 using Clinic.Application.DTOs.Common;
 using Clinic.Application.Interfaces.Repositories;
 using Clinic.Application.Interfaces.Services;
+using Clinic.Domain.Enums;
 using Clinic.Domain.Helpers;
 using Microsoft.EntityFrameworkCore;
 
@@ -124,10 +125,10 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
         if (appointment == null)
             return Result.Failure(AppointmentErrors.AppointmentNotFound);
 
-        if (appointment.Status == "Cancelled")
+        if (appointment.Status == AppointmentStatus.Cancelled)
             return Result.Failure(AppointmentErrors.AlreadyCancelled);
 
-        appointment.Status = "Cancelled"; // TODO: Use Enum
+        appointment.Status = AppointmentStatus.Cancelled;
         appointment.TimeSlot.IsBooked = false;
         await unitOfWork.SaveAsync();
 
@@ -141,7 +142,7 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
         if (appointment == null)
             return Result.Failure(AppointmentErrors.AppointmentNotFound);
 
-        appointment.Status = "Completed"; // TODO: Use Enum
+        appointment.Status = AppointmentStatus.Completed;
 
         await unitOfWork.SaveAsync();
         return Result.Success();

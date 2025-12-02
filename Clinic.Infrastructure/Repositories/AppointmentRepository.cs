@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using Clinic.Application.DTOs.Result;
+using Clinic.Domain.Enums;
 
 
 namespace Clinic.Infrastructure.Repositories;
@@ -40,7 +41,7 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
         return _context.Set<Appointment>()
             .AnyAsync(x => x.PatientId == patientId
                            && x.Date >= now
-                           && x.Status == "Booked");
+                           && x.Status == AppointmentStatus.Booked);
     }
 
     public IQueryable<Appointment> GetByIdWithDetails(int id)
@@ -77,6 +78,11 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
             .AsQueryable();
     }
 
+    public IQueryable<Appointment> GetAllQueryable()
+    {
+        return _context.Set<Appointment>()
+            .AsNoTracking();
+    }
 
     public IQueryable<Appointment> QueryInRange(DateOnly start, DateOnly end)
     {
