@@ -47,8 +47,13 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
             ImageUrl = user.ImageUrl,
             PhoneNumber = user.PhoneNumber
         };
+        // TODO : for secretary get doctor and patients 
+        if(Context.User!.IsInRole(AppRoles.Patient))
+            await Clients.User(userId).SendAsync("OnlineUsers", await GetAllSecretaries(userId));
+        else
+            await Clients.User(userId).SendAsync("OnlineUsers", await GetAllUsers(userId));
 
-        await Clients.User(userId).SendAsync("OnlineUsers", await GetAllUsers(userId));
+
         await Clients.AllExcept(userId).SendAsync("NotifyOnlineUser", onlineUser);
 
         await Clients.Others.SendAsync("UserBecameOnline", onlineUser);
@@ -216,6 +221,27 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
          })
          .Distinct()
          .OrderByDescending(u=>u.IsOnline)
+         .ToListAsync();
+    }
+
+    private async Task<IEnumerable<OnlineUserDto>> GetAllSecretaries(string viewerId)
+    {
+        return await (from u in dbContext.Users
+                      join ur in dbContext.UserRoles on u.Id equals ur.UserId
+                      join r in dbContext.Roles on ur.RoleId equals r.Id into roles
+                      where roles.Any(x => x.Name == AppRoles.Secretary) && u.Id != viewerId && !u.IsDisabled && !u.IsDeleted
+                      select new OnlineUserDto
+                      {
+                          Id = u.Id,
+                          FullName = u.FullName,
+                          UserName = u.UserName!,
+                          ImageUrl = u.ImageUrl,
+                          IsOnline = u.IsOnline,
+                          LastSeen = u.LastSeen,
+                          PhoneNumber = u.PhoneNumber,
+                      })
+         .Distinct()
+         .OrderByDescending(u => u.IsOnline)
          .ToListAsync();
     }
 }

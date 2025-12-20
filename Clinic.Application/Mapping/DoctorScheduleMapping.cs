@@ -68,7 +68,8 @@ public class DoctorScheduleMapping : Profile
         CreateMap<UpdateUserRequest, ApplicationUser>();
 
         // auth
-        CreateMap<RegisterRequest, ApplicationUser>();
+        CreateMap<RegisterRequest, ApplicationUser>()
+            .ForMember(x => x.ImageUrl, opt => opt.MapFrom(src => "/uploads/user.png"));
         
         // role
         CreateMap<ApplicationRole, RoleResponse>();
