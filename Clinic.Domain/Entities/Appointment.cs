@@ -17,6 +17,8 @@ public class Appointment : AuditableEntity
     public string ReasonForVisit { get; set; } = default!;
     public string VisitType { get; set; } = default!;
 
+    public DateTime BookedAt { get; set; }
+    public DateTime? CancelledAt { get; set; }
     public DoctorTimeSlot TimeSlot { get; set; } = default!;
     public Patient Patient { get; set; } = default!;
     public Doctor Doctor { get; set; } = default!;

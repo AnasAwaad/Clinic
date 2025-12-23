@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Repositories;
 public interface IAppointmentRepository : IGenericRepository<Appointment>
 {
-    IQueryable<Appointment> GetAllByPatientId(string userId);
+    IQueryable<Appointment> GetAllPaginatedByPatientIdQueryable(string userId, RequestFilters filters, string type);
+    IQueryable<Appointment> GetAllByPatientIdQueryable(string userId);
     IQueryable<Appointment> GetAllQueryable(RequestFilters filters);
     IQueryable<Appointment> GetAllQueryable();
     IQueryable<Appointment> QueryInRange(DateOnly start, DateOnly end);

@@ -8,4 +8,5 @@ using System.Threading.Tasks;
 namespace Clinic.Application.Interfaces.Repositories;
 public interface IDoctorRepository : IGenericRepository<Doctor>
 {
+    public Task<Doctor?> GetDoctor();
 }
