@@ -24,6 +24,7 @@ public class UnitOfWork : IUnitOfWork
     public IRoleClaimRepository RoleClaims { get; }
     public IGenericRepository<ClinicSettings> ClinicSettings => new GenericRepository<ClinicSettings>(_context);
     public IGenericRepository<PrescriptionItem> PrescriptionItems => new GenericRepository<PrescriptionItem>(_context);
+    public IGenericRepository<Notification> Notifications => new GenericRepository<Notification>(_context);
 
     public UnitOfWork(ApplicationDbContext context)
     {

@@ -9,4 +9,5 @@ namespace Clinic.Application.Interfaces.Repositories;
 public interface IUserRepository : IGenericRepository<ApplicationUser>
 {
     Task<IEnumerable<UserResponse>> GetAllUsersWithRoles();
+    Task<List<string>> GetSecretaryUserIdsAsync();
 }

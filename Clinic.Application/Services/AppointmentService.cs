@@ -9,7 +9,7 @@ using Clinic.Domain.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clinic.Application.Services;
-public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppointmentService
+public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper,INotificationService notificationService) : IAppointmentService
 {
 
     public async Task<Result<PaginatedList<AppointmentListResponse>>> GetAllAsync(RequestFilters filters)
@@ -159,6 +159,15 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
 
         await unitOfWork.Appointments.AddAsync(appointment);
         await unitOfWork.SaveAsync();
+
+
+        var secretaryIds = await unitOfWork.Users.GetSecretaryUserIdsAsync();
+
+        foreach (var secretaryId in secretaryIds)
+        {
+            await notificationService.SendAsync(secretaryId, "New Appointment Booked", $"A new appointment has been booked on {appointment.BookedAt:MMM dd, yyyy, hh:mm tt}");
+        }
+
 
         return Result.Success(mapper.Map<AppointmentResponse>(appointment));
     }

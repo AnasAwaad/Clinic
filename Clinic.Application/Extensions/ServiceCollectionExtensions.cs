@@ -1,15 +1,8 @@
 ﻿using Clinic.Application.Interfaces.Services;
 using Clinic.Application.Services;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Clinic.Application.Extensions;
 public static class ServiceCollectionExtensions
@@ -37,6 +30,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IClinicSettingsService, ClinicSettingsService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IFileService, FileService>();
+        services.AddScoped<INotificationService, NotificationService>();
 
         services.AddHttpContextAccessor();
 

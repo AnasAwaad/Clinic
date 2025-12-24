@@ -1,5 +1,6 @@
 ﻿using Clinic.Application.DTOs.Message;
 using Clinic.Application.DTOs.User;
+using Clinic.Domain.Consts;
 using Clinic.Domain.Entities;
 using Clinic.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using System.Security.Claims;
 
-namespace Clinic.API.Hubs;
+namespace Clinic.Infrastructure.Hubs;
 
 [Authorize]
 public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbContext dbContext) : Hub

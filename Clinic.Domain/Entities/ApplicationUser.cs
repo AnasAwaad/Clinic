@@ -19,6 +19,6 @@ public class ApplicationUser : IdentityUser
     public DateTime? LastSeen { get; set; }
     public DateTime CreatedOn { get; set; } = DateTime.Now;
     public List<RefreshToken> RefreshTokens { get; set; } = [];
-
+    public ICollection<Notification> Notifications { get; set; } = [];
 }
 
