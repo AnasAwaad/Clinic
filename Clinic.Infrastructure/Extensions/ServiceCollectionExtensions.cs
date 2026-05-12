@@ -5,6 +5,7 @@ using Clinic.Infrastructure.Data;
 using Clinic.Infrastructure.Repositories;
 using Clinic.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection")
+        var connectionString = configuration.GetConnectionString("RemoteConnection")
             ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
 
         var clientId = configuration["Authentication:Google:ClientId"]
@@ -27,9 +28,14 @@ public static class ServiceCollectionExtensions
 
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
+    services.AddDataProtection();
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPrescriptionPdfGenerator, PrescriptionPdfGenerator>();
+
+        services.AddScoped<IUserRsaKeyService, UserRsaKeyService>();
+        services.AddScoped<IMessageCryptoService, MessageCryptoService>();
 
         services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();

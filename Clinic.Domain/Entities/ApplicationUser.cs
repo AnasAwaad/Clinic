@@ -20,5 +20,10 @@ public class ApplicationUser : IdentityUser
     public DateTime CreatedOn { get; set; } = DateTime.Now;
     public List<RefreshToken> RefreshTokens { get; set; } = [];
 
+    // Used for at-rest encryption of chat messages (RSA-2048 keypair).
+    // Public key can be stored as-is; private key is stored protected.
+    public string? RsaPublicKeyPem { get; set; }
+    public string? ProtectedRsaPrivateKeyPem { get; set; }
+
 }
 

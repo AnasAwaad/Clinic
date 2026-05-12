@@ -1,19 +1,40 @@
 ﻿using Clinic.Application.DTOs.Message;
 using Clinic.Application.DTOs.User;
+using Clinic.Application.Interfaces.Services;
 using Clinic.Domain.Entities;
 using Clinic.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Security.Claims;
 
 namespace Clinic.API.Hubs;
 
 [Authorize]
-public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbContext dbContext) : Hub
+public class ChatHub(
+    UserManager<ApplicationUser> userManager,
+    ApplicationDbContext dbContext,
+    IMessageCryptoService messageCryptoService,
+    ILogger<ChatHub> logger) : Hub
 {
+
+    private static MessageResponseDto ToMessageResponse(Message message, string content)
+    {
+        return new MessageResponseDto
+        {
+            Id = message.Id,
+            SenderId = message.SenderId,
+            ReceiverId = message.ReceiverId,
+            Content = content,
+            CreatedDate = message.CreatedDate,
+            IsRead = message.IsRead,
+            Sender = null,
+            Receiver = null,
+        };
+    }
 
     public override async Task OnConnectedAsync()
     {
@@ -31,6 +52,7 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
 
         var user = await userManager.FindByIdAsync(userId);
 
+        logger.LogInformation("ChatHub connected: UserId={UserId}, ConnectionId={ConnectionId}, UserFound={UserFound}", userId, connectionId, user is not null);
         if(user is null)
             return;
 
@@ -48,6 +70,8 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
             PhoneNumber = user.PhoneNumber
         };
 
+        logger.LogInformation("ChatHub online user payload: {@OnlineUser}", onlineUser);
+
         await Clients.User(userId).SendAsync("OnlineUsers", await GetAllUsers(userId));
         await Clients.AllExcept(userId).SendAsync("NotifyOnlineUser", onlineUser);
 
@@ -62,11 +86,15 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
         var userId = Context.User!.FindFirstValue(ClaimTypes.NameIdentifier)
                     ?? throw new InvalidOperationException("UserId missing");
 
+        var encrypted = await messageCryptoService.EncryptAsync(request.Content, request.ReceiverId);
+
         var newMsg = new Message
         {
             SenderId = userId,
             ReceiverId = request.ReceiverId,
-            Content = request.Content,
+            EncryptedMessage = encrypted.EncryptedMessage,
+            EncryptedAesKey = encrypted.EncryptedAesKey,
+            Iv = encrypted.Iv,
             CreatedDate = DateTime.UtcNow,
             IsRead = false,
         };
@@ -74,7 +102,8 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
         dbContext.Messages.Add(newMsg);
         await dbContext.SaveChangesAsync();
 
-        await Clients.Users(request.ReceiverId,userId).SendAsync("ReceiveNewMessage", newMsg);
+        await Clients.Users(request.ReceiverId, userId)
+            .SendAsync("ReceiveNewMessage", ToMessageResponse(newMsg, request.Content));
     }
 
 
@@ -102,10 +131,14 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
         if(message == null)
             return;
 
+        var plaintext = await messageCryptoService.DecryptAsync(message);
+
+        var response = ToMessageResponse(message, plaintext);
+
         dbContext.Messages.Remove(message);
         await dbContext.SaveChangesAsync();
         
-        await Clients.Users(userId,message.ReceiverId).SendAsync("DeletedMessage",message);
+        await Clients.Users(userId, message.ReceiverId).SendAsync("DeletedMessage", response);
     }
 
     public async Task UpdateMessage(UpdateMessageRequestDto request)
@@ -124,11 +157,16 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
 
         if (message == null) return;
 
-        message.Content = request.Content;
+        var encrypted = await messageCryptoService.EncryptAsync(request.Content, message.ReceiverId);
+
+        message.EncryptedMessage = encrypted.EncryptedMessage;
+        message.EncryptedAesKey = encrypted.EncryptedAesKey;
+        message.Iv = encrypted.Iv;
 
         await dbContext.SaveChangesAsync();
 
-        await Clients.Users(userId, message.ReceiverId).SendAsync("UpdatedMessage", message);
+        await Clients.Users(userId, message.ReceiverId)
+            .SendAsync("UpdatedMessage", ToMessageResponse(message, request.Content));
     }
 
     public async Task LoadMessages(string recipientId,int pageNumber = 1)
@@ -160,10 +198,14 @@ public class ChatHub(UserManager<ApplicationUser> userManager,ApplicationDbConte
         }
         await dbContext.SaveChangesAsync();
 
+        var plaintexts = await messageCryptoService.DecryptManyAsync(messages);
+        var response = messages.Select((m, idx) => ToMessageResponse(m, plaintexts[idx])).ToList();
+
+        logger.LogInformation("ChatHub LoadMessages: UserId={UserId}, RecipientId={RecipientId}, Page={Page}, Returned={Count}", userId, recipientId, pageNumber, response.Count);
 
         var totalPages = count/pageSize + 1;
         Console.WriteLine(totalPages);
-        await Clients.User(userId).SendAsync("ReceiveMessageList", messages,totalPages);
+        await Clients.User(userId).SendAsync("ReceiveMessageList", response, totalPages);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
