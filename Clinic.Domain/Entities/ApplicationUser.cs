@@ -24,6 +24,7 @@ public class ApplicationUser : IdentityUser
     // Public key can be stored as-is; private key is stored protected.
     public string? RsaPublicKeyPem { get; set; }
     public string? ProtectedRsaPrivateKeyPem { get; set; }
+    public ICollection<Notification> Notifications { get; set; } = [];
 
 }
 

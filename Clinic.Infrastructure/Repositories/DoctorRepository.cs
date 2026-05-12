@@ -13,4 +13,10 @@ public class DoctorRepository : GenericRepository<Doctor>, IDoctorRepository
     public DoctorRepository(DbContext context) : base(context)
     {
     }
+
+    public async Task<Doctor?> GetDoctor()
+    {
+        return await _context.Set<Doctor>()
+            .FirstOrDefaultAsync();
+    }
 }

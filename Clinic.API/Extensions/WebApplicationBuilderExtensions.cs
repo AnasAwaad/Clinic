@@ -30,7 +30,7 @@ public static class WebApplicationBuilderExtensions
                 // .AllowAnyMethod()
                 // .AllowAnyOrigin()
                 // .AllowCredentials();
-                options.WithOrigins("http://localhost:4200", "http://localhost:61695", "http://localhost:61695", "http://127.0.0.1:4200", "http://localhost:49618", "https://localhost:49618", "http://localhost:55658","https://localhost:55658","http://localhost:64530","https://localhost:64530","http://localhost:64519")
+                options.WithOrigins("http://localhost:4200", "http://localhost:58243", "http://localhost:61695", "http://127.0.0.1:4200", "http://localhost:49618", "https://localhost:49618", "http://localhost:55658","https://localhost:55658","http://localhost:64530","https://localhost:64530","http://localhost:64519")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();

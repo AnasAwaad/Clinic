@@ -17,5 +17,7 @@ public class AppointmentDetailsResponse
     public TimeOnly EndTime { get; set; }
     public string ReasonForVisit { get; set; } = string.Empty;
     public string VisitType { get; set; } = string.Empty;
+    public DateTime BookedAt { get; set; }
+    public DateTime? CancelledAt { get; set; }
     public AppointmentPatientResponse Patient { get; set; } = default!;
 }

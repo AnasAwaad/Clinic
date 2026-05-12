@@ -4,6 +4,7 @@ using Clinic.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251224113313_AddNotificationTable")]
+    partial class AddNotificationTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -166,12 +169,6 @@ namespace Clinic.Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ProtectedRsaPrivateKeyPem")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RsaPublicKeyPem")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -202,8 +199,8 @@ namespace Clinic.Infrastructure.Migrations
                             Id = "556c1c99-2d3a-4988-a80a-46ab2f14ea71",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "e7d372de-985a-4336-afaf-73f586ea326e",
-                            CreatedOn = new DateTime(2026, 5, 12, 23, 20, 7, 259, DateTimeKind.Local).AddTicks(260),
+                            ConcurrencyStamp = "615d1edd-cb34-4395-9bd4-2969ad1ddaec",
+                            CreatedOn = new DateTime(2025, 12, 24, 13, 33, 9, 143, DateTimeKind.Local).AddTicks(6856),
                             Email = "Admin@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Admin",
@@ -214,9 +211,9 @@ namespace Clinic.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJJ+hKu+SozJlb5gcZ+J0vpkf14OfDjCqAKNirfV0w50FKk/mr9B6x4uFay1fj7+xg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEN7vTBIWD3iU2KQzRxnnQMobZyANLr5zEBeTUs7I6mYENGqZMKvZnBwuqzPzLOVHeg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "54bee7f7-1f55-4f49-8324-c9c1eb868adc",
+                            SecurityStamp = "260fd220-158c-49fb-805b-5f425c7d38e2",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
@@ -225,8 +222,8 @@ namespace Clinic.Infrastructure.Migrations
                             Id = "402ddff0-09e1-425f-b41b-2fc1ec5668b0",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "1f82d916-623f-4f53-a40c-0d2ecb8447a6",
-                            CreatedOn = new DateTime(2026, 5, 12, 23, 20, 7, 473, DateTimeKind.Local).AddTicks(7137),
+                            ConcurrencyStamp = "fcc020c5-a677-440f-8aa0-6410f7a873cd",
+                            CreatedOn = new DateTime(2025, 12, 24, 13, 33, 9, 234, DateTimeKind.Local).AddTicks(5375),
                             Email = "Secretary@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Secretary",
@@ -237,9 +234,9 @@ namespace Clinic.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SECRETARY@GMAIL.COM",
                             NormalizedUserName = "SECRETARY",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKgS4VedRW6LwNeMlAXh64R0HuN/LQPRWAViBfUhw3QjEZ5jTvKCCyKzYERIFNVHoQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFpPAvKrAiT+Yh+jx7ATzVIBPsp9fNiaVmQ44ym2YkkTJDOkmGiIhrczwz5Vu3VKxQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b02c762f-2312-402d-8931-ce001e2b50c5",
+                            SecurityStamp = "a1672f21-1298-4e33-ab1a-e9bef801a994",
                             TwoFactorEnabled = false,
                             UserName = "Secretary"
                         });
@@ -548,23 +545,15 @@ namespace Clinic.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<byte[]>("EncryptedAesKey")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("EncryptedMessage")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
-
-                    b.Property<byte[]>("Iv")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("ReceiverId")
                         .IsRequired()
@@ -1179,8 +1168,8 @@ namespace Clinic.Infrastructure.Migrations
                             Id = "57ff9f9a-6b56-4c6b-beeb-62cf2c6fd66e",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "5b08f57c-1a8f-4717-b3fd-b940da767f8c",
-                            CreatedOn = new DateTime(2026, 5, 12, 23, 20, 7, 24, DateTimeKind.Local).AddTicks(8940),
+                            ConcurrencyStamp = "52661455-ef46-480e-beb1-2f6e4ac29bb8",
+                            CreatedOn = new DateTime(2025, 12, 24, 13, 33, 9, 47, DateTimeKind.Local).AddTicks(3259),
                             Email = "Doctor@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Doctor",
@@ -1191,9 +1180,9 @@ namespace Clinic.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "DOCTOR@GMAIL.COM",
                             NormalizedUserName = "DOCTOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJ81KGMDSL8zGqHC98uuzhQc4slpAadAQHDhyg8ZaQrX6ZjNLsG+B7EyPAQ6OZmdtQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHXpJTsvOwmxyAIoDE26+QdmnwEH2F/MFnl+bPDBnX4JoiTN+JPqJCEUtb+Qs/9eDQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9fc09a37-1887-41d7-a85d-8f7cc08352f7",
+                            SecurityStamp = "c3723b6f-2613-4f77-8cf0-adc921c09693",
                             TwoFactorEnabled = false,
                             UserName = "Doctor",
                             Specialization = "Cardiology",

@@ -13,9 +13,10 @@ public interface IAppointmentService
     Task<Result<IEnumerable<TimeSlotResponse>>> GetAvailableSlotsAsync(string day);
     Task<Result<List<AppointmentResponse>>> GetInRangeAsync(DateTime start, DateTime end);
     Task<Result<PaginatedList<AppointmentListResponse>>> GetAllAsync(RequestFilters filters);
-    Task<Result<List<AppointmentResponse>>> GetByUserAsync(string userId);
+    Task<Result<PaginatedList<AppointmentResponse>>> GetMyAppointmentsAsync(string UserId,RequestFilters filters,string type);
     Task<Result<AppointmentDetailsResponse>> GetAsync(int id);
     Task<Result<AppointmentResponse>> CreateAsync(AppointmentRequest request);
+    Task<Result<AppointmentResponse>> BookAsync(string userId,BookAppointmentRequest request);
     Task<Result> CancelAsync(int id);
     Task<Result> CompleteAsync(int id);
     Task<Result> UpdateAsync(int id,AppointmentRequest request);

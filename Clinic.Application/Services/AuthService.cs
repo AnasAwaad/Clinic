@@ -152,7 +152,7 @@ internal class AuthService(UserManager<ApplicationUser> userManager,
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
 
-            await SendConfirmationEmail(user, code);
+            //await SendConfirmationEmail(user, code);
 
             return Result.Success();
         }

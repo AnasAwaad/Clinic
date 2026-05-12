@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Security.Claims;
 
-namespace Clinic.API.Hubs;
+namespace Clinic.Infrastructure.Hubs;
 
 [Authorize]
 public class ChatHub(
@@ -258,6 +258,27 @@ public class ChatHub(
          })
          .Distinct()
          .OrderByDescending(u=>u.IsOnline)
+         .ToListAsync();
+    }
+
+    private async Task<IEnumerable<OnlineUserDto>> GetAllSecretaries(string viewerId)
+    {
+        return await (from u in dbContext.Users
+                      join ur in dbContext.UserRoles on u.Id equals ur.UserId
+                      join r in dbContext.Roles on ur.RoleId equals r.Id into roles
+                      where roles.Any(x => x.Name == AppRoles.Secretary) && u.Id != viewerId && !u.IsDisabled && !u.IsDeleted
+                      select new OnlineUserDto
+                      {
+                          Id = u.Id,
+                          FullName = u.FullName,
+                          UserName = u.UserName!,
+                          ImageUrl = u.ImageUrl,
+                          IsOnline = u.IsOnline,
+                          LastSeen = u.LastSeen,
+                          PhoneNumber = u.PhoneNumber,
+                      })
+         .Distinct()
+         .OrderByDescending(u => u.IsOnline)
          .ToListAsync();
     }
 }

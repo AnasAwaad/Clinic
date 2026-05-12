@@ -14,13 +14,8 @@ using Clinic.Domain.Enums;
 
 
 namespace Clinic.Infrastructure.Repositories;
-internal class AppointmentRepository : GenericRepository<Appointment>, IAppointmentRepository
+internal class AppointmentRepository(DbContext context) : GenericRepository<Appointment>(context), IAppointmentRepository
 {
-    public AppointmentRepository(DbContext context) : base(context)
-    {
-    }
-
-
     public Task<Appointment?> GetByIdWithSlotAsync(int appointmentId)
     {
         return _context.Set<Appointment>()
@@ -28,7 +23,37 @@ internal class AppointmentRepository : GenericRepository<Appointment>, IAppointm
             .FirstOrDefaultAsync(a => a.Id == appointmentId);
     }
 
-    public IQueryable<Appointment> GetAllByPatientId(string userId)
+    public IQueryable<Appointment> GetAllPaginatedByPatientIdQueryable(string userId, RequestFilters filters, string type)
+    {
+        var query = _context.Set<Appointment>()
+            .Include(x => x.TimeSlot)
+            .Where(x => x.Patient.Id == userId);
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        query = type.ToLower() switch
+        {
+            "today" => query.Where(x => x.Date == today),
+            "upcoming" => query.Where(x => x.Date > today),
+            "past" => query.Where(x => x.Date < today),
+            _ => query
+        };
+
+        if (!string.IsNullOrEmpty(filters.SearchValue))
+        {
+            var searchValue = filters.SearchValue.Trim();
+            query = query.Where(x =>x.Date.ToString().Contains(searchValue));
+        }
+
+        if (!string.IsNullOrEmpty(filters.SortColumn))
+        {
+            query = query.OrderBy($"{filters.SortColumn} {filters.SortDirection}");
+        }
+
+        return query.AsQueryable();
+    }
+
+    public IQueryable<Appointment> GetAllByPatientIdQueryable(string userId)
     {
         return _context.Set<Appointment>()
             .Include(x => x.Doctor)

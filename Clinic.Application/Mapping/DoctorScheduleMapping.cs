@@ -22,11 +22,8 @@ public class DoctorScheduleMapping : Profile
 
         // appointment
         CreateMap<Appointment, AppointmentResponse>()
-            .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor.FullName))
-            .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.TimeSlot.StartTime))
-            .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.TimeSlot.EndTime))
-            .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient.FullName))
-            .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Patient.ImageUrl));
+            .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.TimeSlot.StartTime.ToString("hh:mm tt")))
+            .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.TimeSlot.EndTime.ToString("hh:mm tt")));
 
 
 
@@ -37,6 +34,10 @@ public class DoctorScheduleMapping : Profile
         CreateMap<Patient, AppointmentPatientResponse>();
 
         CreateMap<AppointmentRequest, Appointment>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Booked"));
+
+
+        CreateMap<BookAppointmentRequest, Appointment>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Booked"));
 
 
@@ -68,7 +69,8 @@ public class DoctorScheduleMapping : Profile
         CreateMap<UpdateUserRequest, ApplicationUser>();
 
         // auth
-        CreateMap<RegisterRequest, ApplicationUser>();
+        CreateMap<RegisterRequest, ApplicationUser>()
+            .ForMember(x => x.ImageUrl, opt => opt.MapFrom(src => "/uploads/user.png"));
         
         // role
         CreateMap<ApplicationRole, RoleResponse>();

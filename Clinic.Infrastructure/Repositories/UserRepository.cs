@@ -1,5 +1,6 @@
 ﻿using Clinic.Application.DTOs.User;
 using Clinic.Application.Interfaces.Repositories;
+using Clinic.Domain.Consts;
 using Clinic.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -49,5 +50,15 @@ public class UserRepository : GenericRepository<ApplicationUser>, IUserRepositor
                     Roles = u.SelectMany(x => x.Roles)
                 }).ToListAsync();
                 
+    }
+
+    public async Task<List<string>> GetSecretaryUserIdsAsync()
+    {
+        return await (from u in _context.Set<ApplicationUser>()
+                      join ur in _context.Set<IdentityUserRole<string>>() on u.Id equals ur.UserId
+                      join r in _context.Set<ApplicationRole>() on ur.RoleId equals r.Id into roles
+                      where roles.Any(x => x.Name == AppRoles.Secretary) && !u.IsDisabled && !u.IsDeleted
+                      select u.Id)
+                .ToListAsync();
     }
 }

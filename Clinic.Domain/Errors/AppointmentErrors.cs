@@ -13,4 +13,6 @@ public static class AppointmentErrors
     public static readonly Error ActiveAppointmentExists = new("Appointment.ActiveAppointmentExists", "The pateint already has active appointment", StatusCodes.Status400BadRequest);
     public static readonly Error AlreadyCancelled = new("Appointment.AlreadyCancelled", "Appintment is aleardy canceled", StatusCodes.Status400BadRequest);
     public static readonly Error NoIdsProvided = new("Appointment.NoIdsProvided", "No ids is provided", StatusCodes.Status400BadRequest);
+    public static readonly Error CannotCancelPastAppointment = new("Appointment.CannotCancelPastAppointment", "Cannot cancel a past appointment", StatusCodes.Status400BadRequest);
+    public static readonly Error CannotCancelWithin24Hours = new("Appointment.CannotCancelWithin24Hours", "Cannot cancel appointment within 24 hours", StatusCodes.Status400BadRequest);
 }

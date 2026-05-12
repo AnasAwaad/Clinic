@@ -10,12 +10,18 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
 {
     [HttpPost]
     [HasPermission(Permissions.AddAppointments)]
-    public async Task<IActionResult> Book([FromBody] AppointmentRequest request)
+    public async Task<IActionResult> Create([FromBody] AppointmentRequest request)
     {
         var result = await appointmentService.CreateAsync(request);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
+    [HttpPost("book")]
+    public async Task<IActionResult> Book([FromBody] BookAppointmentRequest request)
+    {
+        var result = await appointmentService.BookAsync(User.GetUserId(),request);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
 
     [HttpGet("available/{date}")]
     [HasPermission(Permissions.GetTimeSlots)]
@@ -42,7 +48,7 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     }
 
     [HttpGet("{id}")]
-    [HasPermission(Permissions.GetAppointments)]
+    //[HasPermission(Permissions.GetAppointments)]
     public async Task<IActionResult> GetDetails([FromRoute] int id)
     {
         var result = await appointmentService.GetAsync(id);
@@ -51,14 +57,14 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
 
     [HttpGet("my")]
     [HasPermission(Permissions.GetOwnAppointments)]
-    public async Task<IActionResult> GetMyAppointments()
+    public async Task<IActionResult> GetMyAppointments([FromQuery] RequestFilters request, [FromQuery] string type = "Today")
     {
-        var result = await appointmentService.GetByUserAsync(User.GetUserId());
+        var result = await appointmentService.GetMyAppointmentsAsync(User.GetUserId(),request,type);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
     [HttpPut("{id}/cancel")]
-    [HasPermission(Permissions.UpdateAppointments)]
+    //[HasPermission(Permissions.UpdateAppointments)]
     public async Task<IActionResult> Cancel(int id)
     {
         var result = await appointmentService.CancelAsync(id);
@@ -74,7 +80,7 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     }
 
     [HttpPut("{id}")]
-    [HasPermission(Permissions.UpdateAppointments)]
+    //[HasPermission(Permissions.UpdateAppointments)]
     public async Task<IActionResult> Update([FromRoute]int id ,[FromBody] AppointmentRequest request)
     {
         var result = await appointmentService.UpdateAsync(id, request);

@@ -9,9 +9,6 @@ public class AppointmentRequestValidator : AbstractValidator<AppointmentRequest>
 {
     public AppointmentRequestValidator()
     {
-        RuleFor(x => x.DoctorId)
-            .NotEmpty();
-
         RuleFor(x => x.TimeSlotId)
             .NotEmpty();
 

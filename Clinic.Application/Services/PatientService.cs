@@ -155,7 +155,7 @@ public class PatientService(UserManager<ApplicationUser> userManager,
             return Result.Failure<PatientProfileResponse>(PatientErrors.PatientNotFound);
 
         var appointments =await unitOfWork.Appointments
-            .GetAllByPatientId(patientId)
+            .GetAllByPatientIdQueryable(patientId)
             .ProjectTo<AppointmentHistoryResponse>(mapper.ConfigurationProvider)
             .ToListAsync();
 

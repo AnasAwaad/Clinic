@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<INotificationSender, NotificationSender>();
         services.AddScoped<IPrescriptionPdfGenerator, PrescriptionPdfGenerator>();
 
         services.AddScoped<IUserRsaKeyService, UserRsaKeyService>();

@@ -9,7 +9,7 @@ using Clinic.Domain.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clinic.Application.Services;
-public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppointmentService
+public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper,INotificationService notificationService) : IAppointmentService
 {
 
     public async Task<Result<PaginatedList<AppointmentListResponse>>> GetAllAsync(RequestFilters filters)
@@ -18,6 +18,16 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
             .ProjectTo<AppointmentListResponse>(mapper.ConfigurationProvider);
 
         var result = await PaginatedList<AppointmentListResponse>.CreateAsync(items, filters.PageNumber, filters.PageSize);
+
+        return Result.Success(result);
+    }
+
+    public async Task<Result<PaginatedList<AppointmentResponse>>> GetMyAppointmentsAsync(string userId,RequestFilters filters,string type)
+    {
+        var items = unitOfWork.Appointments.GetAllPaginatedByPatientIdQueryable(userId,filters,type)
+            .ProjectTo<AppointmentResponse>(mapper.ConfigurationProvider);
+
+        var result = await PaginatedList<AppointmentResponse>.CreateAsync(items, filters.PageNumber, filters.PageSize);
 
         return Result.Success(result);
     }
@@ -66,19 +76,10 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
         return Result.Success(appointment);
     }
 
-    public async Task<Result<List<AppointmentResponse>>> GetByUserAsync(string userId)
-    {
-        var query = unitOfWork.Appointments.GetAllByPatientId(userId);
-
-        var response = await mapper.ProjectTo<AppointmentResponse>(query).ToListAsync();
-
-        return Result.Success(response);
-    }
-
     // create appointment by patient
     public async Task<Result<AppointmentResponse>> CreateAsync(AppointmentRequest request)
     {
-        var doctor = await unitOfWork.Doctors.GetByIdAsync(request.DoctorId);
+        var doctor = await unitOfWork.Doctors.GetDoctor();
 
         if(doctor is null) 
             return Result.Failure<AppointmentResponse>(DoctorErrors.DoctorNotFound);
@@ -107,12 +108,66 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
 
         var appointment = mapper.Map<Appointment>(request);
         appointment.PatientId = patient.Id;
+        appointment.BookedAt = DateTime.UtcNow;
         timeSlot.IsBooked = true;
-        timeSlot.BookedAt = DateTime.Now;
+        timeSlot.BookedAt = DateTime.UtcNow; // TODO: remove bookedAt Cols in timeSlot
 
 
         await unitOfWork.Appointments.AddAsync(appointment);
         await unitOfWork.SaveAsync();
+
+        return Result.Success(mapper.Map<AppointmentResponse>(appointment));
+    }
+
+    public async Task<Result<AppointmentResponse>> BookAsync(string userId,BookAppointmentRequest request)
+    {
+        var doctor = await unitOfWork.Doctors.GetDoctor();
+
+        if (doctor is null)
+            return Result.Failure<AppointmentResponse>(DoctorErrors.DoctorNotFound);
+
+        var patient = await unitOfWork.Patients.GetByIdAsync(userId);
+
+        if (patient is null)
+            return Result.Failure<AppointmentResponse>(PatientErrors.PatientNotFound);
+
+        var hasActiveAppointment = await unitOfWork.Appointments.HasActiveAppointmentAsync(patient.Id, request.Date);
+
+        if (hasActiveAppointment)
+            return Result.Failure<AppointmentResponse>(AppointmentErrors.ActiveAppointmentExists);
+
+
+        var timeSlot = await unitOfWork.TimeSlots.GetByIdAndDayAsync(request.TimeSlotId, request.Date.DayOfWeek.ToString());
+
+        if (timeSlot is null)
+            return Result.Failure<AppointmentResponse>(DoctorScheduleErrors.TimeSlotNotFound);
+
+        if (timeSlot.IsBooked)
+            return Result.Failure<AppointmentResponse>(AppointmentErrors.TimeSlotAlreadyBooked);
+
+        if (timeSlot.IsDeleted)
+            return Result.Failure<AppointmentResponse>(DoctorScheduleErrors.TimeSlotNotFound);
+
+        var appointment = mapper.Map<Appointment>(request);
+        appointment.PatientId = patient.Id;
+        appointment.DoctorId = doctor.Id;
+        appointment.BookedAt = DateTime.UtcNow;
+        
+        timeSlot.IsBooked = true;
+        timeSlot.BookedAt = DateTime.UtcNow;// TODO: remove bookedAt Cols in timeSlot
+
+
+        await unitOfWork.Appointments.AddAsync(appointment);
+        await unitOfWork.SaveAsync();
+
+
+        var secretaryIds = await unitOfWork.Users.GetSecretaryUserIdsAsync();
+
+        foreach (var secretaryId in secretaryIds)
+        {
+            await notificationService.SendAsync(secretaryId, "New Appointment Booked", $"A new appointment has been booked on {appointment.BookedAt:MMM dd, yyyy, hh:mm tt}");
+        }
+
 
         return Result.Success(mapper.Map<AppointmentResponse>(appointment));
     }
@@ -128,7 +183,22 @@ public class AppointmentService(IUnitOfWork unitOfWork, IMapper mapper) : IAppoi
         if (appointment.Status == AppointmentStatus.Cancelled)
             return Result.Failure(AppointmentErrors.AlreadyCancelled);
 
+        var now = DateTime.UtcNow;
+
+        var appointmentEnd =
+            appointment.Date.ToDateTime(appointment.TimeSlot.EndTime);
+
+        if (appointmentEnd <= now)
+            return Result.Failure(AppointmentErrors.CannotCancelPastAppointment);
+
+        var appointmentStart =appointment.Date.ToDateTime(appointment.TimeSlot.StartTime);
+
+        if (appointmentStart <= DateTime.UtcNow.AddHours(24))
+            return Result.Failure(AppointmentErrors.CannotCancelWithin24Hours);
+
         appointment.Status = AppointmentStatus.Cancelled;
+        appointment.CancelledAt = DateTime.UtcNow;
+
         appointment.TimeSlot.IsBooked = false;
         await unitOfWork.SaveAsync();
 

@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic.Application.DTOs.Appointment;
-public record AppointmentRequest(
-    string PatientId,
+public record BookAppointmentRequest (
     int TimeSlotId,
     DateOnly Date,
     string ReasonForVisit,
